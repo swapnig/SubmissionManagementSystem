@@ -1,6 +1,0 @@
-*.jsdtscope
-target/
-bin/
-build/
-.settings/
-.project

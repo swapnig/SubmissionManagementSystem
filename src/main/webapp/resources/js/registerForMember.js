@@ -33,7 +33,7 @@ $(document).ready(function() {
 			// If Parent category for member to view details changed, fetch member attributes
 			if ($.inArray(category, parentList) == parentList.length - 1) {
 				getMembersAttributes(parentMemberId, parentMemberName);
-				checkForEmptyDropdowns();
+				//checkForEmptyDropdowns();
 				
 			// Else populate child category dropdown for child members
 			} else {

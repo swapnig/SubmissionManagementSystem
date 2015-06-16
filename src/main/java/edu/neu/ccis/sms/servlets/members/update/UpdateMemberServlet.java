@@ -14,9 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.dao.categories.MemberDao;
 import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
-import edu.neu.ccis.sms.entity.categories.MemberAttribute;
 import edu.neu.ccis.sms.entity.categories.Member;
-
+import edu.neu.ccis.sms.entity.categories.MemberAttribute;
 import edu.neu.ccis.sms.util.PrintInfo;
 
 /**
@@ -29,49 +28,57 @@ import edu.neu.ccis.sms.util.PrintInfo;
 @WebServlet("/UpdateMember")
 public class UpdateMemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public UpdateMemberServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public UpdateMemberServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		PrintInfo.printRequestParameters(request);
-        ArrayList<String> paramNames = Collections.list(request.getParameterNames());
-		
+		ArrayList<String> paramNames = Collections.list(request.getParameterNames());
+
 		MemberDao memberDao = new MemberDaoImpl();
 		Long memberId = Long.parseLong(request.getParameter(RequestKeys.PARAM_MEMBER_ID));
 		Member existingMember = memberDao.getMember(memberId);
-		
+
+		String memberName = null;
 		if (paramNames.contains(RequestKeys.PARAM_MEMBER_NAME)) {
-			existingMember.setName(request.getParameter(RequestKeys.PARAM_MEMBER_NAME));
+			memberName = request.getParameter(RequestKeys.PARAM_MEMBER_NAME);
+			existingMember.setName(memberName);
 		}
-		
-		Set<MemberAttribute> memberAttributes = existingMember.getAttributes();
-		for (MemberAttribute memberAttribute : memberAttributes) {
-			String memberName = memberAttribute.getName();
-			if (paramNames.contains(memberName)) {
-				memberAttribute.setValue(request.getParameter(memberName));
-			}
-		}
-		existingMember.setAttributes(memberAttributes);
-		
-		memberDao.updateMember(existingMember);
-		
+
 		StringBuffer content = new StringBuffer();
-		content.append("Data updated into database");
+
+		if (memberDao.doesMemberNameExistForParentMember(memberName, null)) {
+			content.append("<font size='4' color='red'>Member with name " + memberName +
+					" already exists for its parent member, choose a different name.</font>");
+		} else {
+			Set<MemberAttribute> memberAttributes = existingMember.getAttributes();
+			for (MemberAttribute memberAttribute : memberAttributes) {
+				String attributeName = memberAttribute.getName();
+				if (paramNames.contains(attributeName)) {
+					memberAttribute.setValue(request.getParameter(attributeName));
+				}
+			}
+			existingMember.setAttributes(memberAttributes);
+			memberDao.updateMember(existingMember);
+			content.append("Details have been updated for " + memberName);
+		}
 		response.setContentType("text/html");
 		response.getWriter().write(content.toString());
 	}
