@@ -20,7 +20,7 @@ public interface MemberDao {
 
     public Member getMember(final Long id);
 
-    public void updateMember(Member modifiedMember);
+    public void updateMember(Member modifiedMember) throws Exception;
 
     public void deleteMember(Member member);
 

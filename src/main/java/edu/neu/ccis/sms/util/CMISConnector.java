@@ -70,8 +70,8 @@ public class CMISConnector {
     }
 
     /**
-     * Create folder under given parent folder path, if it exists then don't do
-     * anything, otherwise create the new subfolder under given parentFolderPath
+     * Create folder under given parent folder path, if it exists then don't do anything, otherwise create the new
+     * subfolder under given parentFolderPath
      * 
      * @param parentFolderPath
      * @param folderName
@@ -370,6 +370,27 @@ public class CMISConnector {
      */
     public static void downloadDocument(final String docId, final String destinationPath) throws IOException {
         FileUtils.download(docId, destinationPath, session);
+    }
+
+    /**
+     * Rename the CMS folder
+     * 
+     * @param docId
+     * @param destinationPath
+     * @throws IOException
+     */
+    public static Folder renameFolder(final String folderId, final String newFolderName) throws Exception {
+        try {
+            Folder folder = (Folder) session.getObject(folderId);
+            // Rename the folder with new name
+            ObjectId obj = folder.rename(newFolderName, true);
+            // Refresh the Folder details again from CMS
+            folder = (Folder) session.getObject(obj);
+            return folder;
+        } catch (final CmisObjectNotFoundException onfe) {
+            System.out.println("No such folder found!");
+            throw onfe;
+        }
     }
 
     public static class CMISConfig {
