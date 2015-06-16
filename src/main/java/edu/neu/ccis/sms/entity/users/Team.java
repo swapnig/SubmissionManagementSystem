@@ -14,6 +14,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+/**
+ * Team Hibernate Entity bean class
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 10-June-2015
+ */
 @Entity
 @Table(name = "Team", uniqueConstraints = { @UniqueConstraint(columnNames = "TEAM_ID") })
 public class Team implements Serializable, Comparable<Team> {

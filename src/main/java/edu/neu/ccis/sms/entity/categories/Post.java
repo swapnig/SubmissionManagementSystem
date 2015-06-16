@@ -13,6 +13,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+/**
+ * Hibernate Entity bean class for Post; Post contain topic, content - They are
+ * ideally children to a member e.g. discussion Forum
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 @Entity
 @Table(name = "Post", uniqueConstraints = { @UniqueConstraint(columnNames = "POST_ID") })
 public class Post implements Serializable, Comparable<Post> {
@@ -64,7 +72,7 @@ public class Post implements Serializable, Comparable<Post> {
     public void setMemberCategory(Member memberCategory) {
         this.memberCategory = memberCategory;
     }
-    
+
     @Override
     public int compareTo(Post o) {
         return this.id.compareTo(o.getId());

@@ -13,10 +13,18 @@ import org.hibernate.Transaction;
 import edu.neu.ccis.sms.dao.users.UserDao;
 import edu.neu.ccis.sms.dao.users.UserDaoImpl;
 import edu.neu.ccis.sms.entity.categories.Member;
+import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
+/**
+ * DAO Implementation class for Member Entity bean
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 public class MemberDaoImpl implements MemberDao {
 	private Session currentSession;
 	private Transaction currentTransaction;
@@ -107,7 +115,7 @@ public class MemberDaoImpl implements MemberDao {
 	@SuppressWarnings("unchecked")
 	public List<Member> getAllMembers() {
 		openCurrentSessionwithTransaction();
-		List<Member> users = getCurrentSession().createQuery(
+		List<Member> users = (List<Member>) getCurrentSession().createQuery(
 				"from Member").list();
 		closeCurrentSessionwithTransaction();
 		return users;
@@ -198,6 +206,24 @@ public class MemberDaoImpl implements MemberDao {
 			return true;
 		}
 	}
+	
+	/**
+     * Get Member by memberId along with UserToMemberMappings
+     */
+    @Override
+    public Member getMemberByIdWithUserMappings(final Long id) {
+        openCurrentSessionwithTransaction();
+        Query query = getCurrentSession().createQuery(
+                "select m from Member m left join fetch m.userToMemberMappings where m.id = :id");
+        query.setParameter("id", id);
+        List<Member> members = (List<Member>) query.list();
+        closeCurrentSessionwithTransaction();
+        if (members == null || members.isEmpty()) {
+            return null;
+        } else {
+            return members.get(0);
+        }
+    }
 
 	private Query getQueryForParentMemberId(final Long parentMemberId) {
 		Query query;
@@ -211,4 +237,57 @@ public class MemberDaoImpl implements MemberDao {
 		}
 		return query;
 	}
-}
+
+	/**
+     * Get Member by memberId along with UserToMemberMappings
+     */
+    @Override
+    public Member getMemberByIdWithSubmissions(final Long id) {
+        openCurrentSessionwithTransaction();
+        Query query = getCurrentSession().createQuery(
+                "select m from Member m left join fetch m.submissions where m.id = :id");
+        query.setParameter("id", id);
+        List<Member> members = (List<Member>) query.list();
+        closeCurrentSessionwithTransaction();
+        if (members == null || members.isEmpty()) {
+            return null;
+        } else {
+            return members.get(0);
+        }
+    }
+
+    @Override
+    public Set<User> getEvaluatorsForMemberId(final Long id) {
+        final Member member = getMemberByIdWithUserMappings(id);
+        final Set<User> evaluators = new HashSet<User>();
+        for (UserToMemberMapping mapping : member.getUserToMemberMappings()) {
+            if (mapping.getRole() == RoleType.EVALUATOR) {
+                evaluators.add(mapping.getUser());
+            }
+        }
+        return evaluators;
+    }
+
+    @Override
+    public Set<User> getSubmittersForMemberId(final Long id) {
+        final Member member = getMemberByIdWithUserMappings(id);
+        final Set<User> submitters = new HashSet<User>();
+        for (UserToMemberMapping mapping : member.getUserToMemberMappings()) {
+            if (mapping.getRole() == RoleType.SUBMITTER) {
+                submitters.add(mapping.getUser());
+            }
+        }
+        return submitters;
+    }
+
+    @Override
+    public Set<User> getConductorsForMemberId(final Long id) {
+        final Member member = getMemberByIdWithUserMappings(id);
+        final Set<User> conductors = new HashSet<User>();
+        for (UserToMemberMapping mapping : member.getUserToMemberMappings()) {
+            if (mapping.getRole() == RoleType.CONDUCTOR) {
+                conductors.add(mapping.getUser());
+            }
+        }
+        return conductors;
+    }}

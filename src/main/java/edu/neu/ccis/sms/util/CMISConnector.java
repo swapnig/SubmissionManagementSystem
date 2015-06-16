@@ -1,6 +1,5 @@
 package edu.neu.ccis.sms.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +17,7 @@ import org.apache.chemistry.opencmis.client.api.Repository;
 import org.apache.chemistry.opencmis.client.api.Session;
 import org.apache.chemistry.opencmis.client.api.SessionFactory;
 import org.apache.chemistry.opencmis.client.runtime.SessionFactoryImpl;
+import org.apache.chemistry.opencmis.client.util.FileUtils;
 import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
@@ -26,11 +26,19 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 
+/**
+ * Utility class for CMIS opeations for CMS repository
+ * 
+ * @author Pramod R. Khare
+ * @date 8-May-2015
+ * @lastUpdate 10-June-2015
+ */
 public class CMISConnector {
     // Connect to CMS repository and get the session
-    private static final Session session = connectToRepository();
+    private static Session session = null;
 
-    public static Session getCMISSession() {
+    public static Session getCMISSession(final CMISConfig configParams) {
+        session = connectToRepository(configParams);
         return session;
     }
 
@@ -39,21 +47,21 @@ public class CMISConnector {
      * 
      * @return
      */
-    private static Session connectToRepository() {
-        // TODO Auto-generated method stub
+    private static Session connectToRepository(final CMISConfig configParams) {
         SessionFactory sessionFactory = SessionFactoryImpl.newInstance();
         Map<String, String> parameters = new HashMap<String, String>();
-        parameters.put(SessionParameter.USER, "admin");
-        parameters.put(SessionParameter.PASSWORD, "admin");
+        parameters.put(SessionParameter.USER, configParams.getCmsRepoUsername());
+        parameters.put(SessionParameter.PASSWORD, configParams.getCmsRepoPswd());
         parameters.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value());
         parameters.put(SessionParameter.ATOMPUB_URL,
         // "http://localhost:8080/alfresco/cmisatom");
-                "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom");
+        // "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom");
+                configParams.getCmsRepoAtompubBindingUrl());
 
         List<Repository> repos = sessionFactory.getRepositories(parameters);
         System.out.println("Total Repositories in CMS = " + repos.size());
 
-        Repository defaultRepo = repos.get(0);
+        Repository defaultRepo = repos.get(configParams.getCmsRepoNumber());
         System.out.println("Default Repo CMIS version supported = " + defaultRepo.getCmisVersionSupported());
 
         Session session = defaultRepo.createSession();
@@ -71,7 +79,8 @@ public class CMISConnector {
      * @throws CmisObjectNotFoundException
      */
     public static Folder createFolder(final String parentFolderPath, final String folderName)
-            throws CmisObjectNotFoundException {
+            throws CmisObjectNotFoundException
+    {
 
         Folder parentFolder = null;
         Folder subFolder = null;
@@ -136,7 +145,8 @@ public class CMISConnector {
      * @throws IOException
      */
     public static Document uploadToCMSUsingFileToFolderPath(final String parentFolderPath, final File file)
-            throws Exception {
+            throws Exception
+    {
         return uploadToCMSUsingFileToFolderPath(parentFolderPath, file.getName(),
                 Files.probeContentType(file.toPath()), file);
     }
@@ -151,7 +161,8 @@ public class CMISConnector {
      * @throws Exception
      */
     public static Document uploadToCMSUsingFileToFolderPath(final String parentFolderPath, final String fileName,
-            final File file) throws Exception {
+            final File file) throws Exception
+    {
         return uploadToCMSUsingFileToFolderPath(parentFolderPath, fileName, Files.probeContentType(file.toPath()), file);
     }
 
@@ -162,7 +173,8 @@ public class CMISConnector {
      * @throws Exception
      */
     public static Document uploadToCMSUsingFileToFolderPath(final String parentFolderPath, final String fileName,
-            final String fileType, final File file) throws Exception {
+            String fileType, final File file) throws Exception
+    {
 
         Map<String, Object> props = null;
         Folder parentFolder = null;
@@ -177,6 +189,9 @@ public class CMISConnector {
             props.put("cmis:objectTypeId", "cmis:document");
             props.put("cmis:name", fileName);
 
+            if (fileType == null) {
+                fileType = "application/octet-stream";
+            }
             contentStream = session.getObjectFactory().createContentStream(fileName, file.length(), fileType,
                     new FileInputStream(file));
 
@@ -219,7 +234,8 @@ public class CMISConnector {
      * @throws Exception
      */
     public static Document uploadToCMSUsingFileToFolder(final Folder parentFolder, final String fileName,
-            final File file) throws Exception {
+            final File file) throws Exception
+    {
         return uploadToCMSUsingFileToFolder(parentFolder, fileName, Files.probeContentType(file.toPath()), file);
     }
 
@@ -233,7 +249,8 @@ public class CMISConnector {
      * @throws Exception
      */
     public static Document uploadToCMSUsingFileToFolder(final Folder parentFolder, final String fileName,
-            final String fileType, final File file) throws Exception {
+            String fileType, final File file) throws Exception
+    {
 
         Map<String, Object> props = null;
         Document document = null;
@@ -243,6 +260,10 @@ public class CMISConnector {
             props = new HashMap<String, Object>();
             props.put("cmis:objectTypeId", "cmis:document");
             props.put("cmis:name", fileName);
+
+            if (fileType == null) {
+                fileType = "application/octet-stream";
+            }
 
             contentStream = session.getObjectFactory().createContentStream(fileName, file.length(), fileType,
                     new FileInputStream(file));
@@ -316,7 +337,8 @@ public class CMISConnector {
      * @return new Document version
      */
     public static Document updateNewDocumentVersion(Document doc, final String fileName, final File file)
-            throws Exception {
+            throws Exception
+    {
         doc.refresh();
         ObjectId idOfCheckedOutDocument = doc.checkOut();
         Document workingCopy = (Document) session.getObject(idOfCheckedOutDocument);
@@ -326,6 +348,10 @@ public class CMISConnector {
         props.put("cmis:objectTypeId", "cmis:document");
         props.put("cmis:name", fileName);
 
+        if (fileType == null) {
+            fileType = "application/octet-stream";
+        }
+
         ContentStream contentStream = session.getObjectFactory().createContentStream(fileName, file.length(), fileType,
                 new FileInputStream(file));
         ObjectId objectId = workingCopy.checkIn(true, props, contentStream, "Resubmission!");
@@ -333,5 +359,48 @@ public class CMISConnector {
         System.out.println("Version label is now:" + doc.getVersionLabel());
 
         return doc;
+    }
+
+    /**
+     * Download the document to local disk from CMS repo
+     * 
+     * @param docId
+     * @param destinationPath
+     * @throws IOException
+     */
+    public static void downloadDocument(final String docId, final String destinationPath) throws IOException {
+        FileUtils.download(docId, destinationPath, session);
+    }
+
+    public static class CMISConfig {
+        final String cmsRepoUsername;
+        final String cmsRepoPswd;
+        final String cmsRepoAtompubBindingUrl;
+        final int cmsRepoNumber;
+
+        public CMISConfig(final String cmsRepoUsername, final String cmsRepoPswd,
+                final String cmsRepoAtompubBindingUrl, final int cmsRepoNumber)
+        {
+            this.cmsRepoAtompubBindingUrl = cmsRepoAtompubBindingUrl;
+            this.cmsRepoNumber = cmsRepoNumber;
+            this.cmsRepoPswd = cmsRepoPswd;
+            this.cmsRepoUsername = cmsRepoUsername;
+        }
+
+        public String getCmsRepoUsername() {
+            return cmsRepoUsername;
+        }
+
+        public String getCmsRepoPswd() {
+            return cmsRepoPswd;
+        }
+
+        public String getCmsRepoAtompubBindingUrl() {
+            return cmsRepoAtompubBindingUrl;
+        }
+
+        public int getCmsRepoNumber() {
+            return cmsRepoNumber;
+        }
     }
 }

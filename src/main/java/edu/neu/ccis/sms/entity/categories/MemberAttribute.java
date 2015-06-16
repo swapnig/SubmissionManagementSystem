@@ -13,6 +13,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+/**
+ * Hibernate Entity bean class for MemberAttribute; Contains attribute name, 
+ * type and value information and which member it belongs to.
+ *
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 @Entity
 @Table(name = "MemberAttribute", uniqueConstraints = { @UniqueConstraint(columnNames = "MEMBER_ATTRIBUTE_ID") })
 public class MemberAttribute implements Serializable, Comparable<MemberAttribute> {

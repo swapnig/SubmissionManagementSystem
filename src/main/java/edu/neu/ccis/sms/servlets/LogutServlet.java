@@ -12,7 +12,11 @@ import javax.servlet.http.HttpSession;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Servlet implementation class LogoutServlet
+ * Servlet implementation class LogutServlet
+ * 
+ * @author Pramod R. Khare
+ * @date 28-May-2015
+ * @lastUpdate 1-June-2015
  */
 @WebServlet("/Logout")
 public class LogutServlet extends HttpServlet {

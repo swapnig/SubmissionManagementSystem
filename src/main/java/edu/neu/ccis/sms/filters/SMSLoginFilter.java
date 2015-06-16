@@ -17,6 +17,10 @@ import edu.neu.ccis.sms.constants.SessionKeys;
 
 /**
  * Servlet Filter implementation class SMSLoginFilter
+ * 
+ * @author Pramod R. Khare
+ * @date 23-May-2015
+ * @lastUpdate 3-June-2015
  */
 @WebFilter("/*")
 public class SMSLoginFilter implements Filter {
@@ -38,8 +42,8 @@ public class SMSLoginFilter implements Filter {
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -56,8 +60,7 @@ public class SMSLoginFilter implements Filter {
      * @throws ServletException
      * @throws IOException
      */
-    private void validateUserSession(HttpServletRequest request,
-            HttpServletResponse response, FilterChain chain)
+    private void validateUserSession(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String requestURL = request.getRequestURI();
         requestURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
@@ -67,17 +70,14 @@ public class SMSLoginFilter implements Filter {
         System.out.println("session..." + session);
 
         if (session != null) {
-            System.out.println("UserObj - "
-                    + session.getAttribute(SessionKeys.keyUserObj));
+            System.out.println("UserObj - " + session.getAttribute(SessionKeys.keyUserObj));
             System.out.println("Session exists");
         } else {
             System.out.println("session is null");
         }
 
-        boolean isSessionValid = (session != null || 
-                ( session == null && ( requestURL.contains("login.jsp")
-                || requestURL.contains("user_registration.jsp") 
-                || requestURL.equals("Login"))));
+        boolean isSessionValid = (session != null || (session == null && (requestURL.contains("login.jsp")
+                || requestURL.contains("user_registration.jsp") || requestURL.equals("Login"))));
 
         // If the request from the login page pass to login action
         // to create new user session.
@@ -92,7 +92,7 @@ public class SMSLoginFilter implements Filter {
             System.out.println("Invalid session...");
             // HttpServletResponse.SC_LENGTH_REQUIRED 411 error code here used
             // to indicated for session expiration.
-            response.sendRedirect("pages/login.jsp");
+            response.sendRedirect("login.jsp");
         }
     }
 

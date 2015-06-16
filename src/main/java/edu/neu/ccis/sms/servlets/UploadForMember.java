@@ -1,6 +1,5 @@
 package edu.neu.ccis.sms.servlets;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -14,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.chemistry.opencmis.client.api.Folder;
-import org.apache.chemistry.opencmis.client.api.ObjectId;
 import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -35,6 +33,10 @@ import edu.neu.ccis.sms.util.CMISConnector;
 
 /**
  * Servlet implementation class UploadForMember
+ * 
+ * @author Pramod R. Khare
+ * @date 2-June-2015
+ * @lastUpdate 8-June-2015
  */
 @WebServlet(name = "UploadForMember", urlPatterns = { "/UploadForMember" })
 @MultipartConfig
@@ -121,13 +123,12 @@ public class UploadForMember extends HttpServlet {
                         }
                     }
                 }
-                // redirects client to message page
-                getServletContext().getRequestDispatcher("/pages/success.jsp").forward(request, response);
             }
 
             // Upload this file into CMS only if we have a valid memberId,
             // uploaded file, filename from request
             if (null != memberIdToUploadFor && null != storeFile && null != fileName) {
+                System.out.println("Saving submission to SMS and CMS both!...");
                 UserDao userDao = new UserDaoImpl();
                 User submitter = userDao.getUser(userId);
 
@@ -136,6 +137,7 @@ public class UploadForMember extends HttpServlet {
 
                 String memberFolderPath = member.getCmsFolderPath();
 
+                System.out.println("Checking user-email folder under member");
                 // Create the email-id folder for given user if it doesn't exist
                 Folder submitterCMSFolder = CMISConnector.createFolder(memberFolderPath, submitter.getEmail());
 
@@ -145,7 +147,10 @@ public class UploadForMember extends HttpServlet {
                 // First check if user has already submitted for this
                 // member already - meaning is it a resubmission, then get the
                 // document reference
-                Document smsDoc = submitter.getSubmissionDocumentForMemberId(memberIdToUploadFor);
+                // Get the submission document reference for given memberId 
+                // Document smsDoc = submitter.getSubmissionDocumentForMemberId(memberIdToUploadFor);
+
+                Document smsDoc = userDao.getSubmissionDocumentForMemberIdByUserId(userId, memberIdToUploadFor);
 
                 // If there is no previous submission by this user for this
                 // memberId
@@ -182,22 +187,22 @@ public class UploadForMember extends HttpServlet {
                         smsDoc.setCmsDocumentPath(doc.getPaths().get(0));
                         smsDoc.setCmsDocVersion(doc.getVersionLabel());
                         smsDoc.setContentType((String) doc.getPropertyValue("cmis:contentStreamMimeType"));
-                        smsDoc.addSubmittedBy(submitter);
-                        smsDoc.setSubmittedForMember(member);
                         smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
 
-                        docDao.saveDocument(smsDoc);
+                        docDao.updateDocument(smsDoc);
                     } else {
                         throw new Exception("Unable to update document version");
                     }
                 }
                 System.out.println("Successfully uploaded the document for Member! - " + doc.getPaths().get(0));
             }
+            // redirects client to message page
+            response.sendRedirect("pages/submit_to_member.jsp");
         } catch (Exception ex) {
             request.setAttribute("message", "There was an error: " + ex.getMessage());
             // redirects client to message page
             System.out.println(ex.getMessage());
-            getServletContext().getRequestDispatcher("/pages/error.jsp").forward(request, response);
+            response.sendRedirect("pages/error.jsp");
         }
     }
 }

@@ -19,6 +19,10 @@ import edu.neu.ccis.sms.entity.users.User;
 
 /**
  * Servlet implementation class UpdateTOIForUserServlet
+ * 
+ * @author Pramod R. Khare
+ * @date 2-June-2015
+ * @lastUpdate 8-June-2015
  */
 @WebServlet(name = "UpdateTOIForUserServlet", urlPatterns = { "/UpdateTOIForUser" })
 public class UpdateTOIForUserServlet extends HttpServlet {
@@ -53,24 +57,41 @@ public class UpdateTOIForUserServlet extends HttpServlet {
             UserDao userDao = new UserDaoImpl();
             User one = userDao.getUser(userId);
 
-            Set<String> toiSet = one.getTopicsOfInterest();
-            // Remove the old topics of preferences
-            toiSet.clear();
-            userDao.updateUser(one);
+            Set<String> oldToiSet = one.getTopicsOfInterest();
+
+            // Check what is the submitType of request
+            String submitType = request.getParameter("submitType");
 
             Enumeration<String> paramNames = request.getParameterNames();
-            toiSet = new HashSet<String>();
+            Set<String> newToiSet = new HashSet<String>();
             while (paramNames.hasMoreElements()) {
-                String topic = paramNames.nextElement();
-                toiSet.add(topic);
+                String param = paramNames.nextElement();
+                if (param.startsWith("toifield")) {
+                    String topic = request.getParameter(param);
+                    newToiSet.add(topic);
+                }
             }
 
-            // Update the new topics of interest
-            one.setTopicsOfInterest(toiSet);
-            userDao.updateUser(one);
+            // Default action is Replace the old topics with new ones
+            if (null == submitType || submitType.startsWith("Replace")) {
+                oldToiSet.clear();
+                oldToiSet.addAll(newToiSet);
+                one.setTopicsOfInterest(oldToiSet);
+                userDao.updateUser(one);
+            } else if (submitType.startsWith("Clear")) {
+                // Remove the old topics of preferences
+                oldToiSet.clear();
+                one.setTopicsOfInterest(oldToiSet);
+                userDao.updateUser(one);
+            } else if (submitType.startsWith("Add")) {
+                oldToiSet.addAll(newToiSet);
+                one.setTopicsOfInterest(oldToiSet);
+                userDao.updateUser(one);
+            }
+            response.sendRedirect("pages/update_toi.jsp");
         } catch (final Exception e) {
             e.printStackTrace();
-
+            response.sendRedirect("pages/error.jsp");
         }
     }
 }

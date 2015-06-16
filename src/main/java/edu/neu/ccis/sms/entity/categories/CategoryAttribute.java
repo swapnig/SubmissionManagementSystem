@@ -13,6 +13,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+/**
+ * Hibernate Entity bean class for CategoryAttribute; Contains attribute name, 
+ * type and value information
+ *
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 @Entity
 @Table(name = "CategoryAttribute", uniqueConstraints = { @UniqueConstraint(columnNames = "CATEGORY_ATTRIBUTE_ID") })
 public class CategoryAttribute implements Serializable, Comparable<CategoryAttribute> {

@@ -10,6 +10,13 @@ import org.hibernate.Transaction;
 import edu.neu.ccis.sms.entity.categories.Category;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
+/**
+ * DAO implementation class for Category Entity bean
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 public class CategoryDaoImpl implements CategoryDao {
     private Session currentSession;
     private Transaction currentTransaction;

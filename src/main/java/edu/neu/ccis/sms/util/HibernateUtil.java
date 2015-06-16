@@ -3,6 +3,13 @@ package edu.neu.ccis.sms.util;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * HibernateUtil class initializing hibernate sessionfactory
+ * 
+ * @author Pramod R. Khare
+ * @date 8-May-2015
+ * @lastUpdate 10-May-2015
+ */
 public class HibernateUtil {
 
     private static final SessionFactory sessionFactory = buildSessionFactory();

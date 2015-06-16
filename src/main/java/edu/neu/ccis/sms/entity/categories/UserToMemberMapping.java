@@ -3,7 +3,6 @@ package edu.neu.ccis.sms.entity.categories;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,6 +19,15 @@ import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.StatusType;
 import edu.neu.ccis.sms.entity.users.User;
 
+/**
+ * Hibernate Entity bean class for UserToMemberMapping; Contain member to user
+ * mappings i.e. user is registered to which member and with which role, the
+ * registration status, time etc.
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 10-June-2015
+ */
 @Entity
 @Table(name = "UserToMemberMapping", uniqueConstraints = { @UniqueConstraint(columnNames = "ID") })
 public class UserToMemberMapping implements Serializable, Comparable<UserToMemberMapping> {
@@ -29,11 +37,11 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
     @Column(name = "ID", unique = true, nullable = false)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member member;
 
@@ -107,7 +115,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
     public void setActive(boolean isActive) {
         this.isActive = isActive;
     }
-    
+
     @Override
     public int compareTo(UserToMemberMapping o) {
         return this.id.compareTo(o.getId());

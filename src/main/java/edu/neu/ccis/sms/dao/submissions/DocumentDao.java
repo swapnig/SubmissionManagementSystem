@@ -4,6 +4,13 @@ import java.util.List;
 
 import edu.neu.ccis.sms.entity.submissions.Document;
 
+/**
+ * DAO interface for Document Entity bean
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 public interface DocumentDao {
     public List<Document> getAllDocuments();
 
@@ -11,7 +18,9 @@ public interface DocumentDao {
 
     public void updateDocument(Document modifiedDocument);
 
-    public void deleteDocument(Document document);
+    public void deleteDocument(final Document document);
 
-    public void saveDocument(Document newDocument);
+    public void saveDocument(final Document newDocument);
+
+    public Document getDocumentByIdWithEvaluations(final Long documentId);
 }

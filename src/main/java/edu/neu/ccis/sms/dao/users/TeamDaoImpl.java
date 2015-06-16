@@ -9,6 +9,13 @@ import org.hibernate.Transaction;
 import edu.neu.ccis.sms.entity.users.Team;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
+/**
+ * DAO implementation class for Team Entity bean
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 public class TeamDaoImpl implements TeamDao {
     private Session currentSession;
     private Transaction currentTransaction;

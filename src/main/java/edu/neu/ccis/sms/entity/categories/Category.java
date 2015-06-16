@@ -17,6 +17,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+/**
+ * Hibernate Entity bean class for Category; Contains category attributes and
+ * other category parameters
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 7-June-2015
+ */
 @Entity
 @Table(name = "Category", uniqueConstraints = { @UniqueConstraint(columnNames = "CATEGORY_ID"),
         @UniqueConstraint(columnNames = "CATEGORY_NAME") })

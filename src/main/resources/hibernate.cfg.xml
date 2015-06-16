@@ -7,11 +7,11 @@
 	<session-factory>
 		<property name="connection.url">jdbc:mysql://localhost:3306/test</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">root</property>
+		<property name="connection.password"></property>
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 
-		<!-- <property name="show_sql">true</property> -->
+		<property name="show_sql">true</property>
 		<property name="format_sql">true</property>
 		<property name="hbm2ddl.auto">update</property>
 
@@ -26,11 +26,11 @@
 		<mapping class="edu.neu.ccis.sms.entity.categories.CategoryAttribute" />
 		<mapping class="edu.neu.ccis.sms.entity.categories.Member" />
 		<mapping class="edu.neu.ccis.sms.entity.categories.MemberAttribute" />
-        <mapping class="edu.neu.ccis.sms.entity.categories.UserToMemberMapping"/>
 		<mapping class="edu.neu.ccis.sms.entity.categories.Post" />
+        <mapping class="edu.neu.ccis.sms.entity.categories.UserToMemberMapping"/>
+        <mapping class="edu.neu.ccis.sms.entity.users.UserToReviewerMapping" />
         <mapping class="edu.neu.ccis.sms.entity.submissions.Document" />
 		<mapping class="edu.neu.ccis.sms.entity.submissions.Evaluation" />
 		
 	</session-factory>
 </hibernate-configuration>
-

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -24,6 +23,15 @@ import javax.persistence.UniqueConstraint;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.submissions.Document;
 
+/**
+ * User Hibernate Entity bean class; contains all important information about
+ * user, his submissions and his member-registration mappings, and other
+ * personal information
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @lastUpdate 10-June-2015
+ */
 @Entity
 @Table(name = "User", uniqueConstraints = { @UniqueConstraint(columnNames = "USER_ID"),
         @UniqueConstraint(columnNames = "EMAIL"), @UniqueConstraint(columnNames = "USERNAME") })
@@ -63,29 +71,39 @@ public class User implements Serializable, Comparable<User> {
     @Column(name = "STATUS", nullable = false)
     private StatusType status = StatusType.ACTIVE;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TEAM_ID", nullable = true)
     private Team team;
 
     @ManyToMany(mappedBy = "submittedBy")
     private Set<Document> submissions = new HashSet<Document>();
 
+    @ManyToMany(mappedBy = "evaluators")
+    private Set<Document> documentsForEvaluation = new HashSet<Document>();
+
     // TODO - Create a separate Topics entity with many-to-many relationship
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_topics_of_interest", joinColumns = @JoinColumn(name = "USER_ID"))
     @Column(name = "TOPICS_OF_INTEREST")
     private Set<String> topicsOfInterest = new HashSet<String>();
 
-    @ManyToMany(cascade = { CascadeType.ALL })
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "USER_CONFLICT_OF_INTEREST_MAPPING", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONFLICT_WITH_USER_ID") })
     private Set<User> myConflictsOfInterestWithUsers = new HashSet<User>();
 
-    @ManyToMany(mappedBy = "myConflictsOfInterestWithUsers")
+    @ManyToMany(mappedBy = "myConflictsOfInterestWithUsers", fetch = FetchType.EAGER)
     private Set<User> usersForWhomMeInConflictOfInterest = new HashSet<User>();
 
     /** UserToMemberMapping many to one relationship */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Set<UserToMemberMapping> userToMemberMappings = new HashSet<UserToMemberMapping>();
+
+    // user to reviewer mapping - as many to many mappings
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "submitter")
+    private Set<UserToReviewerMapping> allocatedEvaluators = new HashSet<UserToReviewerMapping>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "evaluator")
+    private Set<UserToReviewerMapping> submittersToEvaluate = new HashSet<UserToReviewerMapping>();
 
     public Long getId() {
         return id;
@@ -93,6 +111,30 @@ public class User implements Serializable, Comparable<User> {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<UserToReviewerMapping> getAllocatedEvaluators() {
+        return allocatedEvaluators;
+    }
+
+    public void setAllocatedEvaluators(Set<UserToReviewerMapping> allocatedEvaluators) {
+        this.allocatedEvaluators = allocatedEvaluators;
+    }
+
+    public boolean addAllocatedEvaluator(UserToReviewerMapping allocatedEvaluator) {
+        return this.allocatedEvaluators.add(allocatedEvaluator);
+    }
+
+    public Set<UserToReviewerMapping> getSubmittersToEvaluate() {
+        return submittersToEvaluate;
+    }
+
+    public void setSubmittersToEvaluate(Set<UserToReviewerMapping> submittersToEvaluate) {
+        this.submittersToEvaluate = submittersToEvaluate;
+    }
+
+    public boolean addSubmitterToEvaluate(UserToReviewerMapping submitterToEvaluate) {
+        return this.submittersToEvaluate.add(submitterToEvaluate);
     }
 
     public Team getTeam() {
@@ -227,6 +269,18 @@ public class User implements Serializable, Comparable<User> {
         return this.usersForWhomMeInConflictOfInterest.add(user);
     }
 
+    public Set<Document> getDocumentsForEvaluation() {
+        return documentsForEvaluation;
+    }
+
+    public void setDocumentsForEvaluation(Set<Document> documentsForEvaluation) {
+        this.documentsForEvaluation = documentsForEvaluation;
+    }
+
+    public boolean addDocumentForEvaluation(Document document) {
+        return this.documentsForEvaluation.add(document);
+    }
+
     /**
      * Validate the current user object
      * 
@@ -234,22 +288,6 @@ public class User implements Serializable, Comparable<User> {
      */
     public boolean isValidUser() {
         return false;
-    }
-
-    /**
-     * Get the submitted document for given memberid, if there is any, otherwise
-     * return null
-     * 
-     * @param memberId
-     * @return
-     */
-    public Document getSubmissionDocumentForMemberId(final Long memberId) {
-        for (Document submission : this.submissions) {
-            if (memberId == submission.getSubmittedForMember().getId()) {
-                return submission;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -269,4 +307,79 @@ public class User implements Serializable, Comparable<User> {
         }
         return false;
     }
+
+    /**
+     * Get user's role for given member is RoleType.EVALUATOR then returns true
+     * else returns false
+     * 
+     * @NOTE: Use this method if "userToMemberMappings" is populated, because its lazily loaded
+     * @param memberId
+     * @return
+     */
+    public boolean isEvaluatorForMemberId(final Long memberId) {
+        for (UserToMemberMapping mapping : this.userToMemberMappings) {
+            if (mapping.getMember().getId().equals(memberId) && mapping.getRole() == RoleType.EVALUATOR) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get user's role for given member is RoleType.CONDUCTOR then returns true
+     * else returns false
+     * 
+     * @NOTE: Use this method if "userToMemberMappings" is populated, because its lazily loaded
+     * @param memberId
+     * @return
+     */
+    public boolean isConductorForMemberId(final Long memberId) {
+        for (UserToMemberMapping mapping : this.userToMemberMappings) {
+            if (mapping.getMember().getId().equals(memberId) && mapping.getRole() == RoleType.CONDUCTOR) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get user's role for given member is RoleType.SUBMITTER then returns true
+     * else returns false
+     * 
+     * @NOTE: Use this method if "userToMemberMappings" is populated, because its lazily loaded
+     * @param memberId
+     * @return
+     */
+    public boolean isSubmitterForMemberId(final Long memberId) {
+        for (UserToMemberMapping mapping : this.userToMemberMappings) {
+            if (mapping.getMember().getId().equals(memberId) && mapping.getRole() == RoleType.SUBMITTER) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get submitters to evaluate for given memberId
+     * 
+     * @NOTE: Use this method if "submittersToEvaluate" is populated, because its lazily loaded
+     * @param memberId
+     * @return Set<User> users which are allocated for this evaluator to
+     *         evaluate for given memberId
+     */
+    public Set<User> getSubmittersToEvaluateForMemberId(final Long memberId) {
+        Set<User> submitters = new HashSet<User>();
+        for (UserToReviewerMapping mapping : this.submittersToEvaluate) {
+            if (mapping.getEvaluationForMemberId().equals(memberId)) {
+                submitters.add(mapping.getSubmitter());
+            }
+        }
+        return submitters;
+    }
+
+    /* Hashcode method */
+    /*
+     * public int hashCode() { final int prime = 31; int hash = 17; hash = hash
+     * * prime + ((int) (this.id ^ (this.id>>> 32))); return hash; }
+     */
 }
