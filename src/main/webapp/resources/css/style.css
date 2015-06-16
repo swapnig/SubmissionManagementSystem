@@ -1,0 +1,28 @@
+.container {
+   height: auto;
+   overflow: hidden;
+}
+
+.left {
+    width: 250px;
+    float: left;  
+}
+
+.right {
+    float: none; /* not needed, just for clarification */
+    /* the next props are meant to keep this block independent from the other floated one */
+    width: auto;
+    overflow: hidden;
+}
+
+.smallFieldSet {
+	width : 200px;
+}
+
+.normalFieldSet {
+	width : 400px;
+}
+
+.largeFieldSet {
+	width : 600px;
+}​​

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<property name="connection.url">jdbc:mysql://localhost:3306/test</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">root</property>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+		<!-- <property name="show_sql">true</property> -->
+		<property name="format_sql">true</property>
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- JDBC connection pool (use the built-in) -->
+		<property name="connection.pool_size">10</property>
+		<property name="current_session_context_class">thread</property>
+
+		<mapping class="edu.neu.ccis.sms.entity.users.User" />
+		<mapping class="edu.neu.ccis.sms.entity.users.Team" />
+
+		<mapping class="edu.neu.ccis.sms.entity.categories.Category" />
+		<mapping class="edu.neu.ccis.sms.entity.categories.CategoryAttribute" />
+		<mapping class="edu.neu.ccis.sms.entity.categories.Member" />
+		<mapping class="edu.neu.ccis.sms.entity.categories.MemberAttribute" />
+        <mapping class="edu.neu.ccis.sms.entity.categories.UserToMemberMapping"/>
+		<mapping class="edu.neu.ccis.sms.entity.categories.Post" />
+        <mapping class="edu.neu.ccis.sms.entity.submissions.Document" />
+		<mapping class="edu.neu.ccis.sms.entity.submissions.Evaluation" />
+		
+	</session-factory>
+</hibernate-configuration>
+
