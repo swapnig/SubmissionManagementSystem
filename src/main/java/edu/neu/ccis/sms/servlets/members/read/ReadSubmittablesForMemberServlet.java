@@ -17,7 +17,7 @@ import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
 import edu.neu.ccis.sms.entity.categories.Member;
 
 /**
- * Read all the submittables for given member
+ * Read all the submittables for given member sorted by their name
  * 
  * @author Swapnil Gupta
  * @since Jun 10, 2015

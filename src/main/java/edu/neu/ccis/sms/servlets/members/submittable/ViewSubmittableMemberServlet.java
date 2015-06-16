@@ -23,40 +23,45 @@ import edu.neu.ccis.sms.entity.categories.MemberAttribute;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 
 /**
- * Servlet implementation class ViewSubmittableMemberServlet
+ * View details for a submittable member
+ * @author Swapnil Gupta
+ * @since Jun 11, 2015
+ * @version SMS 1.0
+ *
  */
 @WebServlet("/ViewSubmittableMember")
 public class ViewSubmittableMemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ViewSubmittableMemberServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public ViewSubmittableMemberServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
 		MemberDao memberDao = new MemberDaoImpl();
-		
+
 		UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
 		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
 		Member member = memberDao.getMember(Long.parseLong(memberId));
 		Set<MemberAttribute> memberAttributes = member.getAttributes();
-		
+
 		HttpSession session = request.getSession(true);
 		Long registrableParentMemberId = Long.parseLong((String) session.getAttribute(SessionKeys.activeMemberId));
-		
+
 		List<UserToMemberMapping> mappings = userToMemberMappingDao.getAllUserRolesForMember(userId, registrableParentMemberId);
 		for (UserToMemberMapping mapping : mappings) {
 			request.setAttribute(mapping.getRole().toString(), true);
 		}
-		
+
 		request.setAttribute(RequestKeys.PARAM_MEMBER_ID, memberId);
 		request.setAttribute(RequestKeys.PARAM_MEMBER_NAMEE, member.getName());
 		request.setAttribute(RequestKeys.PARAM_MEMBER_ATTRIBUTES, memberAttributes);
@@ -66,7 +71,8 @@ public class ViewSubmittableMemberServlet extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	@Override
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 	}
 

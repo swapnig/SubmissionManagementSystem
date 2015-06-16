@@ -8,7 +8,7 @@
 				<td>
 					<select id="categories">
 						<option value="default"></option>
-					    <c:forEach items="${requestScope.registerableCategories}" var="category">
+					    <c:forEach items="${applicationScope.registerableCategories}" var="category">
 					        <option value="${category}">${category}</option>
 					    </c:forEach>
 					</select>
