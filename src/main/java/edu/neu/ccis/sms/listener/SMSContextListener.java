@@ -30,6 +30,8 @@ import edu.neu.ccis.sms.entity.categories.Member;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
+import edu.neu.ccis.sms.util.CMISConnector;
+import edu.neu.ccis.sms.util.CMISConnector.CMISConfig;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
 // TODO: Auto-generated Javadoc
@@ -107,10 +109,18 @@ public class SMSContextListener implements ServletContextListener {
 		insertRootCategoryMember();
 
 		// Initialize Hibernate session factory
-		HibernateUtil.getSessionFactory();
+        HibernateUtil.getSessionFactory();
 
-		// Initialize the CMIS Session
-		// CMISConnector.getCMISSession();
+        // Initialize the CMIS Session
+        /* CMIS initialization configs */
+        String cmsRepoUsername = context.getInitParameter("CMSUser");
+        String cmsRepoPswd = context.getInitParameter("CMSPswd");
+        String cmsRepoAtompubBindingUrl = context.getInitParameter("CMSAtomPubBindingURL");
+        int cmsRepoNumber = Integer.parseInt(context.getInitParameter("CMSRepoNumber"));
+
+        CMISConfig config = new CMISConfig(cmsRepoUsername, cmsRepoPswd, cmsRepoAtompubBindingUrl, cmsRepoNumber);
+        // Initialize the CMIS Session
+        CMISConnector.getCMISSession(config);// Initialize Hibernate session factory
 	}
 
 	/**
