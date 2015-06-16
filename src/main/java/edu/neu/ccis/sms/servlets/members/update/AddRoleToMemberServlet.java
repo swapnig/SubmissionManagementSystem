@@ -49,7 +49,7 @@ public class AddRoleToMemberServlet extends HttpServlet {
 		
         UserDao userDao = new UserDaoImpl();
         // User being granted role
-        User subUser = userDao.findUserByEmail(email);
+        User subUser = userDao.getUserByEmailId(email);
         
         StringBuffer content = new StringBuffer();
         if(null == subUser) {
