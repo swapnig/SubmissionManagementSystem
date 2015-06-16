@@ -46,4 +46,6 @@ public interface MemberDao {
 
     /* Get conductors list for given MemberId */
     public Set<User> getConductorsForMemberId(final Long id);
+
+    public boolean doesMemberNameExistForParentMember(final String memberName, final Long parentMemberId);
 }

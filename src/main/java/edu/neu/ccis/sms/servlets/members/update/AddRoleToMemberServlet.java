@@ -50,7 +50,7 @@ public class AddRoleToMemberServlet extends HttpServlet {
 
 		UserDao userDao = new UserDaoImpl();
 		// User being granted role
-		User subUser = userDao.findUserByEmail(email);
+		User subUser = userDao.getUserByEmailId(email);
 
 		ServletContext context = getServletContext();
 		HashMap<String, String> roleKeyToRoles = (HashMap<String, String>) context.getAttribute(ContextKeys.ROLE_KEY_TO_ROLE);
