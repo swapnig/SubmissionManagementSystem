@@ -1,7 +1,6 @@
 package edu.neu.ccis.sms.dao.users;
 
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -143,9 +142,6 @@ public class UserDaoImpl implements UserDao {
             return users.get(0);
         }
     }
-    
-    public User findUserByEmail(String email) {
-        Query query = getCurrentSession().createQuery(
 
     @Override
     public UserToMemberMapping registerUserForMember(User user, Member member, RoleType role) {
