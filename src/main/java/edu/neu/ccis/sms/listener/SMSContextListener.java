@@ -34,6 +34,7 @@ import edu.neu.ccis.sms.util.CMISConnector;
 import edu.neu.ccis.sms.util.CMISConnector.CMISConfig;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
+
 // TODO: Auto-generated Javadoc
 /**
  * Setup the context for an individual application instance, including
@@ -105,22 +106,22 @@ public class SMSContextListener implements ServletContextListener {
 		// Insert new categories from terminology if they do not already exist
 		insertNewCategoriesFromTerminology();
 
+		// Initialize Hibernate session factory
+		HibernateUtil.getSessionFactory();
+
+		// Initialize the CMIS Session
+		/* CMIS initialization configs */
+		String cmsRepoUsername = context.getInitParameter("CMSUser");
+		String cmsRepoPswd = context.getInitParameter("CMSPswd");
+		String cmsRepoAtompubBindingUrl = context.getInitParameter("CMSAtomPubBindingURL");
+		int cmsRepoNumber = Integer.parseInt(context.getInitParameter("CMSRepoNumber"));
+
+		CMISConfig config = new CMISConfig(cmsRepoUsername, cmsRepoPswd, cmsRepoAtompubBindingUrl, cmsRepoNumber);
+		//Initialize the CMIS Session
+		CMISConnector.getCMISSession(config);// Initialize Hibernate session factory
+
 		//Insert member for root category
 		insertRootCategoryMember();
-
-		// Initialize Hibernate session factory
-        HibernateUtil.getSessionFactory();
-
-        // Initialize the CMIS Session
-        /* CMIS initialization configs */
-        String cmsRepoUsername = context.getInitParameter("CMSUser");
-        String cmsRepoPswd = context.getInitParameter("CMSPswd");
-        String cmsRepoAtompubBindingUrl = context.getInitParameter("CMSAtomPubBindingURL");
-        int cmsRepoNumber = Integer.parseInt(context.getInitParameter("CMSRepoNumber"));
-
-        CMISConfig config = new CMISConfig(cmsRepoUsername, cmsRepoPswd, cmsRepoAtompubBindingUrl, cmsRepoNumber);
-        // Initialize the CMIS Session
-        CMISConnector.getCMISSession(config);// Initialize Hibernate session factory
 	}
 
 	/**
