@@ -83,12 +83,12 @@ public class User implements Serializable, Comparable<User> {
 
     // TODO - Create a separate Topics entity with many-to-many relationship
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_topics_of_interest", joinColumns = @JoinColumn(name = "USER_ID"))
+    @CollectionTable(name = "UserTopicsOfInterest", joinColumns = @JoinColumn(name = "USER_ID"))
     @Column(name = "TOPICS_OF_INTEREST")
     private Set<String> topicsOfInterest = new HashSet<String>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "USER_CONFLICT_OF_INTEREST_MAPPING", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONFLICT_WITH_USER_ID") })
+    @JoinTable(name = "UserConflictOfInterestMapping", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONFLICT_WITH_USER_ID") })
     private Set<User> myConflictsOfInterestWithUsers = new HashSet<User>();
 
     @ManyToMany(mappedBy = "myConflictsOfInterestWithUsers", fetch = FetchType.EAGER)
