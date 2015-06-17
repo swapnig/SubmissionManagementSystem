@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import edu.neu.ccis.sms.entity.users.User;
-
 /**
  * Servlet implementation class LogutServlet
  * 

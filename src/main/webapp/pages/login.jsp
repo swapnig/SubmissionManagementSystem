@@ -121,8 +121,7 @@
                 <input type="submit" name="login" class="login login-submit" value="Login">
             </form>
             <div class="login-help">
-                <a href="user_registration.jsp">Register</a>&nbsp;|&nbsp;
-                <a href="forgot_password.jsp">Forgot Password</a>
+                <a href="user_registration.jsp">Register</a>
             </div>
         </div>
     </body>

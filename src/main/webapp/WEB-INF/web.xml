@@ -21,11 +21,11 @@
 	</context-param>
     <context-param>
 	    <param-name>CMSPswd</param-name>
-	    <param-value>admin</param-value>
+	    <param-value>j0nSnoWWG@7</param-value>
 	</context-param>
 	<context-param>
         <param-name>CMSAtomPubBindingURL</param-name>
-        <param-value>http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom</param-value>
+        <param-value>http://129.10.112.165:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom</param-value>
     </context-param>
     <context-param>
         <param-name>CMSRepoNumber</param-name>

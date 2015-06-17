@@ -48,11 +48,11 @@ public class Document implements Serializable, Comparable<Document> {
     private Member submittedForMember;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Document_submission_mapping", joinColumns = { @JoinColumn(name = "DOCUMENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
+    @JoinTable(name = "DocumentSubmissionMapping", joinColumns = { @JoinColumn(name = "DOCUMENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
     private Set<User> submittedBy = new HashSet<User>();
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "Document_evaluators_mapping", joinColumns = { @JoinColumn(name = "DOCUMENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
+    @JoinTable(name = "DocumentEvaluatorsMapping", joinColumns = { @JoinColumn(name = "DOCUMENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
     private Set<User> evaluators = new HashSet<User>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "evaluationFor")
