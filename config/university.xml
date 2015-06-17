@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<sms>
+    <roles>
+        <conductor>Professor</conductor>
+        <evaluator>TA</evaluator>
+        <submitter>Student</submitter>
+    </roles>
+    <category name="university" member="Northeastern University">
+        <username>admin</username>
+        <password>25e4ee4e9229397b6b17776bfceaf8e7</password>
+        <firstname>admin</firstname>
+        <email>admin@gmail.com</email>
+        <subCategory name="department">
+            <labels>
+                <id>Name</id>
+                <description>Description</description>
+                <address>Address<address/>
+                <zip>Zip</zip>
+                <phone>Phone</phone>
+                <website_url>Website url</website_url>
+            </labels>
+            <subCategory name="course" registrable="true">
+                <labels>
+                    <id>Course Id</id>
+                    <name>Name</name>
+                    <conductor>Conductor</conductor>
+                    <description>Description</description>
+                    <maxSeats>Max Seats</maxSeats>
+                    <period>Period</period>
+                    <forum_link>Discussion Forum</forum_link>
+                </labels>    
+                    <subCategory name="class-meeting">
+                        <labels>
+                            <id>Topic</id>
+                            <overview>Overview</overview>
+                            <objective>Learning objective</objective>
+                            <material>Reading Material</material>
+                            <date>Date</date>
+                        </labels>
+                        <subCategory name="assignment" submittable="true">
+                            <labels>
+                                <id>Name</id>
+                                <description>Description</description>
+                                <reference>Reference Material</reference>
+                                <postedOn>Posted on</postedOn>
+                                <dueDate>Due Date</dueDate>
+                            </labels>
+                        </subCategory>
+                    </subCategory>
+                    <subCategory name="team-project" submittable="true">
+                        <labels>
+                            <id>Name</id>
+                            <description>Description</description>
+                            <reference>Reference Material</reference>
+                            <postedOn>Posted on</postedOn>
+                            <dueDate>Due Date</dueDate>
+                        </labels>
+                    </subCategory>
+                </subCategory>
+            <subCategory name="project" registrable="true">
+                <labels>
+                    <name>Topic</name>
+                    <description>Description</description>
+                    <conductor>Conductor</conductor>
+                    <period>Period</period>
+                </labels>
+            </subCategory>
+        </subCategory>
+    </category>
+</sms>
