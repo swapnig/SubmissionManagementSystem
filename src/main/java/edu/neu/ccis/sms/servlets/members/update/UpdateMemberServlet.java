@@ -76,8 +76,13 @@ public class UpdateMemberServlet extends HttpServlet {
 				}
 			}
 			existingMember.setAttributes(memberAttributes);
-			memberDao.updateMember(existingMember);
-			content.append("Details have been updated for " + memberName);
+			try {
+                memberDao.updateMember(existingMember);
+                content.append("Details have been updated for " + memberName);
+            } catch (Exception e) {
+                e.printStackTrace();
+                content.append("Failed to update the details for " + memberName);
+            }
 		}
 		response.setContentType("text/html");
 		response.getWriter().write(content.toString());
