@@ -41,7 +41,7 @@ $(document).ready(function() {
     $("#registerUserWithMemberForm").submit(function(event) {
         // Stop form from submitting normally
         event.preventDefault();
-        postFormUsingAjax('RegisterUserForMember', $("#registerUserWithMemberForm").serialize(), 'result');
+        postFormUsingAjax('AddRoleToMember', $("#registerUserWithMemberForm").serialize(), 'result');
     });
 });
 
