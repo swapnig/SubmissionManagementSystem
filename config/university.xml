@@ -14,7 +14,7 @@
             <labels>
                 <id>Name</id>
                 <description>Description</description>
-                <address>Address<address/>
+                <address>Address</address>
                 <zip>Zip</zip>
                 <phone>Phone</phone>
                 <website_url>Website url</website_url>
