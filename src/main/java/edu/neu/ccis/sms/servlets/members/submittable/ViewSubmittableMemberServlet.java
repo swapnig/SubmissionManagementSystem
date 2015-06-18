@@ -31,49 +31,51 @@ import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
  */
 @WebServlet("/ViewSubmittableMember")
 public class ViewSubmittableMemberServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewSubmittableMemberServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ViewSubmittableMemberServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
-		MemberDao memberDao = new MemberDaoImpl();
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
+        Long activeMemberId = Long.parseLong(memberId);
+        MemberDao memberDao = new MemberDaoImpl();
 
-		UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
-		Member member = memberDao.getMember(Long.parseLong(memberId));
-		Set<MemberAttribute> memberAttributes = member.getAttributes();
+        UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
+        Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+        Member member = memberDao.getMember(activeMemberId);
+        Set<MemberAttribute> memberAttributes = member.getAttributes();
 
-		HttpSession session = request.getSession(true);
-		Long registrableParentMemberId = Long.parseLong((String) session.getAttribute(SessionKeys.activeMemberId));
+        HttpSession session = request.getSession();
+        Long registrableParentMemberId = Long.parseLong((String) session.getAttribute(SessionKeys.activeMemberId));
+        session.setAttribute(SessionKeys.activeSubmittableMemberId, activeMemberId);
 
-		List<UserToMemberMapping> mappings = userToMemberMappingDao.getAllUserRolesForMember(userId, registrableParentMemberId);
-		for (UserToMemberMapping mapping : mappings) {
-			request.setAttribute(mapping.getRole().toString(), true);
-		}
+        List<UserToMemberMapping> mappings = userToMemberMappingDao.getAllUserRolesForMember(userId, registrableParentMemberId);
+        for (UserToMemberMapping mapping : mappings) {
+            request.setAttribute(mapping.getRole().toString(), true);
+        }
 
-		request.setAttribute(RequestKeys.PARAM_MEMBER_ID, memberId);
-		request.setAttribute(RequestKeys.PARAM_MEMBER_NAMEE, member.getName());
-		request.setAttribute(RequestKeys.PARAM_MEMBER_ATTRIBUTES, memberAttributes);
-		request.getRequestDispatcher(JspViews.VIEW_SUBMITTABLE_MEMBER_VIEW).forward(request, response);
-	}
+        request.setAttribute(RequestKeys.PARAM_MEMBER_ID, memberId);
+        request.setAttribute(RequestKeys.PARAM_MEMBER_NAMEE, member.getName());
+        request.setAttribute(RequestKeys.PARAM_MEMBER_ATTRIBUTES, memberAttributes);
+        request.getRequestDispatcher(JspViews.VIEW_SUBMITTABLE_MEMBER_VIEW).forward(request, response);
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-	}
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        // TODO Auto-generated method stub
+    }
 
 }

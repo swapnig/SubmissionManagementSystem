@@ -15,5 +15,7 @@ public interface SessionKeys {
     /* Active Member Id - i.e. Member which is currently getting accessed */
     public static final String activeMemberId = "ACTIVE_MEMBER_ID";
 
+    public static final String activeSubmittableMemberId = "SUBMITTABLE_ACTIVE_MEMBER_ID";
+
     public static final String keyUserMemberMappings = "USER_TO_MEMBER_MAPPINGS";
 }

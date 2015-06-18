@@ -32,40 +32,41 @@ import edu.neu.ccis.sms.entity.users.RoleType;
  */
 @WebServlet("/ViewRegistrableMember")
 public class ViewRegistrableMemberServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ViewRegistrableMemberServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ViewRegistrableMemberServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
-		MemberDao memberDao = new MemberDaoImpl();
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
+        Long activeMemberId = Long.parseLong(memberId);
+        MemberDao memberDao = new MemberDaoImpl();
 
-		UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
-		Member member = memberDao.getMember(Long.parseLong(memberId));
+        UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
+        Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+        Member member = memberDao.getMember(activeMemberId);
 
-		if (userToMemberMappingDao.doesUserHaveRoleForMember(userId, RoleType.CONDUCTOR, member.getId())) {
-			request.setAttribute(RequestKeys.PARAM_ROLE_CONDUCTOR, true);
-		}
+        if (userToMemberMappingDao.doesUserHaveRoleForMember(userId, RoleType.CONDUCTOR, member.getId())) {
+            request.setAttribute(RequestKeys.PARAM_ROLE_CONDUCTOR, true);
+        }
 
-		Set<MemberAttribute> memberAttributes = member.getAttributes();
+        Set<MemberAttribute> memberAttributes = member.getAttributes();
 
-		request.setAttribute(RequestKeys.PARAM_MEMBER_ID, memberId);
-		request.setAttribute(RequestKeys.PARAM_MEMBER_NAMEE, member.getName());
-		request.setAttribute(RequestKeys.PARAM_MEMBER_ATTRIBUTES, memberAttributes);
-		request.getRequestDispatcher(JspViews.VIEW_REGISTRABLE_MEMBER_VIEW).forward(request, response);
+        request.setAttribute(RequestKeys.PARAM_MEMBER_ID, memberId);
+        request.setAttribute(RequestKeys.PARAM_MEMBER_NAMEE, member.getName());
+        request.setAttribute(RequestKeys.PARAM_MEMBER_ATTRIBUTES, memberAttributes);
+        request.getRequestDispatcher(JspViews.VIEW_REGISTRABLE_MEMBER_VIEW).forward(request, response);
 
-		HttpSession session = request.getSession(true);
-		session.setAttribute(SessionKeys.activeMemberId, memberId);
-	}
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionKeys.activeMemberId, activeMemberId);
+    }
 }
