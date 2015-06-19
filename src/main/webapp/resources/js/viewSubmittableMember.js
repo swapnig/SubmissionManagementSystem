@@ -39,11 +39,3 @@ $(document).ready(function() {
         postFormUsingAjax('RegisterUserForMember', $("#registerUserWithMemberForm").serialize(), 'result');
     });
 });
-
-function getMemberSubmittables(memberId) {
-	var data = {
-			memberId : memberId
-	}
-	postDataUsingAjax('ReadSubmittablesForMember', data, 'submittables');
-	$('#submittablesFieldSet').show();
-}

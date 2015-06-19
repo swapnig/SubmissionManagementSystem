@@ -50,5 +50,9 @@ function getMemberSubmittables(memberId) {
 			memberId : memberId
 	}
 	postDataUsingAjax('ReadSubmittablesForMember', data, 'submittables');
-	$('#submittablesFieldSet').show();
+	if ($('#submittables ul li').length == 0) {
+		$('#result').empty().append("No submittables have been created yet.").show();
+	} else {
+		$('#submittablesFieldSet').show();
+	}
 }
