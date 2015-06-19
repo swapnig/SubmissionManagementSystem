@@ -14,6 +14,7 @@ import org.hibernate.Transaction;
 import edu.neu.ccis.sms.dao.users.UserDao;
 import edu.neu.ccis.sms.dao.users.UserDaoImpl;
 import edu.neu.ccis.sms.entity.categories.Member;
+import edu.neu.ccis.sms.entity.categories.MemberStatusType;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
@@ -24,6 +25,7 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  * DAO Implementation class for Member Entity bean
  * 
  * @author Pramod R. Khare
+ * @LastModifiedBy
  * @date 9-May-2015
  * @lastUpdate 7-June-2015
  */
@@ -66,7 +68,7 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public void saveMember(Member newMember) {
+    public void saveMember(final Member newMember) {
         openCurrentSessionwithTransaction();
         // Create the CMS specific folder for this Member
         createCMSFolderForMember(newMember);
@@ -75,7 +77,7 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public void saveMember(Member newMember, User conductor) {
+    public void saveMember(final Member newMember, final User conductor) {
         openCurrentSessionwithTransaction();
         // Create the CMS specific folder for this Member
         createCMSFolderForMember(newMember);
@@ -86,7 +88,7 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public void saveMember(Member newMember, Long conductorUserId) {
+    public void saveMember(final Member newMember, final Long conductorUserId) {
         openCurrentSessionwithTransaction();
         // Create the CMS specific folder for this Member
         createCMSFolderForMember(newMember);
@@ -134,7 +136,7 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public void updateMember(Member modifiedMember) throws Exception {
+    public void updateMember(final Member modifiedMember) throws Exception {
         openCurrentSessionwithTransaction();
         renameCMSFolderForMember(modifiedMember);
         getCurrentSession().update(modifiedMember);
@@ -159,7 +161,7 @@ public class MemberDaoImpl implements MemberDao {
     @SuppressWarnings("unchecked")
     public List<Member> getAllMembers() {
         openCurrentSessionwithTransaction();
-        List<Member> users = (List<Member>) getCurrentSession().createQuery("from Member").list();
+        List<Member> users = getCurrentSession().createQuery("from Member").list();
         closeCurrentSessionwithTransaction();
         return users;
     }
@@ -191,7 +193,25 @@ public class MemberDaoImpl implements MemberDao {
         } else {
             return new HashSet<Member>(members);
         }
+    }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Set<Member> findActiveMembersByCategoryAndParentMember(final Long categoryId,
+            final Long parentMemberId) {
+        openCurrentSessionwithTransaction();
+        Query query = getCurrentSession().createQuery(
+                "from Member WHERE category_id = :categoryId AND parent_member_id = :parentMemberId and activation_status = :status");
+        query.setParameter("categoryId", categoryId);
+        query.setParameter("parentMemberId", parentMemberId);
+        query.setParameter("status", MemberStatusType.ACTIVE.ordinal());
+        List<Member> members = query.list();
+        closeCurrentSessionwithTransaction();
+        if (null == members) {
+            return null;
+        } else {
+            return new HashSet<Member>(members);
+        }
     }
 
     @Override
@@ -253,7 +273,7 @@ public class MemberDaoImpl implements MemberDao {
         Query query = getCurrentSession().createQuery(
                 "select m from Member m left join fetch m.userToMemberMappings where m.id = :id");
         query.setParameter("id", id);
-        List<Member> members = (List<Member>) query.list();
+        List<Member> members = query.list();
         closeCurrentSessionwithTransaction();
         if (members == null || members.isEmpty()) {
             return null;
@@ -284,7 +304,7 @@ public class MemberDaoImpl implements MemberDao {
         Query query = getCurrentSession().createQuery(
                 "select m from Member m left join fetch m.submissions where m.id = :id");
         query.setParameter("id", id);
-        List<Member> members = (List<Member>) query.list();
+        List<Member> members = query.list();
         closeCurrentSessionwithTransaction();
         if (members == null || members.isEmpty()) {
             return null;
@@ -327,5 +347,33 @@ public class MemberDaoImpl implements MemberDao {
             }
         }
         return conductors;
+    }
+
+    @Override
+    public void changeChildMemberActivationStatusByParentMemberId(final Long parentMemberId, final MemberStatusType status) throws Exception {
+        openCurrentSessionwithTransaction();
+        Member member = (Member) getCurrentSession().get(Member.class, parentMemberId);
+        changeChildMemberActivationStatusRecursively(member, status);
+        closeCurrentSessionwithTransaction();
+    }
+
+    /**
+     * Recursively trace the whole hierarchy to get all the submittable member nodes
+     * 
+     * @param member
+     * @return
+     * @throws Exception
+     */
+    private void changeChildMemberActivationStatusRecursively(final Member member, final MemberStatusType status) throws Exception {
+
+        Set<Member> childMembers = member.getChildMembers();
+        if (childMembers != null && !childMembers.isEmpty()) {
+            for (Member child : childMembers) {
+                child.setActivationStatus(status);
+                getCurrentSession().update(child);
+                System.out.println(child.getName());
+                changeChildMemberActivationStatusRecursively(child, status);
+            }
+        }
     }
 }

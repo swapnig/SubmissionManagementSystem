@@ -20,6 +20,7 @@ import edu.neu.ccis.sms.dao.categories.UserToMemberMappingDao;
 import edu.neu.ccis.sms.dao.categories.UserToMemberMappingDaoImpl;
 import edu.neu.ccis.sms.entity.categories.Member;
 import edu.neu.ccis.sms.entity.categories.MemberAttribute;
+import edu.neu.ccis.sms.entity.categories.MemberStatusType;
 import edu.neu.ccis.sms.entity.users.RoleType;
 
 /**
@@ -33,50 +34,56 @@ import edu.neu.ccis.sms.entity.users.RoleType;
  */
 @WebServlet("/ReadMemberDetails")
 public class ReadMemberDetailsServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public ReadMemberDetailsServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ReadMemberDetailsServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
-		MemberDao memberDao = new MemberDaoImpl();
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        String memberId = request.getParameter(RequestKeys.PARAM_MEMBER_ID);
+        MemberDao memberDao = new MemberDaoImpl();
 
-		UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
-		Member member = memberDao.getMember(Long.parseLong(memberId));
+        UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
+        Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+        Member member = memberDao.getMember(Long.parseLong(memberId));
 
-		StringBuffer content = new StringBuffer();
-		Set<MemberAttribute> memberAttributesSet = member.getAttributes();
+        StringBuffer content = new StringBuffer();
+        Set<MemberAttribute> memberAttributesSet = member.getAttributes();
 
-		ArrayList<MemberAttribute> membersAttributes = new ArrayList<MemberAttribute> (memberAttributesSet);
-		Collections.sort(membersAttributes, new MemberAttributeComparator());
+        ArrayList<MemberAttribute> membersAttributes = new ArrayList<MemberAttribute> (memberAttributesSet);
+        Collections.sort(membersAttributes, new MemberAttributeComparator());
 
-		for (MemberAttribute memberAttribute : membersAttributes) {
-			String attributeName = memberAttribute.getName();
-			String attributeValue = memberAttribute.getValue();
-			content.append("<tr><td><label for='" + attributeName + "'>" + attributeName + "</label></td>");
-			content.append("<td><input name='" + attributeName + "' type='text' value='" + attributeValue + "' disabled/></td></tr>");
-		}
+        for (MemberAttribute memberAttribute : membersAttributes) {
+            String attributeName = memberAttribute.getName();
+            String attributeValue = memberAttribute.getValue();
+            content.append("<tr><td><label for='" + attributeName + "'>" + attributeName + "</label></td>");
+            content.append("<td><input name='" + attributeName + "' type='text' value='" + attributeValue + "' disabled/></td></tr>");
+        }
 
-		// Add additional functionalities of editing attributes and adding user roles for conductor
-		if (userToMemberMappingDao.doesUserHaveRoleForMember(userId, RoleType.CONDUCTOR, member.getId())) {
-			content.append("<tr><td><input id='editMemberAttributes' type='button' value='Edit'/></td>");
-			content.append("<td><input type='submit' id='saveMemberAttributes' value='Update' style='display:none'/></td></tr>q");
-			content.append("<tr><td><input type='hidden' name='memberId' value='" + memberId + "'/></td></tr>");
-		}
+        // Add additional functionalities of editing attributes and adding user roles for conductor
+        if (userToMemberMappingDao.doesUserHaveRoleForMember(userId, RoleType.CONDUCTOR, member.getId())) {
+            content.append("<tr><td colspan='2'><input id='editMemberAttributes' type='button' value='Edit'/>");
+            content.append("<input type='submit' id='saveMemberAttributes' value='Update' style='display:none'/>");
 
-		response.setContentType("text/html");
-		response.getWriter().write(content.toString());
-	}
+            if(member.getActivationStatus() == MemberStatusType.ACTIVE) {
+                content.append("<input type='button' id='deleteMember' value='Inactivate' style='display:none'/></td></tr>");
+            } else {
+                content.append("<input type='button' id='deleteMember' value='Activate' style='display:none'/></td></tr>");
+            }
+            content.append("<tr><td><input type='hidden' name='memberId' value='" + memberId + "'/></td></tr>");
+        }
+
+        response.setContentType("text/html");
+        response.getWriter().write(content.toString());
+    }
 
 }

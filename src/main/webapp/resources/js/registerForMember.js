@@ -112,7 +112,7 @@ function getMembersForCategory(category, parentMemberId) {
 		category : category,
 		parentMemberId : parentMemberId
 	}
-	postDataUsingAjax('ReadMembers', data, category + 'List');
+	postDataUsingAjax('ReadActiveMembers', data, category + 'List');
 	$('#' + category).show();
 }
 

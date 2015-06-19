@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.neu.ccis.sms.entity.categories.Member;
+import edu.neu.ccis.sms.entity.categories.MemberStatusType;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
@@ -48,4 +49,8 @@ public interface MemberDao {
     public Set<User> getConductorsForMemberId(final Long id);
 
     public boolean doesMemberNameExistForParentMember(final String memberName, final Long parentMemberId);
+
+    public void changeChildMemberActivationStatusByParentMemberId(Long parentMemberId, MemberStatusType status) throws Exception;
+
+    public Set<Member> findActiveMembersByCategoryAndParentMember(Long categoryId, Long parentMemberId);
 }

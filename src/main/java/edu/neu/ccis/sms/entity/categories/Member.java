@@ -65,7 +65,7 @@ public class Member implements Serializable, Comparable<Member> {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentMember", cascade = CascadeType.ALL)
     private Set<Member> childMembers = new HashSet<Member>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "member")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "member")
     @Column(nullable = false)
     private Set<MemberAttribute> attributes = new HashSet<MemberAttribute>();
 
@@ -104,6 +104,10 @@ public class Member implements Serializable, Comparable<Member> {
     @Column(name = "EVAL_TYPE", nullable = false, updatable = true)
     private EvalType finalEvalType = EvalType.AVERAGE;
 
+
+    @Column(name = "ACTIVATION_STATUS", nullable = false, updatable = true)
+    private MemberStatusType activationStatus = MemberStatusType.ACTIVE;
+
     /**
      * All submitted documents for this submittable member
      */
@@ -115,7 +119,7 @@ public class Member implements Serializable, Comparable<Member> {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -123,15 +127,23 @@ public class Member implements Serializable, Comparable<Member> {
         return finalEvalType;
     }
 
-    public void setFinalEvalType(EvalType finalEvalType) {
+    public void setFinalEvalType(final EvalType finalEvalType) {
         this.finalEvalType = finalEvalType;
+    }
+
+    public MemberStatusType getActivationStatus() {
+        return activationStatus;
+    }
+
+    public void setActivationStatus(final MemberStatusType activationStatus) {
+        this.activationStatus = activationStatus;
     }
 
     public boolean isFinalEvaluated() {
         return isFinalEvaluated;
     }
 
-    public void setFinalEvaluated(boolean isFinalEvaluated) {
+    public void setFinalEvaluated(final boolean isFinalEvaluated) {
         this.isFinalEvaluated = isFinalEvaluated;
     }
 
@@ -139,19 +151,19 @@ public class Member implements Serializable, Comparable<Member> {
         return submissions;
     }
 
-    public void setSubmissions(Set<Document> submissions) {
+    public void setSubmissions(final Set<Document> submissions) {
         this.submissions = submissions;
     }
 
-    public boolean addSubmissions(Document submission) {
-        return this.submissions.add(submission);
+    public boolean addSubmissions(final Document submission) {
+        return submissions.add(submission);
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -159,7 +171,7 @@ public class Member implements Serializable, Comparable<Member> {
         return cmsFolderId;
     }
 
-    public void setCmsFolderId(String cmsFolderId) {
+    public void setCmsFolderId(final String cmsFolderId) {
         this.cmsFolderId = cmsFolderId;
     }
 
@@ -167,7 +179,7 @@ public class Member implements Serializable, Comparable<Member> {
         return cmsFolderPath;
     }
 
-    public void setCmsFolderPath(String cmsFolderPath) {
+    public void setCmsFolderPath(final String cmsFolderPath) {
         this.cmsFolderPath = cmsFolderPath;
     }
 
@@ -175,9 +187,9 @@ public class Member implements Serializable, Comparable<Member> {
         return category;
     }
 
-    public void setCategory(Category category) {
-        this.isRegisterable = category.isRegisterable();
-        this.isSubmittable = category.isSubmittable();
+    public void setCategory(final Category category) {
+        isRegisterable = category.isRegisterable();
+        isSubmittable = category.isSubmittable();
         this.category = category;
     }
 
@@ -185,7 +197,7 @@ public class Member implements Serializable, Comparable<Member> {
         return isRegisterable;
     }
 
-    public void setRegisterable(boolean isRegisterable) {
+    public void setRegisterable(final boolean isRegisterable) {
         this.isRegisterable = isRegisterable;
     }
 
@@ -193,7 +205,7 @@ public class Member implements Serializable, Comparable<Member> {
         return isSubmittable;
     }
 
-    public void setSubmittable(boolean isSubmittable) {
+    public void setSubmittable(final boolean isSubmittable) {
         this.isSubmittable = isSubmittable;
     }
 
@@ -201,7 +213,7 @@ public class Member implements Serializable, Comparable<Member> {
         return parentMember;
     }
 
-    public void setParentMember(Member parentMember) {
+    public void setParentMember(final Member parentMember) {
         this.parentMember = parentMember;
     }
 
@@ -209,63 +221,63 @@ public class Member implements Serializable, Comparable<Member> {
         return childMembers;
     }
 
-    public void setChildMembers(Set<Member> childMembers) {
+    public void setChildMembers(final Set<Member> childMembers) {
         this.childMembers = childMembers;
     }
 
-    public boolean addChildMembers(Member childMember) {
-        return this.childMembers.add(childMember);
+    public boolean addChildMembers(final Member childMember) {
+        return childMembers.add(childMember);
     }
 
     public Set<MemberAttribute> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Set<MemberAttribute> attributes) {
+    public void setAttributes(final Set<MemberAttribute> attributes) {
         this.attributes = attributes;
     }
 
-    public boolean addAttributes(MemberAttribute attribute) {
-        return this.attributes.add(attribute);
+    public boolean addAttributes(final MemberAttribute attribute) {
+        return attributes.add(attribute);
     }
 
     public Set<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(final Set<Post> posts) {
         this.posts = posts;
     }
 
-    public boolean addPost(Post post) {
-        return this.posts.add(post);
+    public boolean addPost(final Post post) {
+        return posts.add(post);
     }
 
     public Set<UserToMemberMapping> getUserToMemberMappings() {
         return userToMemberMappings;
     }
 
-    public void setUserToMemberMappings(Set<UserToMemberMapping> userToMemberMappings) {
+    public void setUserToMemberMappings(final Set<UserToMemberMapping> userToMemberMappings) {
         this.userToMemberMappings = userToMemberMappings;
     }
 
-    public boolean addUserToMemberMapping(UserToMemberMapping userToMemberMapping) {
-        return this.userToMemberMappings.add(userToMemberMapping);
+    public boolean addUserToMemberMapping(final UserToMemberMapping userToMemberMapping) {
+        return userToMemberMappings.add(userToMemberMapping);
     }
 
     @Override
-    public int compareTo(Member o) {
-        return this.id.compareTo(o.getId());
+    public int compareTo(final Member o) {
+        return id.compareTo(o.getId());
     }
 
     @Override
-    public boolean equals(Object anObject) {
+    public boolean equals(final Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof Member) {
             Member member = (Member) anObject;
-            return (this.id.equals(member.id));
+            return id.equals(member.id);
         }
         return false;
     }

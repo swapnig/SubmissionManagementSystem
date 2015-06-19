@@ -23,6 +23,7 @@ import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.categories.UserToMemberMappingDao;
 import edu.neu.ccis.sms.dao.categories.UserToMemberMappingDaoImpl;
 import edu.neu.ccis.sms.entity.categories.Member;
+import edu.neu.ccis.sms.entity.categories.MemberStatusType;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 
@@ -35,8 +36,8 @@ import edu.neu.ccis.sms.entity.users.RoleType;
  */
 @WebServlet("/Dashboard")
 public class DashboardServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-	
+    private static final long serialVersionUID = 1L;
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -44,62 +45,64 @@ public class DashboardServlet extends HttpServlet {
         super();
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ServletContext context = getServletContext();
-		@SuppressWarnings("unchecked")
-		HashMap<String, String> roleKeyToRoles = 
-				(HashMap<String, String>) context.getAttribute(ContextKeys.ROLE_KEY_TO_ROLE);
-		
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
-		String userName = (String) request.getSession().getAttribute(SessionKeys.keyUserName);
-		LinkedHashMap<String, ArrayList<Member>> rolesToMembers = getRegisteredMemberForUser(userId, roleKeyToRoles);
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        ServletContext context = getServletContext();
+        @SuppressWarnings("unchecked")
+        HashMap<String, String> roleKeyToRoles =
+        (HashMap<String, String>) context.getAttribute(ContextKeys.ROLE_KEY_TO_ROLE);
 
-		request.setAttribute("rolesToMembers", rolesToMembers);
-		request.setAttribute("userName", userName);
+        Long userId = (Long) request.getSession(false).getAttribute(SessionKeys.keyUserId);
+        String userName = (String) request.getSession(false).getAttribute(SessionKeys.keyUserName);
+        LinkedHashMap<String, ArrayList<Member>> rolesToMembers = getActiveRegisteredMemberForUser(userId, roleKeyToRoles);
+
+        request.setAttribute("rolesToMembers", rolesToMembers);
+        request.setAttribute("userName", userName);
         request.getRequestDispatcher(JspViews.DASHBOARD_VIEW).forward(request, response);
-	}
+    }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-	}
-	
-	/**
-	 * Set configurations parameters in Http request
-	 * @param request request object for current servlet
-	 */
-	private LinkedHashMap<String, ArrayList<Member>> getRegisteredMemberForUser(Long userId, 
-			HashMap<String, String> roleKeyToRoles) {
-		UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-		List<UserToMemberMapping> userToMemberMappings = userToMemberMappingDao.getAllRegisterableMembersForUser(userId);
-		
-		RoleType currentRole = RoleType.CONDUCTOR;
-		LinkedHashMap<String, ArrayList<Member>> rolesToMembers = new LinkedHashMap<String, ArrayList<Member>>();
-		ArrayList<Member> members = new ArrayList<Member>();
-		for (UserToMemberMapping userToMemberMapping : userToMemberMappings) {
-			if (currentRole != userToMemberMapping.getRole()) {
-				String roleName = currentRole.toString().toLowerCase();
-				Collections.sort(members, new MemberComparator());
-				rolesToMembers.put(roleKeyToRoles.get(roleName), members);
-				members = new ArrayList<Member>();
-				currentRole = userToMemberMapping.getRole();
-			}
-			Member member = userToMemberMapping.getMember();
-			if (member.isRegisterable()) {
-				members.add(member);
-			}
-		}
-		if(CollectionUtils.isNotEmpty(members)) {
-			Collections.sort(members, new MemberComparator());
-			String roleName = currentRole.toString().toLowerCase();
-			rolesToMembers.put(roleKeyToRoles.get(roleName), members);
-		}
-		return rolesToMembers;
-	}
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        // TODO Auto-generated method stub
+    }
+
+    /**
+     * Set configurations parameters in Http request
+     * @param request request object for current servlet
+     */
+    private LinkedHashMap<String, ArrayList<Member>> getActiveRegisteredMemberForUser(final Long userId,
+            final HashMap<String, String> roleKeyToRoles) {
+        UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
+        List<UserToMemberMapping> userToMemberMappings = userToMemberMappingDao.getAllRegisterableMembersForUser(userId);
+
+        RoleType currentRole = RoleType.CONDUCTOR;
+        LinkedHashMap<String, ArrayList<Member>> rolesToMembers = new LinkedHashMap<String, ArrayList<Member>>();
+        ArrayList<Member> members = new ArrayList<Member>();
+        for (UserToMemberMapping userToMemberMapping : userToMemberMappings) {
+            if (currentRole != userToMemberMapping.getRole()) {
+                String roleName = currentRole.toString().toLowerCase();
+                Collections.sort(members, new MemberComparator());
+                rolesToMembers.put(roleKeyToRoles.get(roleName), members);
+                members = new ArrayList<Member>();
+                currentRole = userToMemberMapping.getRole();
+            }
+            Member member = userToMemberMapping.getMember();
+            if (member.isRegisterable() && member.getActivationStatus() == MemberStatusType.ACTIVE) {
+                members.add(member);
+            }
+        }
+        if(CollectionUtils.isNotEmpty(members)) {
+            Collections.sort(members, new MemberComparator());
+            String roleName = currentRole.toString().toLowerCase();
+            rolesToMembers.put(roleKeyToRoles.get(roleName), members);
+        }
+        return rolesToMembers;
+    }
 
 }

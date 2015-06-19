@@ -132,7 +132,7 @@ function getMembersAttributes(memberId, memberName) {
 	
 	posting.done( function(responseData) {
 	    $('#memberFields').html(responseData);
-	    attachEditButtonEventHandlers(memberId);
+	    attachEventHandlers(memberId);
 	});
 	
 	$('#memberLegend').html("<strong>" + memberName + " details </strong>");
@@ -141,7 +141,7 @@ function getMembersAttributes(memberId, memberName) {
 }
 
 // Explicitly attach event handler for edit button, since it is dynamically added through ajax call
-function attachEditButtonEventHandlers(memberId) {
+function attachEventHandlers(memberId) {
 	
 	$('#editMemberAttributes').click(function(){
 		//event.preventDefault();
@@ -152,13 +152,38 @@ function attachEditButtonEventHandlers(memberId) {
 		if( $('#memberForm :text').prop('disabled') ) {
 		     $('#memberForm :text').prop('disabled', false);
 		     $('#saveMemberAttributes').show();
+		     $('#deleteMember').show();
 		     $('#registerUserWithMemberForm').show();
 		     $('#memberId').prop("value", memberId);
 	    } else{
 	         $('#memberForm :text').prop('disabled', true);
 	         $('#saveMemberAttributes').hide();
+	         $('#deleteMember').hide();
 	         $('#registerUserWithMemberForm')[0].reset();
 	         $('#registerUserWithMemberForm').hide();
 	    }
-    }); 
+    });
+	
+	$('#deleteMember').click(function(){
+		if (confirm('Toggle Member Activation Status')) {
+			console.log($('#memberId').val());
+			deleteMember($('#memberId').val());
+			if ($('#deleteMember').val() == "Activate") {
+				$('#deleteMember').prop("value", "Inactivate");
+			} else {
+				$('#deleteMember').prop("value", "Activate");
+			}
+			
+		}
+    });
+}
+
+function deleteMember(memberId) {
+	var data = {
+			memberId : memberId
+	}
+	postDataUsingAjax('ToggleMemberActivation', data, 'result');
+	
+	$('#result').show();
+	//window.location.replace("/SMS/Dashboard");
 }
