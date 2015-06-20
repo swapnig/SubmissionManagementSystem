@@ -47,7 +47,7 @@ public class RegisterUserForMemberServlet extends HttpServlet {
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		Long memberId = Long.parseLong(request.getParameter(RequestKeys.PARAM_MEMBER_ID));
 		String role = request.getParameter(RequestKeys.PARAM_USER_ROLE);
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+		Long userId = (Long) request.getSession(false).getAttribute(SessionKeys.keyUserId);
 
 		ServletContext context = getServletContext();
 		HashMap<String, String> roleKeyToRoles = (HashMap<String, String>) context.getAttribute(ContextKeys.ROLE_KEY_TO_ROLE);

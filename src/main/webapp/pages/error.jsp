@@ -4,19 +4,14 @@
     pageEncoding="ISO-8859-1" 
     isErrorPage="true"
 %>
-
+<jsp:include page="member/templates/header.jsp" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Error</title>
-</head>
-<body>
-    <%
-        //When the page attribute "isErrorPage" is set to "true" the exception object is available
-        System.err.println("Error : " + exception.getMessage());
-    %>
-    <%-- Display generic error to client --%>
-    <b>An error occurred !</b>
-</body>
+	<head>
+	   <title>Error</title>
+	</head>
+	<body>
+	    <p> Something went wrong :( </p> <br/> 
+	    <p> Message : <%=exception.getMessage())%></p>
+	</body>
 </html>

@@ -84,4 +84,3 @@ public class GetUsersByRoleServlet extends HttpServlet {
         }
     }
 }
-

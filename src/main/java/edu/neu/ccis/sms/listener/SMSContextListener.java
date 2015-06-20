@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -34,14 +35,12 @@ import edu.neu.ccis.sms.util.CMISConnector;
 import edu.neu.ccis.sms.util.CMISConnector.CMISConfig;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
-
 // TODO: Auto-generated Javadoc
 /**
- * Setup the context for an individual application instance, including
- * configuring Application Terminology, Hibernate and Alfrseco.
+ * Setup the context for an individual application instance, including configuring Application Terminology, Hibernate
+ * and Alfrseco.
  * 
- * Implements ServletContextListener interface, overriding contextInitialized
- * and contextDestroyed events
+ * Implements ServletContextListener interface, overriding contextInitialized and contextDestroyed events
  * 
  * @author Swapnil Gupta
  * @version SMS 1.0
@@ -49,6 +48,7 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  */
 @WebListener
 public class SMSContextListener implements ServletContextListener {
+    private static final Logger LOGGER = Logger.getLogger(SMSContextListener.class.getName());
 
     /** The terminology config. */
     private final CompositeConfiguration terminologyConfig;
@@ -72,32 +72,34 @@ public class SMSContextListener implements ServletContextListener {
     private final HashMap<String, String> roleKeyToRoles;
 
     /**
-     * Loads terminology from configuration sources and reads data into data structures for future access.
-     * List of data structures is documented in @see setupTerminologyConfigurationInContext
+     * Loads terminology from configuration sources and reads data into data structures for future access. List of data
+     * structures is documented in @see setupTerminologyConfigurationInContext
      */
     public SMSContextListener() {
         terminologyConfig = new ConfigurationLoader().loadConfiguration();
         categoryToPropertyKey = ConfigurationReader.getCategoryToPropertyKey(terminologyConfig);
         categoryToParent = ConfigurationReader.getCategoryToParentCategory(categoryToPropertyKey, terminologyConfig);
         categoryToAttributes = ConfigurationReader.getCategoryToHtmlLabels(categoryToPropertyKey, terminologyConfig);
-        registerableCategories = ConfigurationReader.getAllCategoriesForBooleanAttribute(
-                categoryToPropertyKey, terminologyConfig, ConfigKeys.CATEGORY_ATTRIBUTE_REGISTRABLE);
-        submittableCategories = ConfigurationReader.getAllCategoriesForBooleanAttribute(
-                categoryToPropertyKey, terminologyConfig, ConfigKeys.CATEGORY_ATTRIBUTE_SUBMITTABLE);
+        registerableCategories = ConfigurationReader.getAllCategoriesForBooleanAttribute(categoryToPropertyKey,
+                terminologyConfig, ConfigKeys.CATEGORY_ATTRIBUTE_REGISTRABLE);
+        submittableCategories = ConfigurationReader.getAllCategoriesForBooleanAttribute(categoryToPropertyKey,
+                terminologyConfig, ConfigKeys.CATEGORY_ATTRIBUTE_SUBMITTABLE);
         roleKeyToRoles = ConfigurationReader.getChildPropertyKeyToValue(ConfigKeys.ROLES_ROOT_ELEMENT,
                 terminologyConfig);
     }
 
     /**
-     * Processes the servlet context initialization event, used for setting up
-     * application terminology, hibernate and content management system.
-     *
+     * Processes the servlet context initialization event, used for setting up application terminology, hibernate and
+     * content management system.
+     * 
      * @param contextEvent
      *            the context event for current servlet instance
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
     @Override
     public void contextInitialized(final ServletContextEvent contextEvent) {
+        LOGGER.info("Method - SMSContextListener:contextInitialized");
+
         ServletContext context = contextEvent.getServletContext();
 
         // Setup terminology in application context
@@ -114,19 +116,19 @@ public class SMSContextListener implements ServletContextListener {
         int cmsRepoNumber = Integer.parseInt(context.getInitParameter("CMSRepoNumber"));
 
         CMISConfig config = new CMISConfig(cmsRepoUsername, cmsRepoPswd, cmsRepoAtompubBindingUrl, cmsRepoNumber);
-        //Initialize the CMIS Session
+        // Initialize the CMIS Session
         CMISConnector.getCMISSession(config);// Initialize Hibernate session factory
 
         // Insert new categories from terminology if they do not already exist
         insertNewCategoriesFromTerminology();
 
-        //Insert member for root category
+        // Insert member for root category
         insertRootCategoryMember();
     }
 
     /**
      * Context destroyed.
-     *
+     * 
      * @param arg0
      *            the arg0
      * @see ServletContextListener#contextDestroyed(ServletContextEvent)
@@ -137,29 +139,26 @@ public class SMSContextListener implements ServletContextListener {
     }
 
     /**
-     * Setup terminology configuration in servlet context including few
-     * frequently used data structures.
+     * Setup terminology configuration in servlet context including few frequently used data structures.
      * 
-     * 1. {@link edu.neu.ccis.sms.constants.ContextKeys#TERMINOLOGY_CONFIG}) :
-     * configuration containing the terminology for current application context.
+     * 1. {@link edu.neu.ccis.sms.constants.ContextKeys#TERMINOLOGY_CONFIG}) : configuration containing the terminology
+     * for current application context.
      * 
-     * 2. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PROPERTY_KEY}):
-     * category mapped to its property key in the terminology configuration.
+     * 2. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PROPERTY_KEY}): category mapped to its property key
+     * in the terminology configuration.
      * 
-     * 3. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_ATTRIBUTES}):
-     * category mapped to its attributes in the terminology configuration.
+     * 3. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_ATTRIBUTES}): category mapped to its attributes in
+     * the terminology configuration.
      * 
-     * 4. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PARENT}) :
-     * category mapped to its parent in the terminology configuration.
+     * 4. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PARENT}) : category mapped to its parent in the
+     * terminology configuration.
      * 
-     * 5. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PARENT}) :
-     * set of registrables in given terminology.
+     * 5. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PARENT}) : set of registrables in given terminology.
      * 
-     * 6. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PARENT}) :
-     * set of submittables in given terminology.
+     * 6. {@link edu.neu.ccis.sms.constants.ContextKeys#CATEGORY_TO_PARENT}) : set of submittables in given terminology.
      * 
-     * 7. {@link edu.neu.ccis.sms.constants.ContextKeys#ROLES_ROOT_ELEMENT}) :
-     * role key in terminology configuration mapped to its role in the current context.
+     * 7. {@link edu.neu.ccis.sms.constants.ContextKeys#ROLES_ROOT_ELEMENT}) : role key in terminology configuration
+     * mapped to its role in the current context.
      * 
      * @param context
      *            servlet context for current application instance
@@ -175,10 +174,9 @@ public class SMSContextListener implements ServletContextListener {
     }
 
     /**
-     * Inserts all the categories in the current terminology, if they already do not exist in database.
-     * If existing categories are encountered they are ignored.
-     * Categories need to be unique across all terminologies, although they can be same for different
-     * instances of same terminology configuration.
+     * Inserts all the categories in the current terminology, if they already do not exist in database. If existing
+     * categories are encountered they are ignored. Categories need to be unique across all terminologies, although they
+     * can be same for different instances of same terminology configuration.
      */
     private void insertNewCategoriesFromTerminology() {
         CategoryDao categoryDao = new CategoryDaoImpl();
@@ -202,15 +200,13 @@ public class SMSContextListener implements ServletContextListener {
     }
 
     /**
-     * Inserts the member for root category, this can be only done during the system startup.
-     * Member name needs to be unique for the given root category.
-     * On system restart or if the name corresponding to an existing member is used it will ignored
-     * and this will be logged in the logs.
-     * The name of this member is specified the configuration xml using the attribute.
-     * {@link edu.neu.ccis.sms.constants.ConfigKeys#HIERARCHY_ROOT_MEMBER_ELEMENT}
+     * Inserts the member for root category, this can be only done during the system startup. Member name needs to be
+     * unique for the given root category. On system restart or if the name corresponding to an existing member is used
+     * it will ignored and this will be logged in the logs. The name of this member is specified the configuration xml
+     * using the attribute. {@link edu.neu.ccis.sms.constants.ConfigKeys#HIERARCHY_ROOT_MEMBER_ELEMENT}
      * 
-     * If the root member is being newly created, it is assigned a conductor with the username specified
-     * in the {@link edu.neu.ccis.sms.constants.ConfigKeys#HIERARCHY_ROOT_USERNAME_ELEMENT}
+     * If the root member is being newly created, it is assigned a conductor with the username specified in the
+     * {@link edu.neu.ccis.sms.constants.ConfigKeys#HIERARCHY_ROOT_USERNAME_ELEMENT}
      * 
      */
     private void insertRootCategoryMember() {
@@ -227,7 +223,8 @@ public class SMSContextListener implements ServletContextListener {
         MemberDao memberDao = new MemberDaoImpl();
 
         if (memberDao.doesMemberNameExistForParentMember(rootMemberName, null)) {
-            System.out.println("Member " + rootMemberName + " for root category already exist, cannot create it again.");
+            System.out
+                    .println("Member " + rootMemberName + " for root category already exist, cannot create it again.");
         } else {
             Member rootMember = new Member();
             rootMember.setCategory(rootCategory);
@@ -239,11 +236,10 @@ public class SMSContextListener implements ServletContextListener {
         }
     }
 
-
     /**
-     * Creates the user specified in the configuration files as the condcutor for this new root member, if
-     * the user not already the conductor
-     *
+     * Creates the user specified in the configuration files as the condcutor for this new root member, if the user not
+     * already the conductor
+     * 
      * @param rootCategoryPropertyKey
      *            the property key for root category
      * @param rootMember
@@ -281,17 +277,17 @@ public class SMSContextListener implements ServletContextListener {
 
         UserToMemberMappingDao mappingDao = new UserToMemberMappingDaoImpl();
         // If the given user is already conductor for root member then do nothing else make user conductor for member
-        if(mappingDao.doesUserHaveRoleForMember(rootUser.getId(), RoleType.CONDUCTOR, rootMember.getId())) {
-            System.out.println("Root member: " + rootMember.getName() + " already has " +
-                    rootUser.getUsername() + " as its conductor");
+        if (mappingDao.doesUserHaveRoleForMember(rootUser.getId(), RoleType.CONDUCTOR, rootMember.getId())) {
+            System.out.println("Root member: " + rootMember.getName() + " already has " + rootUser.getUsername()
+                    + " as its conductor");
         } else {
             UserToMemberMapping mapping = new UserToMemberMapping();
             mapping.setMember(rootMember);
             mapping.setRole(RoleType.CONDUCTOR);
             mapping.setUser(rootUser);
             mappingDao.saveUserToMemberMapping(mapping);
-            System.out.println("Root member: " + rootMember.getName() + " does not have " +
-                    rootUser.getUsername() + " as its conductor. It has been now made its conductor");
+            System.out.println("Root member: " + rootMember.getName() + " does not have " + rootUser.getUsername()
+                    + " as its conductor. It has been now made its conductor");
         }
     }
 }

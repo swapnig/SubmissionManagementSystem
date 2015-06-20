@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -29,6 +30,7 @@ import edu.neu.ccis.sms.entity.users.User;
 public class LoginServlet extends HttpServlet {
     private final MessageDigest md;
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
 
     /**
      * @throws NoSuchAlgorithmException
@@ -57,6 +59,8 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException,
     IOException
     {
+        LOGGER.info("Method - LoginServlet:doPost");
+
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
@@ -71,7 +75,7 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (one != null) {
-            System.out.println("Login successful!!");
+            LOGGER.info("Login successful!!");
             session = request.getSession(true);
 
             // Save important information about user into session
@@ -85,7 +89,7 @@ public class LoginServlet extends HttpServlet {
 
             response.sendRedirect("/SMS/Dashboard");
         } else {
-            System.out.println("Login failed!!");
+            LOGGER.info("Login failed!!");
             response.sendRedirect("pages/login.jsp");
         }
     }

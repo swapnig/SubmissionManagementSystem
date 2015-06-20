@@ -54,7 +54,7 @@ public class CreateNewMemberFormServlet extends HttpServlet {
 		String parentMemberName = request.getParameter(RequestKeys.PARAM_PARENT_MEMBER_NAME);
 
 		UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+		Long userId = (Long) request.getSession(false).getAttribute(SessionKeys.keyUserId);
 
 		ServletContext context = getServletContext();
 		HashMap<String, ArrayList<String>> categoryToHtmlLabels =

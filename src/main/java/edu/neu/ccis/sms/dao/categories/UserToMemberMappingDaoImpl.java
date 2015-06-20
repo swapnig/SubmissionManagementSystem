@@ -51,24 +51,21 @@ public class UserToMemberMappingDaoImpl implements UserToMemberMappingDao {
     }
 
     @Override
-    public void saveUserToMemberMapping(
-            final UserToMemberMapping newUserToMemberMapping) {
+    public void saveUserToMemberMapping(final UserToMemberMapping newUserToMemberMapping) {
         openCurrentSessionwithTransaction();
         getCurrentSession().save(newUserToMemberMapping);
         closeCurrentSessionwithTransaction();
     }
 
     @Override
-    public void updateUserToMemberMapping(
-            final UserToMemberMapping modifiedUserToMemberMapping) {
+    public void updateUserToMemberMapping(final UserToMemberMapping modifiedUserToMemberMapping) {
         openCurrentSessionwithTransaction();
         getCurrentSession().update(modifiedUserToMemberMapping);
         closeCurrentSessionwithTransaction();
     }
 
     @Override
-    public void deleteUserToMemberMapping(
-            final UserToMemberMapping userToMemberMapping) {
+    public void deleteUserToMemberMapping(final UserToMemberMapping userToMemberMapping) {
         openCurrentSessionwithTransaction();
         getCurrentSession().delete(userToMemberMapping);
         closeCurrentSessionwithTransaction();
@@ -77,8 +74,7 @@ public class UserToMemberMappingDaoImpl implements UserToMemberMappingDao {
     @Override
     public List<UserToMemberMapping> getAllUserToMemberMappings() {
         openCurrentSessionwithTransaction();
-        List<UserToMemberMapping> mappings = getCurrentSession()
-                .createQuery("from UserToMemberMapping").list();
+        List<UserToMemberMapping> mappings = getCurrentSession().createQuery("from UserToMemberMapping").list();
         closeCurrentSessionwithTransaction();
         return mappings;
     }
@@ -109,8 +105,7 @@ public class UserToMemberMappingDaoImpl implements UserToMemberMappingDao {
 
     public UserToMemberMapping findByUserToMemberMappingId(final Long id) {
         openCurrentSessionwithTransaction();
-        UserToMemberMapping mapping = (UserToMemberMapping) getCurrentSession()
-                .get(UserToMemberMapping.class, id);
+        UserToMemberMapping mapping = (UserToMemberMapping) getCurrentSession().get(UserToMemberMapping.class, id);
         closeCurrentSessionwithTransaction();
         return mapping;
     }
@@ -119,26 +114,43 @@ public class UserToMemberMappingDaoImpl implements UserToMemberMappingDao {
     @Override
     public boolean doesUserHaveRoleForMember(final Long userId, final RoleType role, final Long memberId) {
         openCurrentSessionwithTransaction();
-        Query query = getCurrentSession().createQuery("from UserToMemberMapping WHERE user_id = :userId AND member_id = :memberId AND role = :role");
+        Query query = getCurrentSession().createQuery(
+                "from UserToMemberMapping WHERE user_id = :userId AND member_id = :memberId AND role = :role");
         query.setParameter("userId", userId);
         query.setParameter("memberId", memberId);
         query.setParameter("role", role);
         List<UserToMemberMapping> mappings = query.list();
-        System.out.println(mappings);
         closeCurrentSessionwithTransaction();
         if (CollectionUtils.isEmpty(mappings)) {
             return false;
         } else {
             return true;
         }
+    }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public RoleType getUsersRoleForMember(final Long userId, final Long memberId) {
+        openCurrentSessionwithTransaction();
+        Query query = getCurrentSession().createQuery(
+                "from UserToMemberMapping WHERE user_id = :userId AND member_id = :memberId");
+        query.setParameter("userId", userId);
+        query.setParameter("memberId", memberId);
+        List<UserToMemberMapping> mappings = query.list();
+        closeCurrentSessionwithTransaction();
+        if (CollectionUtils.isEmpty(mappings)) {
+            return null;
+        } else {
+            return mappings.get(0).getRole();
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public List<UserToMemberMapping> getAllUserRolesForMember(final Long userId, final Long memberId) {
         openCurrentSessionwithTransaction();
-        Query query = getCurrentSession().createQuery("from UserToMemberMapping WHERE user_id = :userId AND member_id = :memberId");
+        Query query = getCurrentSession().createQuery(
+                "from UserToMemberMapping WHERE user_id = :userId AND member_id = :memberId");
         query.setParameter("userId", userId);
         query.setParameter("memberId", memberId);
         List<UserToMemberMapping> mappings = query.list();

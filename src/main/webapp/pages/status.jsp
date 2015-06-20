@@ -8,100 +8,91 @@
     edu.neu.ccis.sms.dao.users.UserDao, 
     edu.neu.ccis.sms.dao.users.UserDaoImpl,
     edu.neu.ccis.sms.dao.categories.MemberDaoImpl,
+    edu.neu.ccis.sms.dao.categories.UserToMemberMappingDao,
+    edu.neu.ccis.sms.dao.categories.UserToMemberMappingDaoImpl,
     edu.neu.ccis.sms.entity.categories.Member,
     edu.neu.ccis.sms.entity.submissions.Document,
     edu.neu.ccis.sms.entity.submissions.Evaluation,
-    edu.neu.ccis.sms.entity.users.User"%>
+    edu.neu.ccis.sms.entity.users.User,
+    edu.neu.ccis.sms.entity.users.RoleType"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<jsp:include page="member/templates/header.jsp" />
 <%
-    /* Load all the submittable Member Details */
-    Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-    System.out.println("Session activeMemberId - " + activeMemberId);
+	/* Load all the submittable Member Details */
+	Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
+	System.out.println("Session activeMemberId - " + activeMemberId);
 
-    //TODO Remove once fully tested
-    activeMemberId = new Long(2);
-
-    // Get the MemberDaoImple instance
-    MemberDao memberDao = new MemberDaoImpl();
-    Set<Member> submittableMembers = memberDao.findAllSubmittableMembersByParentMemberId(activeMemberId);
-    System.out.println("Total Number of submittables - " + submittableMembers.size());
-
-    // TODO get the activeMember's name 
-    String activeMemberName = "CS5500";
-
-    // Get current logged in users all submission documents
+	// Get current logged in users all submission documents
     Long userId = (Long)session.getAttribute(SessionKeys.keyUserId);
+
+	// user object from session
+	User user = (User) session.getAttribute(SessionKeys.keyUserObj);
+
+    // DAOs
     UserDao userDao = new UserDaoImpl();
-    User thisUser = userDao.getUserByIdWithSubmissions(userId);
-    Set<Document> userSubmissions = thisUser.getSubmissions();
+    MemberDao memberDao = new MemberDaoImpl();
+    UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
+
+    Member activeMember = memberDao.getMember(activeMemberId);
+    Set<Member> submittables = memberDao.findAllSubmittableMembersByParentMemberId(activeMemberId);
+    List<Member> submittableMembers = new ArrayList<Member>(submittables);
+    Collections.sort(submittableMembers);
+
+    System.out.println("Total Number of submittables - " + submittableMembers.size());
+    String activeMemberName = activeMember.getName();
+
+    RoleType role = userToMemberMappingDao.getUsersRoleForMember(userId, activeMemberId);
+    // if user doesn't have any role, then forward him to DashBoard page
+    if(role == null){
+        response.sendRedirect("dashboard.jsp");
+    }
+
+    List<User> submittersList = new ArrayList<User>();
+    // Depending upon the role - user should see only his submission's evaluations
+    // Or should see all submitter's details
+    if (role == RoleType.CONDUCTOR || role == RoleType.EVALUATOR){
+        submittersList.addAll(memberDao.getSubmittersForMemberId(activeMemberId));
+    }else if (role == RoleType.SUBMITTER) {
+        submittersList.add(user);
+    }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
         <title>Submission Evaluations Status Page</title>
-        <style>
-            body {
-                font-family: 'Roboto', sans-serif;
-            }
-            
-            .form_header {
-                font-weight: 100;
-                text-align: left;
-                font-size: 1.8em;
-            }
-            
-            td.doc {
-                color: navy;
-                font-size: 150%;
-            }
-            
-            td.label {
-                font-size: 150%;
-            }
-            
-            th.label {
-                font-size: 150%;
-            }
-            
-            div {
-                color: black;
-                font-size: 150%;
-            }
-            
-            div.error {
-                color: red;
-                font-size: 200%;
-            }
-        </style>
     </head>
     <body>
         <div class="form_header">Submissions Evaluations Status for <%=activeMemberName%></div>
-        <hr />
-        <font size=2>
-            NOTE: <br/>
-            1. This page shows final evaluation results for all evaluated submissions.<br/>
-            2. NA - This status means the submission is yet to be evaluated.<br/>
-            2. All grades are in percentage values (i.e. out of 100).<br/>
-        </font>
+        <br/>
+        <% for(User submitter : submittersList) { %>
+        <div>Username: <%=submitter.getFirstname()%>&nbsp;<%=submitter.getLastname()%></div>
+        <div>Email: <%=submitter.getEmail()%></div> 
         <table cellpadding="3" border="2">
             <tr>
                 <th>Name</th>
                 <th>Grades Received</th>
-                <th>Comments</th>
+                <th>Last Submitted On</th>
             </tr>
             <%-- Create individual rows dynamically for each submittable member --%>
             <%
+                User thisUser = userDao.getUserByIdWithSubmissions(submitter.getId());
+                Set<Document> userSubmissions = thisUser.getSubmissions();
                 boolean submissionFound = false;
                 for (Member member : submittableMembers) {
                     submissionFound = false;
-                    out.println("<tr><td class='doc'>"+member.getName()+"</td>");
+                    out.println("<tr><td>"+member.getName()+"</td>");
                     for(Document doc : userSubmissions){
                         if(doc.getSubmittedForMember().getId().equals(member.getId())){
                             submissionFound = true;
                             Evaluation finalEval = doc.getFinalEvaluation();
-                            out.println("<td>"+finalEval.getResult()+"</td>");
-                            out.println("<td>"+finalEval.getComments()+"</td></tr>");
+                            if(finalEval == null){
+                                out.println("<td>NA</td>");
+                                out.println("<td>"+doc.getSubmittedOnTimestamp()+"</td></tr>");
+                            }else{
+                                out.println("<td>"+finalEval.getResult()+"</td>");
+                                out.println("<td>"+doc.getSubmittedOnTimestamp()+"</td></tr>");
+                            }
                             break;
                         }
                     }
@@ -114,7 +105,15 @@
             %>
         </table>
         <br/>
+        <% } %>
         <br/>
+        <a href="<%=request.getContextPath()%>/ViewRegistrableMember?memberId=<%=activeMemberId%>">Back to <%=activeMemberName%></a>
         <hr />
+        <font size=2>
+            NOTE: <br/>
+            1. This page shows final evaluation results for all evaluated submissions.<br/>
+            2. NA - This status means the submission is yet to be evaluated.<br/>
+            2. All grades are in percentage values (i.e. out of 100).<br/>
+        </font>
     </body>
 </html>

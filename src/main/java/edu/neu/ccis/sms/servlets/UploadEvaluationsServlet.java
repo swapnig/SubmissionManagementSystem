@@ -3,6 +3,7 @@ package edu.neu.ccis.sms.servlets;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -38,18 +39,17 @@ import edu.neu.ccis.sms.entity.users.User;
 @MultipartConfig
 public class UploadEvaluationsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(UploadEvaluationsServlet.class.getName());
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public UploadEvaluationsServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -57,12 +57,13 @@ public class UploadEvaluationsServlet extends HttpServlet {
     }
 
     /**
-     * Upon receiving file upload submission, parses the request to read upload
-     * data and saves the file on disk.
+     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
     {
+        LOGGER.info("Method - UploadEvaluationsServlet:doPost");
+
         try {
             HttpSession session = request.getSession(false);
             Long evaluatorId = (Long) session.getAttribute(SessionKeys.keyUserId);
@@ -97,7 +98,7 @@ public class UploadEvaluationsServlet extends HttpServlet {
                     String comments = request.getParameter("comments" + i);
 
                     if (!checkIfUserIsValidToEvaluate(submittersToEvaluate, submitterUserId)) {
-                        System.out.println("This submitterUserId " + submitterUserId
+                        LOGGER.info("This submitterUserId " + submitterUserId
                                 + " is not supposed to be evaluated by this Evaluator!");
                         continue;
                     }
@@ -134,29 +135,28 @@ public class UploadEvaluationsServlet extends HttpServlet {
 
                         // TODO - calculate the final evaluations if
                         // disseminate_evaluations process is already done
-                        // if (submittableMember.isFinalEvaluated()) {
-                        // calculateAndSaveFinalEvaluations(submittableMember,
-                        // submittedDoc, evaluatedBy);
-                        // }
+                        if (submittableMember.isFinalEvaluated()) {
+                            calculateAndSaveFinalEvaluations(submittableMember, submittedDoc, evaluatedBy);
+                        }
 
-                        System.out.println("Successfully Submitted evaluation for document - "
+                        LOGGER.info("Successfully Submitted evaluation for document - "
                                 + submittedDoc.getCmsDocumentPath() + " - by userId - " + submitterUserId);
                     } else {
-                        System.out.println("This user hasnot yet submitted the submission document - ignoring..");
+                        LOGGER.info("This user hasnot yet submitted the submission document - ignoring..");
                     }
                 } catch (final Exception e) {
-                    System.out.println("Unable to persist evaluation for UserId - " + strSubmitterUserId);
+                    LOGGER.info("Unable to persist evaluation for UserId - " + strSubmitterUserId);
                     e.printStackTrace();
                 }
             }
 
-            System.out.println("Successfully uploaded the evaluations for Member! - " + submittableMemberId);
+            LOGGER.info("Successfully uploaded the evaluations for Member! - " + submittableMemberId);
             // redirects client to message page
             response.sendRedirect("pages/success.jsp");
         } catch (Exception ex) {
-            request.setAttribute("message", "There was an error: " + ex.getMessage());
+            request.setAttribute("message", "Failed to upload the evaluations : " + ex.getMessage());
             // redirects client to message page
-            System.out.println(ex.getMessage());
+            LOGGER.info("Failed to upload the evaluations : " + ex.getMessage());
             response.sendRedirect("pages/error.jsp");
         }
     }
@@ -188,10 +188,10 @@ public class UploadEvaluationsServlet extends HttpServlet {
                 case MAXIMUM: {
                     if (finalEval.getResult() == null) {
                         // Always save the percent result
-                        finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                        finalEval.setResult(eval.getResult());
                     } else {
-                        if (finalEval.getResult() < (eval.getResult() / eval.getOutOfTotal())) {
-                            finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                        if (finalEval.getResult() < eval.getResult()) {
+                            finalEval.setResult(eval.getResult());
                         }
                     }
 
@@ -199,10 +199,10 @@ public class UploadEvaluationsServlet extends HttpServlet {
                 }
                 case MINIMUM: {
                     if (finalEval.getResult() == null) {
-                        finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                        finalEval.setResult(eval.getResult());
                     } else {
-                        if (finalEval.getResult() > (eval.getResult() / eval.getOutOfTotal())) {
-                            finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                        if (finalEval.getResult() > eval.getResult()) {
+                            finalEval.setResult(eval.getResult());
                         }
                     }
 
@@ -211,12 +211,12 @@ public class UploadEvaluationsServlet extends HttpServlet {
                 case AVERAGE:
                 default: {
                     if (finalEval.getResult() == null) {
-                        finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                        finalEval.setResult(eval.getResult());
                     } else {
                         // Just add all the evaluations, division by
                         // total number of evaluations will be done
                         // in the end
-                        finalEval.setResult(finalEval.getResult() + (eval.getResult() / eval.getOutOfTotal()));
+                        finalEval.setResult(finalEval.getResult() + eval.getResult());
                     }
                     break;
                 }
@@ -240,8 +240,7 @@ public class UploadEvaluationsServlet extends HttpServlet {
     /**
      * Check if there is any old evaluation by this Evaluator
      * 
-     * @Note = there can be only one evaluation by one unique evaluator per
-     *       document
+     * @Note = there can be only one evaluation by one unique evaluator per document
      * @param evaluations
      * @param evaluatorId
      * @return previous Evaluation object
@@ -258,8 +257,8 @@ public class UploadEvaluationsServlet extends HttpServlet {
     }
 
     /**
-     * Check if given submitterUserId is supposed to be evaluated by me - i.e.
-     * its in current user's submittersToEvaluate list of users
+     * Check if given submitterUserId is supposed to be evaluated by me - i.e. its in current user's
+     * submittersToEvaluate list of users
      */
     private boolean checkIfUserIsValidToEvaluate(Set<User> submittersToEvaluate, Long submitterUserId) {
         // Check if given email id user exists in given Set<User>

@@ -52,7 +52,7 @@ public class Category implements Serializable, Comparable<Category> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentCategory")
     private Set<Category> childCategories = new HashSet<Category>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "category")
+    @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "category")
     @Column(nullable = false)
     private Set<CategoryAttribute> attributes = new HashSet<CategoryAttribute>();
 

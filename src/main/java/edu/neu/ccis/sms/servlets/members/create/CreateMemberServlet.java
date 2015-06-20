@@ -50,7 +50,7 @@ public class CreateMemberServlet extends HttpServlet {
 	@Override
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		ArrayList<String> paramNames = Collections.list(request.getParameterNames());
-		Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+		Long userId = (Long) request.getSession(false).getAttribute(SessionKeys.keyUserId);
 		String parentMemberId = request.getParameter(RequestKeys.PARAM_PARENT_MEMBER_ID);
 
 		MemberDao memberDao = new MemberDaoImpl();

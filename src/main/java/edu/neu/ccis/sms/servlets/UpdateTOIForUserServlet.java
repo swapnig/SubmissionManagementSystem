@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,29 +28,31 @@ import edu.neu.ccis.sms.entity.users.User;
 @WebServlet(name = "UpdateTOIForUserServlet", urlPatterns = { "/UpdateTOIForUser" })
 public class UpdateTOIForUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(UpdateCOIForUserServlet.class.getName());
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public UpdateTOIForUserServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         doPost(request, response);
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+            IOException
+    {
+        LOGGER.info("Method - UpdateTOIForUserServlet:doPost");
+
         HttpSession session = request.getSession(false);
         Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
 
@@ -88,9 +91,12 @@ public class UpdateTOIForUserServlet extends HttpServlet {
                 one.setTopicsOfInterest(oldToiSet);
                 userDao.updateUser(one);
             }
+
+            LOGGER.info("TOI saved successfully!");
             response.sendRedirect("pages/update_toi.jsp");
         } catch (final Exception e) {
             e.printStackTrace();
+            LOGGER.info("Failed to update topics of interest : " + e.getMessage());
             response.sendRedirect("pages/error.jsp");
         }
     }

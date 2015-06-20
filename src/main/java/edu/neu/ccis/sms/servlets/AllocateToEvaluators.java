@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,10 +19,14 @@ import javax.servlet.http.HttpSession;
 import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.categories.MemberDao;
 import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
+import edu.neu.ccis.sms.dao.categories.UserToMemberMappingDao;
+import edu.neu.ccis.sms.dao.categories.UserToMemberMappingDaoImpl;
 import edu.neu.ccis.sms.dao.users.UserToReviewerMappingDao;
 import edu.neu.ccis.sms.dao.users.UserToReviewerMappingDaoImpl;
 import edu.neu.ccis.sms.entity.categories.Member;
+import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.submissions.Document;
+import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
 import edu.neu.ccis.sms.entity.users.UserToReviewerMapping;
 
@@ -36,45 +41,67 @@ import edu.neu.ccis.sms.entity.users.UserToReviewerMapping;
 @MultipartConfig
 public class AllocateToEvaluators extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(AllocateToEvaluators.class.getName());
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public AllocateToEvaluators() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         doPost(request, response);
     }
 
     /**
-     * Upon receiving file upload submission, parses the request to read upload
-     * data and saves the file on disk.
+     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+            IOException
+    {
+        LOGGER.info("Method - AllocateToEvaluators:doPost");
         try {
-            HttpSession session = request.getSession(false);
-            Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
-
-            Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-            activeMemberId = new Long(2);
-            // TODO Validate if he is the conductor for given active member id
-
-            // Get request parameter values: memberId and
-            // numberOfEvaluatorsPerSub
-            Long memberId = Long.parseLong(request.getParameter("memberId"));
-            int numberOfEvaluatorsPerSubmission = Integer.parseInt(request.getParameter("numberOfEvaluatorsPerSub"));
-
             // DAO impls
             UserToReviewerMappingDao userToRevDao = new UserToReviewerMappingDaoImpl();
             MemberDao memberDao = new MemberDaoImpl();
+            UserToMemberMappingDao user2MemberMapDao = new UserToMemberMappingDaoImpl();
+
+            HttpSession session = request.getSession(false);
+            Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
+            Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
+
+            LOGGER.info("User id " + userId + " \t ActiveMember id " + activeMemberId);
+
+            // Important TODO Validate if he is the conductor for given active member id
+            List<UserToMemberMapping> rolesMapping = user2MemberMapDao.getAllUserRolesForMember(userId, activeMemberId);
+            boolean isConductorRole = false;
+            for (UserToMemberMapping mapping : rolesMapping) {
+                if (mapping.getRole() == RoleType.CONDUCTOR) {
+                    isConductorRole = true;
+                    break;
+                }
+            }
+
+            // If User is not a Conductor for this Member, then Show Error
+            if (!isConductorRole) {
+                LOGGER.info("User is not conductor on given registerable member, Cannot access this page!");
+                request.setAttribute("message", "Invalid page access!");
+                response.sendRedirect("pages/error.jsp");
+                return;
+            }
+
+            // TODO change it to take the current submittable member rather than a drop down
+            Long memberId = (Long) session.getAttribute(SessionKeys.activeSubmittableMemberId);
+            LOGGER.info("Session activeSubmittableMemberId - " + activeMemberId);
+
+            // Get request parameter values: memberId and numberOfEvaluatorsPerSub
+            memberId = Long.parseLong(request.getParameter("memberId"));
+            int numberOfEvaluatorsPerSubmission = Integer.parseInt(request.getParameter("numberOfEvaluatorsPerSub"));
 
             // TODO In case of, "Allocate Evaluators" is clicked more than one
             // times, then before doing any new allocation for evaluators,
@@ -143,24 +170,25 @@ public class AllocateToEvaluators extends HttpServlet {
                 }
             }
 
+            LOGGER.info("Allocating Evaluators to Submitters done successfully!");
+
             // redirects client to message page
             response.sendRedirect("pages/success.jsp");
         } catch (Exception ex) {
-            request.setAttribute("message", "There was an error: " + ex.getMessage());
+            request.setAttribute("message", "Unable to allocate evaluators : " + ex.getMessage());
             // redirects client to message page
-            System.out.println(ex.getMessage());
+            LOGGER.info("Unable to allocate evaluators : " + ex.getMessage());
             response.sendRedirect("pages/error.jsp");
         }
     }
 
     /**
-     * Takes a collection of documents submitted , and a user object - to find
-     * of there is any submission document submitted by this user
+     * Takes a collection of documents submitted , and a user object - to find of there is any submission document
+     * submitted by this user
      * 
      * @param submisions
      * @param submitter
-     * @return Document object if is it submitted by given user else returns
-     *         null
+     * @return Document object if is it submitted by given user else returns null
      */
     private Document findSubmissionDocumentForUserFromAllSubmissions(Set<Document> submisions, User submitter) {
         for (Document doc : submisions) {

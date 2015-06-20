@@ -53,7 +53,7 @@ public class ReadMemberDetailsServlet extends HttpServlet {
         MemberDao memberDao = new MemberDaoImpl();
 
         UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-        Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+        Long userId = (Long) request.getSession(false).getAttribute(SessionKeys.keyUserId);
         Member member = memberDao.getMember(Long.parseLong(memberId));
 
         StringBuffer content = new StringBuffer();

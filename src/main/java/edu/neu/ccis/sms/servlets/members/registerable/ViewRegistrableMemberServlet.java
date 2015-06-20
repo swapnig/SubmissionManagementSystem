@@ -52,7 +52,7 @@ public class ViewRegistrableMemberServlet extends HttpServlet {
         MemberDao memberDao = new MemberDaoImpl();
 
         UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
-        Long userId = (Long) request.getSession().getAttribute(SessionKeys.keyUserId);
+        Long userId = (Long) request.getSession(false).getAttribute(SessionKeys.keyUserId);
         Member member = memberDao.getMember(activeMemberId);
 
         if (userToMemberMappingDao.doesUserHaveRoleForMember(userId, RoleType.CONDUCTOR, member.getId())) {
@@ -66,7 +66,7 @@ public class ViewRegistrableMemberServlet extends HttpServlet {
         request.setAttribute(RequestKeys.PARAM_MEMBER_ATTRIBUTES, memberAttributes);
         request.getRequestDispatcher(JspViews.VIEW_REGISTRABLE_MEMBER_VIEW).forward(request, response);
 
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         session.setAttribute(SessionKeys.activeMemberId, activeMemberId);
     }
 }

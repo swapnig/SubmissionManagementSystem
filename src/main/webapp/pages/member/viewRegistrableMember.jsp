@@ -39,5 +39,9 @@
 			<div id="submittables"></div>
 		</fieldset>
 		<div id="result"></div>
+		
+        <br/>
+        <br/>
+        <div><a href="${pageContext.request.contextPath}/pages/status.jsp">View Grades for submissions</a></div>
 	</body>
 </html>

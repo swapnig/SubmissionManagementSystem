@@ -3,7 +3,9 @@ package edu.neu.ccis.sms.servlets;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -42,41 +44,36 @@ import edu.neu.ccis.sms.util.CMISConnector;
 @MultipartConfig
 public class UploadForMember extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(UploadForMember.class.getName());
+    private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public UploadForMember() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         doPost(request, response);
     }
 
-    // upload settings
-    // sets memory threshold - beyond which files are stored in disk
-    private static final int MEMORY_THRESHOLD = 1024 * 1024 * 5; // 5MB
-    // sets maximum size of upload file
-    private static final int MAX_FILE_SIZE = 1024 * 1024 * 50; // 50MB
-    // sets maximum size of request (include file + form data)
-    private static final int MAX_REQUEST_SIZE = 1024 * 1024 * 60; // 60MB
-
     /**
-     * Upon receiving file upload submission, parses the request to read upload
-     * data and saves the file on disk.
+     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+            IOException
+    {
+        LOGGER.info("Method - UploadForMember:doPost");
+
         // checks if the request actually contains upload file
         if (!ServletFileUpload.isMultipartContent(request)) {
             // if not, we stop here
-            System.out.println("Error: Form must have enctype=multipart/form-data.");
+            LOGGER.info("Error: Form must have enctype=multipart/form-data.");
             getServletContext().getRequestDispatcher("/pages/error.jsp").forward(request, response);
             return;
         }
@@ -86,6 +83,46 @@ public class UploadForMember extends HttpServlet {
 
         String submittedFromRemoteAddress = request.getRemoteAddr();
 
+        // DAOs
+        UserDao userDao = new UserDaoImpl();
+        MemberDao memberDao = new MemberDaoImpl();
+
+        ServletContext context = request.getServletContext();
+
+        /**
+         * Get upload params - from context
+         */
+        // upload settings
+        // sets memory threshold - beyond which files are stored in disk
+        int MEMORY_THRESHOLD = 1024 * 1024 * 5; // 5MB
+        try {
+            if (context.getInitParameter("MaximumMemoryThreshold") != null) {
+                MEMORY_THRESHOLD = Integer.parseInt(context.getInitParameter("MaximumMemoryThreshold"));
+            }
+        } catch (final Exception e) {
+            // ignore this exception as we will use default configs
+        }
+
+        // sets maximum size of upload file
+        int MAX_FILE_SIZE = 1024 * 1024 * 50; // 50MB
+        try {
+            if (context.getInitParameter("MaximumFileUploadSize") != null) {
+                MAX_FILE_SIZE = Integer.parseInt(context.getInitParameter("MaximumFileUploadSize"));
+            }
+        } catch (final Exception e) {
+            // ignore this exception as we will use default configs
+        }
+
+        // sets maximum size of request (include file + form data)
+        int MAX_REQUEST_SIZE = 1024 * 1024 * 60; // 60MB
+        try {
+            if (context.getInitParameter("MaximumRequestSize") != null) {
+                MAX_REQUEST_SIZE = Integer.parseInt(context.getInitParameter("MaximumRequestSize"));
+            }
+        } catch (final Exception e) {
+            // ignore this exception as we will use default configs
+        }
+
         // configures upload settings
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);
@@ -94,7 +131,7 @@ public class UploadForMember extends HttpServlet {
         upload.setSizeMax(MAX_REQUEST_SIZE);
 
         // sets temporary location to store files
-        factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
+        factory.setRepository(new File(TMP_DIR));
 
         try {
             // parses the request's content to extract file data
@@ -109,12 +146,9 @@ public class UploadForMember extends HttpServlet {
                 for (FileItem item : formItems) {
                     // processes only fields that are not form fields
                     if (!item.isFormField()) {
-                        System.out.println("Non-Form-Field - item.getName() - " + item.getName());
-
                         fileName = FilenameUtils.getName(item.getName());
                         String fileNameSuffix = FilenameUtils.getExtension(fileName);
                         storeFile = File.createTempFile(fileName, "." + fileNameSuffix);
-
                         // saves the file on disk
                         item.write(storeFile);
                     } else {
@@ -128,16 +162,11 @@ public class UploadForMember extends HttpServlet {
             // Upload this file into CMS only if we have a valid memberId,
             // uploaded file, filename from request
             if (null != memberIdToUploadFor && null != storeFile && null != fileName) {
-                System.out.println("Saving submission to SMS and CMS both!...");
-                UserDao userDao = new UserDaoImpl();
                 User submitter = userDao.getUser(userId);
-
-                MemberDao memberDao = new MemberDaoImpl();
                 Member member = memberDao.getMember(memberIdToUploadFor);
 
                 String memberFolderPath = member.getCmsFolderPath();
 
-                System.out.println("Checking user-email folder under member");
                 // Create the email-id folder for given user if it doesn't exist
                 Folder submitterCMSFolder = CMISConnector.createFolder(memberFolderPath, submitter.getEmail());
 
@@ -147,7 +176,7 @@ public class UploadForMember extends HttpServlet {
                 // First check if user has already submitted for this
                 // member already - meaning is it a resubmission, then get the
                 // document reference
-                // Get the submission document reference for given memberId 
+                // Get the submission document reference for given memberId
                 // Document smsDoc = submitter.getSubmissionDocumentForMemberId(memberIdToUploadFor);
 
                 Document smsDoc = userDao.getSubmissionDocumentForMemberIdByUserId(userId, memberIdToUploadFor);
@@ -171,6 +200,7 @@ public class UploadForMember extends HttpServlet {
                     smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
 
                     docDao.saveDocument(smsDoc);
+                    LOGGER.info("Saved user's first submission into CMS!");
                 } else {
                     // Resubmission scenario - get previous Document reference
                     // and update it with newer version
@@ -190,18 +220,20 @@ public class UploadForMember extends HttpServlet {
                         smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
 
                         docDao.updateDocument(smsDoc);
+                        LOGGER.info("Saved user's resubmission into CMS!");
                     } else {
-                        throw new Exception("Unable to update document version");
+                        LOGGER.info("Failed to save user's resubmission into CMS!");
+                        throw new Exception("Unable to update document version!, inconsistency found with CMS!");
                     }
                 }
-                System.out.println("Successfully uploaded the document for Member! - " + doc.getPaths().get(0));
+                LOGGER.info("Successfully uploaded the document for Member! - " + doc.getPaths().get(0));
             }
             // redirects client to message page
             response.sendRedirect("pages/submit_to_member.jsp");
         } catch (Exception ex) {
-            request.setAttribute("message", "There was an error: " + ex.getMessage());
+            request.setAttribute("message", "Failed to save the user's submissions : " + ex.getMessage());
             // redirects client to message page
-            System.out.println(ex.getMessage());
+            LOGGER.info("Failed to save the user's submissions : " + ex.getMessage());
             response.sendRedirect("pages/error.jsp");
         }
     }

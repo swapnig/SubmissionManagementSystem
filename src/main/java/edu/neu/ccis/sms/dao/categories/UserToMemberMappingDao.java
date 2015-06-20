@@ -19,8 +19,9 @@ public interface UserToMemberMappingDao {
 
 	public List<UserToMemberMapping> getAllMembersForUser(Long userId);
 
-	public boolean doesUserHaveRoleForMember(Long userId, RoleType role,
-			Long memberId);
+	public boolean doesUserHaveRoleForMember(Long userId, RoleType role, Long memberId);
+
+	public RoleType getUsersRoleForMember(final Long userId, final Long memberId);
 
 	public List<UserToMemberMapping> getAllRegisterableMembersForUser(Long userId);
 

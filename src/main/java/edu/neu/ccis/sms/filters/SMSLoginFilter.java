@@ -1,6 +1,7 @@
 package edu.neu.ccis.sms.filters;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -13,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import edu.neu.ccis.sms.constants.SessionKeys;
-
 /**
  * Servlet Filter implementation class SMSLoginFilter
  * 
@@ -24,6 +23,7 @@ import edu.neu.ccis.sms.constants.SessionKeys;
  */
 @WebFilter("/*")
 public class SMSLoginFilter implements Filter {
+    private static final Logger LOGGER = Logger.getLogger(SMSLoginFilter.class.getName());
 
     /**
      * Default constructor.
@@ -44,8 +44,9 @@ public class SMSLoginFilter implements Filter {
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
      */
     @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException,
-    ServletException {
+    public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
+            throws IOException, ServletException
+    {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -54,44 +55,38 @@ public class SMSLoginFilter implements Filter {
     }
 
     /**
-     * validateUserSession checks for session expired request and returns
-     * expired message.
+     * validateUserSession checks for session expired request and returns expired message.
      * 
      * @param request
      * @param response
      * @throws ServletException
      * @throws IOException
      */
-    private void validateUserSession(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
-            throws IOException, ServletException {
+    private void validateUserSession(final HttpServletRequest request, final HttpServletResponse response,
+            final FilterChain chain) throws IOException, ServletException
+    {
+        LOGGER.info("Method - SMSLoginFilter:validateUserSession");
+
         String requestURL = request.getRequestURI();
         requestURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
 
-        System.out.println("Requested URL - " + requestURL);
         HttpSession session = request.getSession(false);
-        System.out.println("session..." + session);
-
-        if (session != null) {
-            System.out.println("UserObj - " + session.getAttribute(SessionKeys.keyUserObj));
-            System.out.println("Session exists");
-        } else {
-            System.out.println("session is null");
-        }
-
-        boolean isSessionValid = session != null || session == null && (requestURL.contains("login.jsp")
-                || requestURL.contains("user_registration.jsp") || requestURL.equals("Login"));
+        boolean isSessionValid = session != null
+                || session == null
+                && (requestURL.contains("login.jsp") || requestURL.contains("user_registration.jsp") || requestURL
+                        .equals("Login"));
 
         // If the request from the login page pass to login action
         // to create new user session.
         if (isSessionValid) {
-            System.out.println("forwarding to resource!");
+            LOGGER.info("forwarding to resource!, valid session request!");
             chain.doFilter(request, response);
             return;
         }
         // If the request for other than login page then check whether the
         // request has a session expired or not
         else {
-            System.out.println("Invalid session...");
+            LOGGER.info("Invalid session, login again!");
             // HttpServletResponse.SC_LENGTH_REQUIRED 411 error code here used
             // to indicated for session expiration.
             response.sendRedirect("/SMS/pages/login.jsp");

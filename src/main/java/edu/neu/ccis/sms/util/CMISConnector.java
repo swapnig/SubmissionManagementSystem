@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.chemistry.opencmis.client.api.CmisObject;
 import org.apache.chemistry.opencmis.client.api.Document;
@@ -22,6 +23,7 @@ import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
+import org.apache.chemistry.opencmis.commons.enums.UnfileObject;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
@@ -34,6 +36,8 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
  * @lastUpdate 10-June-2015
  */
 public class CMISConnector {
+    private static final Logger LOGGER = Logger.getLogger(CMISConnector.class.getName());
+
     // Connect to CMS repository and get the session
     private static Session session = null;
 
@@ -59,13 +63,13 @@ public class CMISConnector {
                 configParams.getCmsRepoAtompubBindingUrl());
 
         List<Repository> repos = sessionFactory.getRepositories(parameters);
-        System.out.println("Total Repositories in CMS = " + repos.size());
+        LOGGER.info("Total Repositories in CMS = " + repos.size());
 
         Repository defaultRepo = repos.get(configParams.getCmsRepoNumber());
-        System.out.println("Default Repo CMIS version supported = " + defaultRepo.getCmisVersionSupported());
+        LOGGER.info("Default Repo CMIS version supported = " + defaultRepo.getCmisVersionSupported());
 
         Session session = defaultRepo.createSession();
-        System.out.println("Connected to the repository!!");
+        LOGGER.info("Connected to the repository!!");
         return session;
     }
 
@@ -78,10 +82,9 @@ public class CMISConnector {
      * @return
      * @throws CmisObjectNotFoundException
      */
-    public static Folder createFolder(final String parentFolderPath, final String folderName)
+    public static Folder createFolder(final String parentFolderPath, String folderName)
             throws CmisObjectNotFoundException
     {
-
         Folder parentFolder = null;
         Folder subFolder = null;
         try {
@@ -92,6 +95,7 @@ public class CMISConnector {
             throw onfe;
         }
 
+        folderName = sanitizeFileFolderNames(folderName);
         // Then check if the new TOBE created folder already exists
         try {
             subFolder = (Folder) session.getObjectByPath(parentFolder.getPath() + "/" + folderName);
@@ -115,12 +119,13 @@ public class CMISConnector {
      * @param folderName
      * @return
      */
-    public static Folder createFolderUnderRoot(final String folderName) {
+    public static Folder createFolderUnderRoot(String folderName) {
 
         Folder root = session.getRootFolder();
         Folder subFolder;
         // Then check if the new TOBE created folder already exists
         try {
+            folderName = sanitizeFileFolderNames(folderName);
             subFolder = (Folder) session.getObjectByPath(root.getPath() + "/" + folderName);
             System.out.println("Folder already existed!");
         } catch (final CmisObjectNotFoundException onfe) {
@@ -172,7 +177,7 @@ public class CMISConnector {
      * @return - Document - newly uploaded document
      * @throws Exception
      */
-    public static Document uploadToCMSUsingFileToFolderPath(final String parentFolderPath, final String fileName,
+    public static Document uploadToCMSUsingFileToFolderPath(final String parentFolderPath, String fileName,
             String fileType, final File file) throws Exception
     {
 
@@ -182,6 +187,7 @@ public class CMISConnector {
         ContentStream contentStream = null;
 
         try {
+            fileName = sanitizeFileFolderNames(fileName);
             parentFolder = (Folder) session.getObjectByPath(parentFolderPath);
             System.out.println("parentFolder found - " + parentFolder.getId());
 
@@ -248,8 +254,8 @@ public class CMISConnector {
      * @return
      * @throws Exception
      */
-    public static Document uploadToCMSUsingFileToFolder(final Folder parentFolder, final String fileName,
-            String fileType, final File file) throws Exception
+    public static Document uploadToCMSUsingFileToFolder(final Folder parentFolder, String fileName, String fileType,
+            final File file) throws Exception
     {
 
         Map<String, Object> props = null;
@@ -257,6 +263,7 @@ public class CMISConnector {
         ContentStream contentStream = null;
 
         try {
+            fileName = sanitizeFileFolderNames(fileName);
             props = new HashMap<String, Object>();
             props.put("cmis:objectTypeId", "cmis:document");
             props.put("cmis:name", fileName);
@@ -336,14 +343,13 @@ public class CMISConnector {
      * 
      * @return new Document version
      */
-    public static Document updateNewDocumentVersion(Document doc, final String fileName, final File file)
-            throws Exception
-    {
+    public static Document updateNewDocumentVersion(Document doc, String fileName, final File file) throws Exception {
         doc.refresh();
         ObjectId idOfCheckedOutDocument = doc.checkOut();
         Document workingCopy = (Document) session.getObject(idOfCheckedOutDocument);
         String fileType = Files.probeContentType(file.toPath());
 
+        fileName = sanitizeFileFolderNames(fileName);
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("cmis:objectTypeId", "cmis:document");
         props.put("cmis:name", fileName);
@@ -379,9 +385,10 @@ public class CMISConnector {
      * @param destinationPath
      * @throws IOException
      */
-    public static Folder renameFolder(final String folderId, final String newFolderName) throws Exception {
+    public static Folder renameFolder(final String folderId, String newFolderName) throws Exception {
         try {
             Folder folder = (Folder) session.getObject(folderId);
+            newFolderName = sanitizeFileFolderNames(newFolderName);
             // Rename the folder with new name
             ObjectId obj = folder.rename(newFolderName, true);
             // Refresh the Folder details again from CMS
@@ -391,6 +398,52 @@ public class CMISConnector {
             System.out.println("No such folder found!");
             throw onfe;
         }
+    }
+
+    /**
+     * Delete folder and all its subfolders
+     * @param folderId
+     * @return boolean if the folder was completely deleted
+     */
+    public static boolean deleteFolder(final String folderId) {
+        try {
+            Folder folder = (Folder) session.getObject(folderId);
+            // Delete folder and all its subfolders
+            List<String> undeletedItems = folder.deleteTree(true, UnfileObject.DELETE, true);
+            return (undeletedItems.size() > 0) ? false : true;
+        } catch (final CmisObjectNotFoundException onfe) {
+            System.out.println("No such folder found!");
+            return false;
+        }
+    }
+
+    /**
+     * Delete a document mapped by given document id
+     * @param docId
+     * @return 
+     */
+    public static void deleteDocument(final String docId) {
+        try {
+            Document doc = getDocumentById(docId);
+            doc.deleteAllVersions();
+        } catch (final CmisObjectNotFoundException onfe) {
+            System.out.println("No such document exists, no need to delete it!");
+        }
+    }
+
+    /**
+     * As there are certain characters which are not allowed in alfresco as file and folder names, we need to replace
+     * those charasters with "_" chars < (less than), > (greater than), : (colon), " (double quote), / (forward slash),
+     * \ (backslash), | (vertical bar or pipe), ? (question mark), * (asterisk)
+     * 
+     * @return sanitized string after replacing the invalid chars with all "_", and trimming its length to 254
+     */
+    public static String sanitizeFileFolderNames(String input) {
+        LOGGER.info("Sanitizing Folder/File name = " + input);
+        input = input.replaceAll("[/\\\\:*?\"<>|]", "_");
+        input = input.substring(0, (input.length() > 254 ? 254 : input.length()));
+        LOGGER.info("Sanitized Folder/File name = " + input);
+        return input;
     }
 
     public static class CMISConfig {

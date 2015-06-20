@@ -2,6 +2,7 @@ package edu.neu.ccis.sms.servlets;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -37,18 +38,17 @@ import edu.neu.ccis.sms.entity.users.User;
 @MultipartConfig
 public class DisseminateEvaluationsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(DisseminateEvaluationsServlet.class.getName());
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public DisseminateEvaluationsServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -56,12 +56,12 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
     }
 
     /**
-     * Calculate the final Evaluations for all the submitted documents for given
-     * memberId
+     * Calculate the final Evaluations for all the submitted documents for given memberId
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
     {
+        LOGGER.info("Method - DisseminateEvaluationsServlet:doPost");
         try {
             HttpSession session = request.getSession(false);
             Long conductorUserId = (Long) session.getAttribute(SessionKeys.keyUserId);
@@ -94,7 +94,14 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                 // Get all the evaluations first for this document
                 Document doc = docDao.getDocumentByIdWithEvaluations(submission.getId());
 
-                Evaluation finalEval = new Evaluation();
+                // Get the old final evaluation - if there is any
+                Evaluation finalEval = null;
+                if (doc.getFinalEvaluation() != null) {
+                    finalEval = doc.getFinalEvaluation();
+                } else {
+                    finalEval = new Evaluation();
+                }
+
                 finalEval.setEvaluatedBy(conductorUser);
                 finalEval.setComments("Final Evaluations using all available evaluations from all assigned evaluators");
 
@@ -113,10 +120,10 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                         case MAXIMUM: {
                             if (finalEval.getResult() == null) {
                                 // Always save the percent result
-                                finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                                finalEval.setResult(eval.getResult());
                             } else {
-                                if (finalEval.getResult() < (eval.getResult() / eval.getOutOfTotal())) {
-                                    finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                                if (finalEval.getResult() < eval.getResult()) {
+                                    finalEval.setResult(eval.getResult());
                                 }
                             }
 
@@ -124,10 +131,10 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                         }
                         case MINIMUM: {
                             if (finalEval.getResult() == null) {
-                                finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                                finalEval.setResult(eval.getResult());
                             } else {
-                                if (finalEval.getResult() > (eval.getResult() / eval.getOutOfTotal())) {
-                                    finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                                if (finalEval.getResult() > eval.getResult()) {
+                                    finalEval.setResult(eval.getResult());
                                 }
                             }
 
@@ -136,12 +143,12 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                         case AVERAGE:
                         default: {
                             if (finalEval.getResult() == null) {
-                                finalEval.setResult(eval.getResult() / eval.getOutOfTotal());
+                                finalEval.setResult(eval.getResult());
                             } else {
                                 // Just add all the evaluations, division by
                                 // total number of evaluations will be done
                                 // in the end
-                                finalEval.setResult(finalEval.getResult() + (eval.getResult() / eval.getOutOfTotal()));
+                                finalEval.setResult(finalEval.getResult() + eval.getResult());
                             }
                             break;
                         }
@@ -153,18 +160,25 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                     finalEval.setResult(finalEval.getResult() / evals.size());
                 }
 
-                evalDao.saveEvaluation(finalEval);
+                // Save the final evaluation
+                if (doc.getFinalEvaluation() == null) {
+                    evalDao.saveEvaluation(finalEval);
+                } else {
+                    evalDao.updateEvaluation(finalEval);
+                }
+
+                // Update the document with this new evaluation
                 doc.setFinalEvaluation(finalEval);
                 docDao.updateDocument(doc);
             }
 
-            System.out.println("Successfully calculated final evaluations for Member! - " + submittableMemberId);
+            LOGGER.info("Successfully calculated final evaluations for Member! - " + submittableMemberId);
             // redirects client to message page
             response.sendRedirect("pages/success.jsp");
         } catch (Exception ex) {
-            request.setAttribute("message", "There was an error: " + ex.getMessage());
+            request.setAttribute("message", "Failed to disseminate evaluations : " + ex.getMessage());
             // redirects client to message page
-            System.out.println(ex.getMessage());
+            LOGGER.info("Failed to disseminate evaluations : " + ex.getMessage());
             response.sendRedirect("pages/error.jsp");
         }
     }

@@ -1,6 +1,7 @@
 package edu.neu.ccis.sms.servlets;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,13 +20,13 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/Logout")
 public class LogutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(LogutServlet.class.getName());
 
     /**
      * @see HttpServlet#HttpServlet()
      */
     public LogutServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -43,9 +44,11 @@ public class LogutServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
+        LOGGER.info("Method - LogutServlet:doPost");
+
         HttpSession session = request.getSession(false);
         if (session != null) {
-            System.out.println("Session invalidated!");
+            LOGGER.info("Session invalidated! User successfully logged out!");
             session.invalidate();
             session = null;
         }

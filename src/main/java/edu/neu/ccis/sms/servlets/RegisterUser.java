@@ -3,6 +3,7 @@ package edu.neu.ccis.sms.servlets;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.neu.ccis.sms.dao.users.UserDao;
 import edu.neu.ccis.sms.dao.users.UserDaoImpl;
-import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
@@ -26,6 +26,7 @@ import edu.neu.ccis.sms.entity.users.User;
 public class RegisterUser extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private MessageDigest md;
+    private static final Logger LOGGER = Logger.getLogger(RegisterUser.class.getName());
 
     /**
      * @throws Exception
@@ -37,8 +38,7 @@ public class RegisterUser extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -46,12 +46,13 @@ public class RegisterUser extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
     {
+        LOGGER.info("Method - RegisterUser:doPost");
+
         String username = request.getParameter("userName");
         String password = request.getParameter("password");
         String emailId = request.getParameter("email");
@@ -70,12 +71,13 @@ public class RegisterUser extends HttpServlet {
         one.setUsername(username);
         userDao.saveUser(one);
 
+        LOGGER.info("User registered successfully! - " + emailId);
         response.sendRedirect("pages/success.jsp");
     }
 
     /**
-     * All passwords are stored in the backend as MD5 hash hex-strings, so
-     * converting the password from user into its hash -> hex string
+     * All passwords are stored in the backend as MD5 hash hex-strings, so converting the password from user into its
+     * hash -> hex string
      * 
      * @param password
      * @return
