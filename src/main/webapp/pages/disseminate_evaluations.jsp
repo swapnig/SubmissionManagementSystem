@@ -13,6 +13,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <jsp:include page="member/templates/header.jsp" />
 <%
+	// Check if there is any message to show in page
+	String message = (String) request.getAttribute("message");
+
     // Get the current user id
     Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
     System.out.println("Session userId - " + userId);
@@ -51,6 +54,7 @@
         <div>Disseminate Evaluations for <%=activeMemberName%> - <%=submittableMemberName%></div>
         <br/>
         <form action="<%=request.getContextPath()%>/DisseminateEvaluations" method="POST">
+            <input type="hidden" id="submittableMemberId" name="submittableMemberId" value="<%=submittableMemberId%>">
             <table cellpadding="3" border="0">
                 <tr>
                     <td>Select Final Evaluations Calculations Type:</td>
@@ -70,15 +74,20 @@
             </table>
         </form>
         <br/>
+        <% 
+            if(message != null) {
+                out.println("<div>"+message+"</div><br/>");
+            }
+        %>
         <a href="<%=request.getContextPath()%>/ViewSubmittableMember?memberId=<%=submittableMemberId%>">Back to <%=submittableMemberName%></a>
         &nbsp;&nbsp;
         <a href="<%=request.getContextPath()%>/ViewRegistrableMember?memberId=<%=activeMemberId%>">Back to <%=activeMemberName%></a>
         <hr />
         <font size=2>
         Evaluation Types: <br/>
-        1. Average : Calculates final evaluations for all submissions as average of all individual evaluations available for that document<br/>
-        2. Minimum : Calculates final evaluations for all submissions as minimum of all individual evaluations available for that document<br/>
-        3. Maximum : Calculates final evaluations for all submissions as maximum of all individual evaluations available for that document<br/>
+        1. Average : Calculates the final evaluations for each individual submission as an average of all individual evaluations available for that submission.<br/>
+        2. Minimum : Calculates the final evaluations for each individual submission as minimum of all individual evaluations available for that submission.<br/>
+        3. Maximum : Calculates the final evaluations for each individual submission as maximum of all individual evaluations available for that submission.<br/>
         </font>
         <br/>
     </body>

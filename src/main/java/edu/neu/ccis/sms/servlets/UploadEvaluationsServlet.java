@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.neu.ccis.sms.constants.JspViews;
+import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.categories.MemberDao;
 import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
@@ -149,26 +151,37 @@ public class UploadEvaluationsServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
-
+            request.setAttribute(RequestKeys.PARAM_MESSAGE, "Thank you! Evaluations received and saved successfully by system.");
             LOGGER.info("Successfully uploaded the evaluations for Member! - " + submittableMemberId);
-            // redirects client to message page
-            response.sendRedirect("pages/success.jsp");
         } catch (Exception ex) {
-            request.setAttribute("message", "Failed to upload the evaluations : " + ex.getMessage());
-            // redirects client to message page
+            ex.printStackTrace();
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Failed to upload the evaluations. Please retry or contact administrator.");
             LOGGER.info("Failed to upload the evaluations : " + ex.getMessage());
-            response.sendRedirect("pages/error.jsp");
         }
+        request.getRequestDispatcher(JspViews.UPLOAD_EVALUATIONS_VIEW).forward(request, response);
     }
 
     /**
+     * As evaluations for this submittable member are already out to students, these new evaluations should be directly
+     * used for final Evaluation calculations. This function calculates the final evaluation for this document from its
+     * new and all old evaluations, if there was already a final evaluation calculated then recalculates it considering
+     * this current newly evaluation.
      * 
      * @param submittableMember
      * @param doc
      * @param evaluatedBy
      */
     private void calculateAndSaveFinalEvaluations(Member submittableMember, Document doc, User evaluatedBy) {
-        Evaluation finalEval = new Evaluation();
+
+        // Get the old final evaluation - if there is any
+        Evaluation finalEval = null;
+        if (doc.getFinalEvaluation() != null) {
+            finalEval = doc.getFinalEvaluation();
+        } else {
+            finalEval = new Evaluation();
+        }
+
         finalEval.setEvaluatedBy(evaluatedBy);
         finalEval.setComments("Final Evaluations using all available evaluations from all assigned evaluators!");
 
@@ -232,7 +245,14 @@ public class UploadEvaluationsServlet extends HttpServlet {
         DocumentDao docDao = new DocumentDaoImpl();
         EvaluationDao evalDao = new EvaluationDaoImpl();
 
-        evalDao.saveEvaluation(finalEval);
+        // Save the final evaluation
+        if (doc.getFinalEvaluation() == null) {
+            evalDao.saveEvaluation(finalEval);
+        } else {
+            evalDao.updateEvaluation(finalEval);
+        }
+
+        // Update the document with this new evaluation
         doc.setFinalEvaluation(finalEval);
         docDao.updateDocument(doc);
     }

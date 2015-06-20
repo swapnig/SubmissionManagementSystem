@@ -5,7 +5,8 @@ package edu.neu.ccis.sms.constants;
  * 
  * @author Pramod Khare
  * @date 4-June-2015
- * @lastUpdate 4-June-2015
+ * @ModifiedBy Swapnil Gupta
+ * @lastUpdate 20-June-2015
  */
 
 public interface RequestKeys {
@@ -20,4 +21,9 @@ public interface RequestKeys {
 	public static final String PARAM_MEMBER_NAME = "Name";
 	public static final String PARAM_USER_ROLE = "role";
 	public static final String PARAM_USER_EMAIL = "userEmailId";
+
+    /**
+     * This attribute is used for storing any messages from backend while forwarding requests to next Servlet or UI page
+     */
+    public static final String PARAM_MESSAGE = "message";
 }

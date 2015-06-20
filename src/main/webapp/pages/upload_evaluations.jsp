@@ -7,10 +7,11 @@
     edu.neu.ccis.sms.dao.users.*,
     edu.neu.ccis.sms.entity.categories.*,
     edu.neu.ccis.sms.entity.users.*"%>
-
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <jsp:include page="member/templates/header.jsp" />
 <%
+    // Check if there is any message to show in page
+    String message = (String) request.getAttribute("message");
+
     // Get the current user id
     Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
     System.out.println("Session userId - " + userId);
@@ -28,7 +29,7 @@
     UserToMemberMappingDao userToMemberMappingDao = new UserToMemberMappingDaoImpl();
 
     RoleType role = userToMemberMappingDao.getUsersRoleForMember(userId, activeMemberId);
-    if(role == null || role != RoleType.SUBMITTER){
+    if(role == null || role == RoleType.SUBMITTER){
         response.sendRedirect("dashboard.jsp");
     }
 
@@ -52,9 +53,10 @@
         <div>Upload Evaluations for <%=activeMemberName%> - <%=submittableMemberName%></div>
         <hr />
         <form action="<%=request.getContextPath()%>/UploadEvaluations" method="POST">
-            <label style="width:150px;display:inline-block;" for="maxGrades">Maximum Grades (Out of total)</label>
+            <label style="width:300px;display:inline-block;" for="maxGrades">Maximum Grades (Out of total)</label>
             <input type="text" id="maxGrades" name="maxGrades" value="100" size=30 maxlength=5>
             <input type="hidden" id="submittableMemberId" name="submittableMemberId" value="<%=submittableMemberId%>">
+            <br/>
             <br/>
             <table cellpadding="3" border="2">
                 <tr>
@@ -74,19 +76,26 @@
                     }
                 %>
             </table>
+            <br/>
             <table>
                 <% if (!submittersToEvaluate.isEmpty()){%>
-	                <tr>
-	                    <td align=center colspan=2>
-	                        <input type='submit' style="width: 150px; display: inline-block;" id="uploadEvals" value='Upload Evaluations' />
-	                    </td>
-	                </tr>
+                    <tr>
+                        <td align=center colspan=2>
+                            <input type='submit' style="width: 150px; display: inline-block;" id="uploadEvals" value='Upload Evaluations' />
+                        </td>
+                    </tr>
                 <%} else {%>
                     <tr> 
                         <td align=center colspan=2> There are no submissions to evaluate for you! </td> 
                     </tr>
                 <% }%>
             </table>
+            <br/>
+	        <% 
+	            if(message != null) {
+	                out.println("<div>"+message+"</div><br/>");
+	            }
+	        %>
         </form>
         <hr />
     </body>

@@ -20,6 +20,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
 
+import edu.neu.ccis.sms.constants.JspViews;
+import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.users.UserDao;
 import edu.neu.ccis.sms.dao.users.UserDaoImpl;
@@ -138,18 +140,24 @@ public class DocumentRetrievalServlet extends HttpServlet {
             } else {
                 // Send the error message to UI page to show - that there are no submissions to evaluate or Conductor is
                 // yet to disseminate the submissions for evaluations
-                response.sendRedirect("pages/document_retrieval.jsp");
+                LOGGER.info("There are no submission available for evaluation."
+                        + "<br/>Either Conductor has not yet allocated the evaluators"
+                        + " OR there are no submissions allocated to you.");
+                request.setAttribute(RequestKeys.PARAM_MESSAGE, "There are no submission available for evaluation."
+                        + "<br/>Either Conductor has not yet allocated the evaluators"
+                        + " OR there are no submissions allocated to you.");
+                request.getRequestDispatcher(JspViews.DOWNLOAD_SUBMISSIONS_VIEW).forward(request, response);
             }
 
             // TODO Cleanup the files which were downloaded
             FileUtils.deleteDirectory(solutionsDir);
             LOGGER.info("Submissions downloaded successfully for evaluation!!");
         } catch (final Exception ex) {
-            request.setAttribute("message",
-                    "Failed to download submissions zip file for evaluation : " + ex.getMessage());
-            // redirects client to message page
+            ex.printStackTrace();
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Failed to download submissions zip file for evaluation. Please try again or contact administrator.");
             LOGGER.info("Failed to download submissions zip file for evaluation : " + ex.getMessage());
-            response.sendRedirect("pages/error.jsp");
+            request.getRequestDispatcher(JspViews.DOWNLOAD_SUBMISSIONS_VIEW).forward(request, response);
         }
     }
 

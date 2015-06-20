@@ -14,6 +14,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <jsp:include page="member/templates/header.jsp" />
 <%
+	// Check if there is any message to show in page
+	String message = (String) request.getAttribute("message");
+
 	// Get the current user id
 	Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
 	System.out.println("Session userId - " + userId);
@@ -62,6 +65,12 @@
                 </tr>
             </table>
         </form>
+        <br/>
+        <% 
+            if(message != null) {
+                out.println("<div>"+message+"</div><br/>");
+            }
+        %>
         <br/>
         <a href="<%=request.getContextPath()%>/ViewSubmittableMember?memberId=<%=submittableMemberId%>">Back to <%=submittableMemberName%></a>
         &nbsp;&nbsp;

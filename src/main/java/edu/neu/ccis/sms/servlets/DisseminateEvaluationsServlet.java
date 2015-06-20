@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.neu.ccis.sms.constants.JspViews;
+import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.categories.MemberDao;
 import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
@@ -171,15 +173,16 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                 doc.setFinalEvaluation(finalEval);
                 docDao.updateDocument(doc);
             }
-
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Disseminated evaluations successfully by calculating final evaluations for all submissions.");
             LOGGER.info("Successfully calculated final evaluations for Member! - " + submittableMemberId);
-            // redirects client to message page
-            response.sendRedirect("pages/success.jsp");
         } catch (Exception ex) {
-            request.setAttribute("message", "Failed to disseminate evaluations : " + ex.getMessage());
+            ex.printStackTrace();
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Failed to disseminate evaluations. Please retry or contact administrator.");
             // redirects client to message page
             LOGGER.info("Failed to disseminate evaluations : " + ex.getMessage());
-            response.sendRedirect("pages/error.jsp");
         }
+        request.getRequestDispatcher(JspViews.DISSEMINATE_EVALUATIONS_VIEW).forward(request, response);
     }
 }

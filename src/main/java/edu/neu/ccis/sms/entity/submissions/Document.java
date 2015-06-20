@@ -26,8 +26,8 @@ import edu.neu.ccis.sms.entity.categories.Member;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Hibernate Entity bean class for Document; Encompasses a submission done by
- * user, resubmissions for a given member just update the old Document instance
+ * Hibernate Entity bean class for Document; Encompasses a submission done by user, resubmissions for a given member
+ * just update the old Document instance
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -169,6 +169,10 @@ public class Document implements Serializable, Comparable<Document> {
 
     public Date getSubmittedOnTimestamp() {
         return submittedOnTimestamp;
+    }
+
+    public void setSubmittedOnTimestamp(Date submittedOnTimestamp) {
+        this.submittedOnTimestamp = submittedOnTimestamp;
     }
 
     public String getFilename() {

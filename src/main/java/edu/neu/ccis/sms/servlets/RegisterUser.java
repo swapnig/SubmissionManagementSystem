@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import edu.neu.ccis.sms.constants.JspViews;
+import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.dao.users.UserDao;
 import edu.neu.ccis.sms.dao.users.UserDaoImpl;
 import edu.neu.ccis.sms.entity.users.User;
@@ -72,7 +74,9 @@ public class RegisterUser extends HttpServlet {
         userDao.saveUser(one);
 
         LOGGER.info("User registered successfully! - " + emailId);
-        response.sendRedirect("pages/success.jsp");
+        request.setAttribute(RequestKeys.PARAM_MESSAGE, "User registered successfully. Please login to start using SMS!");
+        // redirects client to message page
+        request.getRequestDispatcher(JspViews.REGISTER_USER_VIEW).forward(request, response);
     }
 
     /**

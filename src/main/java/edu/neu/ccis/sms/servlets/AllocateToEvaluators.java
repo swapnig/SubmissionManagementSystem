@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import edu.neu.ccis.sms.constants.JspViews;
+import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.categories.MemberDao;
 import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
@@ -90,8 +92,8 @@ public class AllocateToEvaluators extends HttpServlet {
             // If User is not a Conductor for this Member, then Show Error
             if (!isConductorRole) {
                 LOGGER.info("User is not conductor on given registerable member, Cannot access this page!");
-                request.setAttribute("message", "Invalid page access!");
-                response.sendRedirect("pages/error.jsp");
+                request.setAttribute(RequestKeys.PARAM_MESSAGE, "Invalid page access!");
+                getServletContext().getRequestDispatcher(JspViews.ERROR_PAGE_VIEW).forward(request, response);
                 return;
             }
 
@@ -171,15 +173,14 @@ public class AllocateToEvaluators extends HttpServlet {
             }
 
             LOGGER.info("Allocating Evaluators to Submitters done successfully!");
-
-            // redirects client to message page
-            response.sendRedirect("pages/success.jsp");
+            request.setAttribute(RequestKeys.PARAM_MESSAGE, "Successfully allocated evaluators to submissions!");
         } catch (Exception ex) {
-            request.setAttribute("message", "Unable to allocate evaluators : " + ex.getMessage());
-            // redirects client to message page
+            ex.printStackTrace();
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Failed to allocate evaluators for submissions. Please retry or contact administrator.");
             LOGGER.info("Unable to allocate evaluators : " + ex.getMessage());
-            response.sendRedirect("pages/error.jsp");
         }
+        request.getRequestDispatcher(JspViews.ALLOCATE_EVALUATORS_VIEW).forward(request, response);
     }
 
     /**

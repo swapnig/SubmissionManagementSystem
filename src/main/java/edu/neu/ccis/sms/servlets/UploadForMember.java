@@ -2,6 +2,7 @@ package edu.neu.ccis.sms.servlets;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -21,6 +22,8 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FilenameUtils;
 
+import edu.neu.ccis.sms.constants.JspViews;
+import edu.neu.ccis.sms.constants.RequestKeys;
 import edu.neu.ccis.sms.constants.SessionKeys;
 import edu.neu.ccis.sms.dao.categories.MemberDao;
 import edu.neu.ccis.sms.dao.categories.MemberDaoImpl;
@@ -74,7 +77,7 @@ public class UploadForMember extends HttpServlet {
         if (!ServletFileUpload.isMultipartContent(request)) {
             // if not, we stop here
             LOGGER.info("Error: Form must have enctype=multipart/form-data.");
-            getServletContext().getRequestDispatcher("/pages/error.jsp").forward(request, response);
+            getServletContext().getRequestDispatcher(JspViews.ERROR_PAGE_VIEW).forward(request, response);
             return;
         }
 
@@ -177,8 +180,6 @@ public class UploadForMember extends HttpServlet {
                 // member already - meaning is it a resubmission, then get the
                 // document reference
                 // Get the submission document reference for given memberId
-                // Document smsDoc = submitter.getSubmissionDocumentForMemberId(memberIdToUploadFor);
-
                 Document smsDoc = userDao.getSubmissionDocumentForMemberIdByUserId(userId, memberIdToUploadFor);
 
                 // If there is no previous submission by this user for this
@@ -201,6 +202,8 @@ public class UploadForMember extends HttpServlet {
 
                     docDao.saveDocument(smsDoc);
                     LOGGER.info("Saved user's first submission into CMS!");
+                    request.setAttribute(RequestKeys.PARAM_MESSAGE, "Your submission received successfully by system."
+                            + "<br/>Document Name - " + fileName + "<br/>Received on - " + smsDoc.getSubmittedOnTimestamp());
                 } else {
                     // Resubmission scenario - get previous Document reference
                     // and update it with newer version
@@ -218,23 +221,31 @@ public class UploadForMember extends HttpServlet {
                         smsDoc.setCmsDocVersion(doc.getVersionLabel());
                         smsDoc.setContentType((String) doc.getPropertyValue("cmis:contentStreamMimeType"));
                         smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
+                        smsDoc.setSubmittedOnTimestamp(new Date());
 
                         docDao.updateDocument(smsDoc);
                         LOGGER.info("Saved user's resubmission into CMS!");
+                        request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                                "Your resubmission received successfully by system." + "<br/>Document Name - " + fileName
+                                        + "<br/>Received on - " + smsDoc.getSubmittedOnTimestamp());
                     } else {
                         LOGGER.info("Failed to save user's resubmission into CMS!");
-                        throw new Exception("Unable to update document version!, inconsistency found with CMS!");
+                        request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                                "Failed to save your resubmission, Please retry or contact administrator.");
                     }
                 }
                 LOGGER.info("Successfully uploaded the document for Member! - " + doc.getPaths().get(0));
+            } else {
+                request.setAttribute(RequestKeys.PARAM_MESSAGE, "Failed to save your submission; "
+                        + "some problem with receiveing your submission, Please retry or contact administrator.");
             }
-            // redirects client to message page
-            response.sendRedirect("pages/submit_to_member.jsp");
-        } catch (Exception ex) {
-            request.setAttribute("message", "Failed to save the user's submissions : " + ex.getMessage());
-            // redirects client to message page
+        } catch (final Exception ex) {
+            ex.printStackTrace();
             LOGGER.info("Failed to save the user's submissions : " + ex.getMessage());
-            response.sendRedirect("pages/error.jsp");
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Failed to save your submission. Please retry or contact administrator.");
         }
+        // redirects client to message page
+        request.getRequestDispatcher(JspViews.SUBMIT_TO_MEMBER_VIEW).forward(request, response);
     }
 }
