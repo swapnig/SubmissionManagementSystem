@@ -1,42 +1,76 @@
-function postDataUsingAjax (url, data, responseElementId) {
-	console.log(data);
-	var posting = $.post(url, data);
+/**
+ * Set of generic utility functions used by the entire application to make ajax calls
+ * @author Swapnil Gupta
+ * @date May 30, 2015
+ * 
+ */
+
+
+/**
+ * Generic function for making a post request using ajax
+ * @param url String containing the URL to which the request is sent
+ * @param data Data to be sent to the server, Object must be Key/Value pairs.
+ * @param responseElementId String containing Html element id of the div in which the response 
+ * 		  from the server is shown
+ * @param errorElementId String containing Html element id of the div in which the error 
+ * 		  from the request to server should be shown
+ */
+function postDataUsingAjax (url, data, responseElementId, errorElementId) {
+	var postRequest = $.post(url, data);
 	
-	posting.done( function(responseData) {
+	// Populate the server response in the given response element
+	postRequest.done( function(responseData) {
 	    $('#' + responseElementId).html(responseData);
+	});
+	
+	// Notify user that a request to the server failed
+	postRequest.error( function(responseData) {
+	    $('#' + errorElementId).html("<font size='4' color='red'>There was issue processing the request</font>");
 	});
 }
 
+
+/**
+ * Generic function for submitting a html form as a post request using ajax
+ * @param url A string containing the URL to which the request is sent
+ * @param serializedFormData Data to be sent to the server, Object must be Key/Value pairs.
+ * @param responseElementId Html element id of the div in which the response from the server is shown
+ */
 function postFormUsingAjax (url, serializedFormData, responseElementId) {
-	console.log(serializedFormData);
-    var posting = $.post(url, serializedFormData);
+    var postRequest = $.post(url, serializedFormData);
 
-    posting.done( function(data) {
-        $('#' + responseElementId).empty().append(data + ' using ' + url).show();
+    // Populate the server response in the given response element
+    postRequest.done( function(data) {
+    	$('#' + responseElementId).empty().append(data).show();
     });
+    
+    // Notify user that a request to the server failed
+    postRequest.error( function(responseData) {
+		$('#' + responseElementId).empty().append("<font size='4' color='red'>" +
+				"There was issue processing the request. Try again or contact administrator</font>").show();
+	});
 }
 
-// Build request data object from an array of data request parameters
-function buildRequestData(dataArray) {
-	console.log(dataArray);
-	var dataObject = {};
-	for (var index in dataArray) {
-		var data = dataArray[index];
-		dataObject[index] = data;
-	}
-	console.log(dataObject);
-}
 
-function foo() {
-  for (var i = 0; i < arguments.length; i++) {
-    alert(arguments[i]);
-  }
-}
-
+/**
+ * Generic function for making a get request using ajax
+ * @param url A string containing the URL to which the request is sent
+ * @param data Data to be sent to the server, Object must be Key/Value pairs.
+ * @param responseElementId String containing Html element id of the div in which the response 
+ * 		  from the server is shown
+ * @param errorElementId String containing Html element id of the div in which the error from the 
+ * 		  request to server should be shown
+ */
 function getDataUsingAjax (requestUrl, data, responseElementId) {
-	var getting = $.get(requestUrl, data);
+	var getRequest = $.get(requestUrl, data);
 	
-	getting.done( function(responseData) {
+	// Populate the server response in the given response element
+	getRequest.done( function(responseData) {
+	    $('#' + responseElementId).html(responseData);
+	});
+	
+	// Notify user that a request to the server failed
+	getRequest.error( function(responseData) {
 	    $('#' + responseElementId).html(responseData);
 	});
 }
