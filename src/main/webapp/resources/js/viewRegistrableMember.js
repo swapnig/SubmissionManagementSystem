@@ -26,10 +26,12 @@ $(document).ready(function() {
 		if( $('#memberForm :text').prop('disabled') ) {
 			 $('#memberId').prop("value", $('#memberID').val());
 		     $('#memberForm :text').prop('disabled', false);
+		     $('#memberForm textarea').attr('disabled', false);
 		     $('#saveMemberAttributes').show();
 		     $('#registerUserWithMemberForm').show();
 	    } else{
 	         $('#memberForm :text').prop('disabled', true);
+	         $('#memberForm textarea').attr('disabled', true);
 	         $('#saveMemberAttributes').hide();
 	         $('#registerUserWithMemberForm').hide();
 	         $('#registerUserWithMemberForm')[0].reset();

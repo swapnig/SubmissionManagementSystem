@@ -194,7 +194,7 @@ function getMembersAttributes(memberId, memberName) {
 	
 	postRequest.done( function(responseData) {
 	    $('#memberFields').html(responseData);
-	    $('#editMemberAttributes').hide();
+	    // $('#editMemberAttributes').hide();
 	    $('#memberLegend').html("<strong>" + memberName + " details </strong>");
 	    attachEventHandlers(memberId);
 		$('#memberForm').show();
@@ -228,13 +228,15 @@ function attachEventHandlers(memberId) {
 		if( $('#memberForm :text').prop('disabled') ) {
 			 $('#memberId').prop("value", memberId);
 		     $('#memberForm :text').prop('disabled', false);
+		     $('#memberForm textarea').attr('disabled', false);
 		     $('#saveMemberAttributes').show();
-		     $('#deleteMember').show();
+		     $('#toggleMemberActivation').show();
 		     $('#registerUserWithMemberForm').show();
 	    } else{
 	         $('#memberForm :text').prop('disabled', true);
+	         $('#memberForm textarea').attr('disabled', true);
 	         $('#saveMemberAttributes').hide();
-	         $('#deleteMember').hide();
+	         $('#toggleMemberActivation').hide();
 	         $('#registerUserWithMemberForm').hide();
 	         $('#registerUserWithMemberForm')[0].reset();
 	    }

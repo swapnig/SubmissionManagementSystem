@@ -20,11 +20,13 @@ $(document).ready(function() {
 		 * 3. Show form to register user with member
 		 */
 		if( $('#memberForm :text').prop('disabled') ) {
-			$('#memberId').prop("value", $('#memberID').val());
+			 $('#memberId').prop("value", $('#memberID').val());
 		     $('#memberForm :text').prop('disabled', false);
+		     $('#memberForm textarea').attr('disabled', false);
 		     $('#saveMemberAttributes').show();
 	    } else{
 	         $('#memberForm :text').prop('disabled', true);
+	         $('#memberForm textarea').attr('disabled', true);
 	         $('#saveMemberAttributes').hide();
 	    }
     });
