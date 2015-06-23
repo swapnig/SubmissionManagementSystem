@@ -1,10 +1,47 @@
+/*
+	@author Swapnil Gupta
+	@date Jun 15, 2015 
+*/
+
+html, body { height: 100%; }
+
+#header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+
+#nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    padding:5px; 
+}
+
+#section {
+    float:left;
+    padding:10px; 
+}
+
+#result {
+	font-family : Courier New Courier monospace;
+}
+
+#footer {
+    background-color:black;
+    color:white;
+    clear:both;
+    text-align:center;
+    padding:5px; 
+}
+
 .container {
    height: auto;
    overflow: hidden;
 }
 
 .left {
-    width: 250px;
+    width: 300px;
     float: left;  
 }
 
@@ -15,14 +52,14 @@
     overflow: hidden;
 }
 
-.smallFieldSet {
-	width : 200px;
+.fieldSet {
+	width : 100%;
 }
 
-.normalFieldSet {
-	width : 400px;
+.leftFieldSet {
+	width : 81%;
 }
 
-.largeFieldSet {
-	width : 600px;
+.rightFieldSet {
+	width : 90%;
 }​​
