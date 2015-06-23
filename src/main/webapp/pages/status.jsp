@@ -16,7 +16,7 @@
     edu.neu.ccis.sms.entity.users.User,
     edu.neu.ccis.sms.entity.users.RoleType"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<jsp:include page="member/templates/header.jsp" />
+<jsp:include page="layout/header.jsp" />
 <%
 	/* Load all the submittable Member Details */
 	Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);

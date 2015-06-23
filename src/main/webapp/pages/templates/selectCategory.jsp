@@ -1,6 +1,6 @@
 <%@ taglib  uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div id="selectCategory">
-	<fieldset style="width:400px">
+	<fieldset class="fieldSet">
 		<legend><strong>Select category</strong></legend>
 		<table>
 			<tr>

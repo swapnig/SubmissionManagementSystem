@@ -1,6 +1,6 @@
 <%@ taglib  uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<form id="registerUserWithMemberForm" action="${pageContext.request.contextPath}/AddRoleToMember" method="POST" style="display:none">
-	<fieldset id="registerUserWithMemberFieldSet" style="width:400px">
+<form id="registerUserWithMemberForm" style="display:none">
+	<fieldset id="registerUserWithMemberFieldSet" class="fieldSet">
 		<legend id="registerUserWithMemberLegend"><strong>Add role for member</strong></legend>  
 	    <table id="registerUserWithMemberFields">
 	    	<tr>

@@ -10,7 +10,7 @@
     edu.neu.ccis.sms.entity.categories.Member,
     edu.neu.ccis.sms.entity.users.RoleType"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<jsp:include page="member/templates/header.jsp" />
+<jsp:include page="layout/header.jsp" />
 <%
     // Check if there is any message to show in page
     String message = (String) request.getAttribute("message");

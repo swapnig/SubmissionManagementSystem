@@ -14,7 +14,7 @@
 
     System.out.println("Total Number of toiSet - "+toiSet.size());
 %>
-<jsp:include page="member/templates/header.jsp" />
+<jsp:include page="layout/header.jsp" />
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">

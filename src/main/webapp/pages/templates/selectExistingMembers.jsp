@@ -1,6 +1,6 @@
 <%@ taglib  uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <div id="selectExistingMembers" style="display:none">
-	<fieldset style="width:400px">
+	<fieldset class="fieldSet">
 		<legend><strong>Select parent members</strong></legend>
 		<!-- Dynamically generate id <category-name>List for drop down, 
 		     listing all available members for current category (populated using ajax)-->

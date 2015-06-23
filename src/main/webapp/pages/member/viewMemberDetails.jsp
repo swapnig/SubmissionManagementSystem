@@ -16,15 +16,20 @@
 		</script>
 		<script src="${pageContext.request.contextPath}/resources/js/ajaxRequest.js" type="text/javascript"></script>
 		<script src="${pageContext.request.contextPath}/resources/js/viewMemberDetails.js" type="text/javascript"></script>
+		<link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
 		<div id="container">
-			<jsp:include page="templates/header.jsp" />
-			<jsp:include page="templates/selectCategory.jsp" /><br/>
-			<jsp:include page="templates/selectExistingMembers.jsp" /><br/>
-			<jsp:include page="templates/memberForm.jsp" /><br/>
-			<jsp:include page="templates/registerOtherForMemberForm.jsp" /><br/>
-			<div id="result"></div>
+			<jsp:include page="../layout/header.jsp" />
+			<jsp:include page="../layout/nav.jsp" />
+			<div id="section">
+				<jsp:include page="../templates/selectCategory.jsp" /><br/>
+				<jsp:include page="../templates/selectExistingMembers.jsp" /><br/>
+				<jsp:include page="../templates/memberForm.jsp" /><br/>
+				<jsp:include page="../templates/registerOtherForMemberForm.jsp" /><br/>
+				<div id="result"></div>
+			</div>
+			<jsp:include page="../layout/footer.jsp" />
 		</div>
 	</body>
 </html>

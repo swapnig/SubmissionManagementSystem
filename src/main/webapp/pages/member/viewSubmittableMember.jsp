@@ -25,63 +25,72 @@
 		<link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
-		<div class="container">
-		<jsp:include page="templates/header.jsp" />
-		    <div class="left">
-		        <c:if test="${CONDUCTOR == 'true'}">
-					<fieldset id="conductorFieldSet" class="smallFieldSet">
-						<legend id="conductorLegend"><strong>Conductor links</strong></legend>
-						<!-- Add links to pages which should be accessible to Evaluators role only -->
-						<ul>
-                            <li><a href="${pageContext.request.contextPath}/pages/allocate_to_evaluators.jsp">Allocate Evaluators (for grading submissions)</a></li>
-                            <li><a href="${pageContext.request.contextPath}/pages/disseminate_evaluations.jsp">Disseminate Evaluations (to students)</a></li>
-                        </ul>
-					</fieldset>
-				</c:if>
-				<c:if test="${EVALUATOR == 'true'}">
-					<fieldset id="evaluatorFieldSet" class="smallFieldSet">
-						<legend id="evaluatorLegend"><strong>Evaluator links</strong></legend>
-						<!-- Add links to pages which should be accessible to Evaluators role only -->
-						<ul>
-                            <li><a href="${pageContext.request.contextPath}/pages/document_retrieval.jsp">Download submissions for grading</a></li>
-                            <li><a href="${pageContext.request.contextPath}/pages/upload_evaluations.jsp">Upload Evaluations</a></li>
-                        </ul>
-					</fieldset>
-				</c:if>
-		    </div>
-		    <div class="right">
-		        <form id="memberForm" action="" method="GET">
-					<fieldset id="memberFormFieldSet" class="normalFieldSet">
-						<legend id="memberLegend"><strong>${memberName} details</strong></legend>  
-					    <table id="memberFields">
-					    	<c:forEach items="${memberAttributes}" var="category">
-					    	<tr>
-								<td><label for="${category.name}">${category.name}</label></td>
-								<td><input name="${category.name}" type="text" value="${category.value}" disabled/></td>
-							</tr>
-						    </c:forEach>
-						</table>
-						<c:if test="${CONDUCTOR == 'true'}">
-							<input id="editMemberAttributes" type="button" value="Edit"/>
-							<input type="submit" id="saveMemberAttributes" value="Update" style='display:none'/>
-						</c:if>
-						
-						<input type="hidden" id="memberID" name="memberId" value="${memberId}" style='display:none'/>
-					</fieldset>
-				</form>
-				<br/>
-				<jsp:include page="templates/registerOtherForMemberForm.jsp"/><br/>
-				
-				<c:if test="${SUBMITTER == 'true'}">
-					<fieldset id="reviewerFieldSet" class="normalFieldSet">
-						<legend id="reviewerLegend"><strong>Submitter links</strong></legend>
-						<ul>
-                            <li><a href="${pageContext.request.contextPath}/pages/submit_to_member.jsp">Upload Submission</a></li>
-                        </ul>
-					</fieldset>
-				</c:if>
-				<div id="result"></div>
-		    </div>
+		<div id="container">
+			<jsp:include page="../layout/header.jsp" />
+			<jsp:include page="../layout/nav.jsp" />
+			<div id="section">
+				<div class="left">
+			        <c:if test="${CONDUCTOR == 'true'}">
+						<fieldset id="conductorFieldSet" class="leftFieldSet">
+							<legend id="conductorLegend"><strong>Conductor links</strong></legend>
+							<!-- Add links to pages which should be accessible to Evaluators role only -->
+							<ul>
+	                            <li><a href="${pageContext.request.contextPath}/pages/allocate_to_evaluators.jsp">Allocate Evaluators (for grading submissions)</a></li>
+	                            <li><a href="${pageContext.request.contextPath}/pages/disseminate_evaluations.jsp">Disseminate Evaluations (to students)</a></li>
+	                        </ul>
+						</fieldset>
+					</c:if>
+					<c:if test="${EVALUATOR == 'true'}">
+						<fieldset id="evaluatorFieldSet" class="leftFieldSet">
+							<legend id="evaluatorLegend"><strong>Evaluator links</strong></legend>
+							<!-- Add links to pages which should be accessible to Evaluators role only -->
+							<ul>
+	                            <li><a href="${pageContext.request.contextPath}/pages/document_retrieval.jsp">Download submissions for grading</a></li>
+	                            <li><a href="${pageContext.request.contextPath}/pages/upload_evaluations.jsp">Upload Evaluations</a></li>
+	                        </ul>
+						</fieldset>
+					</c:if>
+					<c:if test="${SUBMITTER == 'true'}">
+						<fieldset id="reviewerFieldSet" class="leftFieldSet">
+							<legend id="reviewerLegend"><strong>Submitter links</strong></legend>
+							<ul>
+	                            <li><a href="${pageContext.request.contextPath}/pages/submit_to_member.jsp">Upload Submission</a></li>
+	                        </ul>
+						</fieldset>
+					</c:if>
+			    </div>
+			    <div class="right">
+			        <form id="memberForm" action="" method="GET">
+						<fieldset id="memberFormFieldSet" class="rightFieldSet">
+							<legend id="memberLegend"><strong>${memberName} details</strong></legend>  
+						    <table id="memberFields">
+						    	<c:forEach items="${memberAttributes}" var="category" varStatus="loop">
+						    	<tr>
+									<td style="width:1px"><label for="${category.name}">${category.name}</label></td>
+									<c:choose>
+										<c:when test="${loop.index == 0}">
+									    	<td><input name="${category.name}" type="text" value="${category.value}" disabled/></td>
+									  	</c:when>
+									  	<c:otherwise>
+									    	<td><textarea name="${category.name}" disabled>"${category.value}"</textarea></td>
+									  	</c:otherwise>
+									</c:choose>
+								</tr>
+							    </c:forEach>
+							</table>
+							<c:if test="${CONDUCTOR == 'true'}">
+								<input id="editMemberAttributes" type="button" value="Edit"/>
+								<input type="submit" id="saveMemberAttributes" value="Update" style='display:none'/>
+							</c:if>
+							
+							<input type="hidden" id="memberID" name="memberId" value="${memberId}" style='display:none'/>
+						</fieldset>
+					</form>
+					<br/>
+					<div id="result"></div>
+			    </div>
+			</div>
+			<jsp:include page="../layout/footer.jsp" />
 		</div>
 	</body>
 </html>

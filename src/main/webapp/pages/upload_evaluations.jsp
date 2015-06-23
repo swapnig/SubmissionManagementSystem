@@ -7,7 +7,7 @@
     edu.neu.ccis.sms.dao.users.*,
     edu.neu.ccis.sms.entity.categories.*,
     edu.neu.ccis.sms.entity.users.*"%>
-<jsp:include page="member/templates/header.jsp" />
+<jsp:include page="layout/header.jsp" />
 <%
     // Check if there is any message to show in page
     String message = (String) request.getAttribute("message");
