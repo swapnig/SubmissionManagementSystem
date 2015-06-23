@@ -17,6 +17,7 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
  * @lastUpdate 7-June-2015
  */
 public class CategoryDaoImpl implements CategoryDao {
@@ -45,7 +46,7 @@ public class CategoryDaoImpl implements CategoryDao {
         return currentSession;
     }
 
-    public void setCurrentSession(Session currentSession) {
+    public void setCurrentSession(final Session currentSession) {
         this.currentSession = currentSession;
     }
 
@@ -53,13 +54,13 @@ public class CategoryDaoImpl implements CategoryDao {
         return currentTransaction;
     }
 
-    public void setCurrentTransaction(Transaction currentTransaction) {
+    public void setCurrentTransaction(final Transaction currentTransaction) {
         this.currentTransaction = currentTransaction;
     }
 
     /** Save a new category */
     @Override
-    public void saveCategory(Category newCategory) {
+    public void saveCategory(final Category newCategory) {
         openCurrentSessionwithTransaction();
         getCurrentSession().save(newCategory);
         closeCurrentSessionwithTransaction();
@@ -67,14 +68,14 @@ public class CategoryDaoImpl implements CategoryDao {
 
     /** Update category details for an already existing category */
     @Override
-    public void updateCategory(Category modifiedCategory) {
+    public void updateCategory(final Category modifiedCategory) {
         openCurrentSessionwithTransaction();
         getCurrentSession().update(modifiedCategory);
         closeCurrentSessionwithTransaction();
     }
 
     /** Find category by its id */
-    public Category findByCategoryId(Long id) {
+    public Category findByCategoryId(final Long id) {
         openCurrentSessionwithTransaction();
         Category category = (Category) getCurrentSession().get(Category.class, id);
         closeCurrentSessionwithTransaction();
@@ -83,11 +84,11 @@ public class CategoryDaoImpl implements CategoryDao {
 
     /** Get category by its name, as category names are unique for an installation */
     @SuppressWarnings("unchecked")
-    public Category findByCategoryName(String categoryName) {
+    public Category findByCategoryName(final String categoryName) {
         openCurrentSessionwithTransaction();
         Query query = getCurrentSession().createQuery("from Category WHERE name = :categoryName");
         query.setParameter("categoryName", categoryName);
-        List<Category> categories = (List<Category>) query.list();
+        List<Category> categories = query.list();
         closeCurrentSessionwithTransaction();
         if (categories == null || categories.isEmpty()) {
             return null;
@@ -98,7 +99,7 @@ public class CategoryDaoImpl implements CategoryDao {
 
     /** Delete a given category */
     @Override
-    public void deleteCategory(Category category) {
+    public void deleteCategory(final Category category) {
         openCurrentSessionwithTransaction();
         getCurrentSession().delete(category);
         closeCurrentSessionwithTransaction();
@@ -109,7 +110,7 @@ public class CategoryDaoImpl implements CategoryDao {
     @SuppressWarnings("unchecked")
     public List<Category> getAllCategories() {
         openCurrentSessionwithTransaction();
-        List<Category> categories = (List<Category>) getCurrentSession().createQuery("from Category").list();
+        List<Category> categories = getCurrentSession().createQuery("from Category").list();
         closeCurrentSessionwithTransaction();
         return categories;
     }
@@ -126,13 +127,13 @@ public class CategoryDaoImpl implements CategoryDao {
      * Get Category by its Category-Id
      */
     @Override
-    public Category getCategory(Long id) {
+    public Category getCategory(final Long id) {
         return findByCategoryId(id);
     }
 
     /** Get Category by its Category-Name; as category names are unique per installation */
     @Override
-    public Category getCategoryByName(String categoryName) {
+    public Category getCategoryByName(final String categoryName) {
         return findByCategoryName(categoryName);
     }
 }

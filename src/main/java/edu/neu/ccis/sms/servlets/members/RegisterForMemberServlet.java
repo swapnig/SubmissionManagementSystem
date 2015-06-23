@@ -1,4 +1,4 @@
-package edu.neu.ccis.sms.servlets.members.register;
+package edu.neu.ccis.sms.servlets.members;
 
 import java.io.IOException;
 
@@ -21,21 +21,21 @@ import edu.neu.ccis.sms.constants.JspViews;
  */
 @WebServlet("/RegisterForMember")
 public class RegisterForMemberServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public RegisterForMemberServlet() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public RegisterForMemberServlet() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		request.getRequestDispatcher(JspViews.REGISTER_FOR_MEMBER_VIEW).forward(request, response);
-	}
+    /**
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     */
+    @Override
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher(JspViews.REGISTER_FOR_MEMBER_VIEW).forward(request, response);
+    }
 }

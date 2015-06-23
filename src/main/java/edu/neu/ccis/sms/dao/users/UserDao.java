@@ -13,6 +13,7 @@ import edu.neu.ccis.sms.entity.users.User;
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
  * @lastUpdate 10-June-2015
  */
 public interface UserDao {

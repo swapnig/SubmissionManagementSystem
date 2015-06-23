@@ -12,6 +12,13 @@ import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
+/**
+ * 
+ * @author Pramod R. Khare
+ * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
+ *
+ */
 public class UserToMemberMappingDaoImpl implements UserToMemberMappingDao {
     private Session currentSession;
     private Transaction currentTransaction;

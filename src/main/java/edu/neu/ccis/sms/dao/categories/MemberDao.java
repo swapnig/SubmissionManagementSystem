@@ -10,9 +10,9 @@ import edu.neu.ccis.sms.entity.users.User;
 /**
  * DAO interface for Member Entity bean; Provides access methods for accessing
  * 
- * @author Pramod R. Khare, Swapnil Gupta
- * @LastModifiedBy Pramod Khare
+ * @author Pramod R. Khare
  * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
  * @lastUpdate 10-June-2015
  */
 public interface MemberDao {

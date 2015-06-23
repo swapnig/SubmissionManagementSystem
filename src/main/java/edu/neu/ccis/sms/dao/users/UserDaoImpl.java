@@ -23,6 +23,7 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
  * @lastUpdate 10-June-2015
  */
 public class UserDaoImpl implements UserDao {
@@ -51,7 +52,7 @@ public class UserDaoImpl implements UserDao {
         return currentSession;
     }
 
-    public void setCurrentSession(Session currentSession) {
+    public void setCurrentSession(final Session currentSession) {
         this.currentSession = currentSession;
     }
 
@@ -59,12 +60,12 @@ public class UserDaoImpl implements UserDao {
         return currentTransaction;
     }
 
-    public void setCurrentTransaction(Transaction currentTransaction) {
+    public void setCurrentTransaction(final Transaction currentTransaction) {
         this.currentTransaction = currentTransaction;
     }
 
     @Override
-    public void saveUser(User newUser) {
+    public void saveUser(final User newUser) {
         openCurrentSessionwithTransaction();
         getCurrentSession().save(newUser);
         closeCurrentSessionwithTransaction();
@@ -72,14 +73,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void updateUser(User modifiedUser) {
+    public void updateUser(final User modifiedUser) {
         openCurrentSessionwithTransaction();
         getCurrentSession().update(modifiedUser);
         closeCurrentSessionwithTransaction();
         ;
     }
 
-    public User findByUserId(Long id) {
+    public User findByUserId(final Long id) {
         openCurrentSessionwithTransaction();
         User user = (User) getCurrentSession().get(User.class, id);
         closeCurrentSessionwithTransaction();
@@ -87,16 +88,17 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void deleteUser(User user) {
+    public void deleteUser(final User user) {
         openCurrentSessionwithTransaction();
         getCurrentSession().delete(user);
         closeCurrentSessionwithTransaction();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public List<User> getAllUser() {
         openCurrentSessionwithTransaction();
-        List<User> users = (List<User>) getCurrentSession().createQuery("from User").list();
+        List<User> users = getCurrentSession().createQuery("from User").list();
         closeCurrentSessionwithTransaction();
         return users;
     }
@@ -109,16 +111,16 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUser(Long id) {
+    public User getUser(final Long id) {
         return findByUserId(id);
     }
 
     @Override
-    public User findUserByUsername(String username) {
+    public User findUserByUsername(final String username) {
         openCurrentSessionwithTransaction();
         Query query = getCurrentSession().createQuery("from User WHERE username = :username");
         query.setParameter("username", username);
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;
@@ -128,13 +130,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User findUserByUsernameAndPassword(String username, String password) {
+    public User findUserByUsernameAndPassword(final String username, final String password) {
         openCurrentSessionwithTransaction();
         Query query = getCurrentSession().createQuery("from User WHERE username = :username AND password = :password");
         query.setParameter("username", username);
         query.setParameter("password", password);
 
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;
@@ -144,7 +146,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserToMemberMapping registerUserForMember(User user, Member member, RoleType role) {
+    public UserToMemberMapping registerUserForMember(final User user, final Member member, final RoleType role) {
         UserToMemberMapping mapping = new UserToMemberMapping();
         mapping.setMember(member);
         mapping.setUser(user);
@@ -157,7 +159,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public UserToMemberMapping registerUserForMember(Long userId, Long memeberId, RoleType role) {
+    public UserToMemberMapping registerUserForMember(final Long userId, final Long memeberId, final RoleType role) {
         User u1 = getUser(userId);
 
         MemberDao memDao = new MemberDaoImpl();
@@ -176,11 +178,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUserByEmailId(String userEmailId) {
+    public User getUserByEmailId(final String userEmailId) {
         openCurrentSessionwithTransaction();
         Query query = getCurrentSession().createQuery("from User WHERE email = :email");
         query.setParameter("email", userEmailId);
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;
@@ -195,7 +197,7 @@ public class UserDaoImpl implements UserDao {
         Query query = getCurrentSession().createQuery(
                 "select u from User u left join fetch u.submissions where u.id = :id");
         query.setParameter("id", userId);
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;
@@ -211,7 +213,8 @@ public class UserDaoImpl implements UserDao {
      * @param memberId
      * @return
      */
-    public Document getSubmissionDocumentForMemberIdByUserId(Long userId, Long memberIdToUploadFor) {
+    @Override
+    public Document getSubmissionDocumentForMemberIdByUserId(final Long userId, final Long memberIdToUploadFor) {
         User user = getUserByIdWithSubmissions(userId);
         if (user == null) {
             return null;
@@ -225,12 +228,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUserByIdWithDocumentsForEvaluation(Long userId) {
+    public User getUserByIdWithDocumentsForEvaluation(final Long userId) {
         openCurrentSessionwithTransaction();
         Query query = getCurrentSession().createQuery(
                 "select u from User u left join fetch u.documentsForEvaluation where u.id = :id");
         query.setParameter("id", userId);
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;
@@ -245,7 +248,7 @@ public class UserDaoImpl implements UserDao {
         Query query = getCurrentSession().createQuery(
                 "select u from User u left join fetch u.allocatedEvaluators where u.id = :id");
         query.setParameter("id", userId);
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;
@@ -260,7 +263,7 @@ public class UserDaoImpl implements UserDao {
         Query query = getCurrentSession().createQuery(
                 "select u from User u left join fetch u.submittersToEvaluate where u.id = :id");
         query.setParameter("id", userId);
-        List<User> users = (List<User>) query.list();
+        List<User> users = query.list();
         closeCurrentSessionwithTransaction();
         if (users == null || users.isEmpty()) {
             return null;

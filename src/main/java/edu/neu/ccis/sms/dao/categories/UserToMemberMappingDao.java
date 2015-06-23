@@ -5,6 +5,13 @@ import java.util.List;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 
+/**
+ * 
+ * @author Pramod R Khare
+ * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
+ *
+ */
 public interface UserToMemberMappingDao {
     /**
      * Get all user to member registrations for all available members;

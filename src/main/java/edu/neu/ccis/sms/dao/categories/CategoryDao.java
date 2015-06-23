@@ -9,6 +9,7 @@ import edu.neu.ccis.sms.entity.categories.Category;
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
  * @lastUpdate 7-June-2015
  */
 public interface CategoryDao {

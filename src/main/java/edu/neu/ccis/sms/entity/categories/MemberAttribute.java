@@ -48,8 +48,8 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
     }
 
     public MemberAttribute(final String attributeName, final String attributeValue, final Member member) {
-        this.name = attributeName;
-        this.value = attributeValue;
+        name = attributeName;
+        value = attributeValue;
         this.member = member;
     }
 
@@ -57,7 +57,7 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -65,7 +65,7 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -73,7 +73,7 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -81,23 +81,23 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
         return member;
     }
 
-    public void setMember(Member member) {
+    public void setMember(final Member member) {
         this.member = member;
     }
 
     @Override
-    public int compareTo(MemberAttribute o) {
-        return this.id.compareTo(o.getId());
+    public int compareTo(final MemberAttribute o) {
+        return id.compareTo(o.getId());
     }
 
     @Override
-    public boolean equals(Object anObject) {
+    public boolean equals(final Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof MemberAttribute) {
             MemberAttribute memAttr = (MemberAttribute) anObject;
-            return (this.id.equals(memAttr.id));
+            return id.equals(memAttr.id);
         }
         return false;
     }

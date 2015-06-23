@@ -25,8 +25,8 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  * DAO Implementation class for Member Entity bean
  * 
  * @author Pramod R. Khare
- * @LastModifiedBy
  * @date 9-May-2015
+ * @modifiedBy Swapnil Gupta
  * @lastUpdate 7-June-2015
  */
 public class MemberDaoImpl implements MemberDao {
