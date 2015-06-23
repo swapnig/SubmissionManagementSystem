@@ -67,6 +67,7 @@ public class MemberDaoImpl implements MemberDao {
         this.currentTransaction = currentTransaction;
     }
 
+    /** Save a new member; This implementation will not ad any default conductor role for a newly created member */
     @Override
     public void saveMember(final Member newMember) {
         openCurrentSessionwithTransaction();
@@ -76,6 +77,7 @@ public class MemberDaoImpl implements MemberDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /** Save a new member; adds a default conductor role for newly created member */
     @Override
     public void saveMember(final Member newMember, final User conductor) {
         openCurrentSessionwithTransaction();
@@ -87,6 +89,7 @@ public class MemberDaoImpl implements MemberDao {
         userDao.registerUserForMember(conductor.getId(), memberId, RoleType.CONDUCTOR);
     }
 
+    /** saveMember - overloaded method; Takes userId as a default conductor for a newly created member */
     @Override
     public void saveMember(final Member newMember, final Long conductorUserId) {
         openCurrentSessionwithTransaction();
@@ -135,6 +138,7 @@ public class MemberDaoImpl implements MemberDao {
         member.setCmsFolderPath(cmsMemberFolder.getPath());
     }
 
+    /** Update member details */
     @Override
     public void updateMember(final Member modifiedMember) throws Exception {
         openCurrentSessionwithTransaction();
@@ -150,6 +154,7 @@ public class MemberDaoImpl implements MemberDao {
         return member;
     }
 
+    /** Delete a given member */
     @Override
     public void deleteMember(final Member user) {
         openCurrentSessionwithTransaction();
@@ -157,6 +162,11 @@ public class MemberDaoImpl implements MemberDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /**
+     * Get all available members in current installation
+     * 
+     * @return
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<Member> getAllMembers() {
@@ -173,6 +183,7 @@ public class MemberDaoImpl implements MemberDao {
         }
     }
 
+    /** Get Member by its member id */
     @Override
     public Member getMember(final Long id) {
         return findByMemberId(id);
@@ -195,13 +206,21 @@ public class MemberDaoImpl implements MemberDao {
         }
     }
 
+    /**
+     * Get all members of a given category type and which are under given parent member in its hierarchy tree and which
+     * are currntly having MemberStatusType as Active
+     * 
+     * @param categoryId
+     * @param parentMemberId
+     * @return
+     */
     @Override
     @SuppressWarnings("unchecked")
-    public Set<Member> findActiveMembersByCategoryAndParentMember(final Long categoryId,
-            final Long parentMemberId) {
+    public Set<Member> findActiveMembersByCategoryAndParentMember(final Long categoryId, final Long parentMemberId) {
         openCurrentSessionwithTransaction();
-        Query query = getCurrentSession().createQuery(
-                "from Member WHERE category_id = :categoryId AND parent_member_id = :parentMemberId and activation_status = :status");
+        Query query = getCurrentSession()
+                .createQuery(
+                        "from Member WHERE category_id = :categoryId AND parent_member_id = :parentMemberId and activation_status = :status");
         query.setParameter("categoryId", categoryId);
         query.setParameter("parentMemberId", parentMemberId);
         query.setParameter("status", MemberStatusType.ACTIVE.ordinal());
@@ -214,6 +233,13 @@ public class MemberDaoImpl implements MemberDao {
         }
     }
 
+    /**
+     * Get all members which are submittable - including all immediate and distant sub-children in its hierarchy; This
+     * will also return current parent member in returned list if it is submittable.
+     * 
+     * @param parentMemberId
+     * @return
+     */
     @Override
     public Set<Member> findAllSubmittableMembersByParentMemberId(final Long parentMemberId) {
         Set<Member> submittableMembers = new HashSet<Member>();
@@ -248,6 +274,13 @@ public class MemberDaoImpl implements MemberDao {
         return submittableMembers;
     }
 
+    /**
+     * Checks if for a given member are there any of its child members have a given membername
+     * 
+     * @param memberName
+     * @param parentMemberId
+     * @return
+     */
     @SuppressWarnings("unchecked")
     @Override
     public boolean doesMemberNameExistForParentMember(final String memberName, final Long parentMemberId) {
@@ -265,7 +298,10 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     /**
-     * Get Member by memberId along with UserToMemberMappings
+     * Load Member for given member id along with its registered users
+     * 
+     * @param id
+     * @return
      */
     @Override
     public Member getMemberByIdWithUserMappings(final Long id) {
@@ -296,7 +332,10 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     /**
-     * Get Member by memberId along with UserToMemberMappings
+     * Load Member for given member id along with its all user submissions
+     * 
+     * @param id
+     * @return
      */
     @Override
     public Member getMemberByIdWithSubmissions(final Long id) {
@@ -313,6 +352,12 @@ public class MemberDaoImpl implements MemberDao {
         }
     }
 
+    /**
+     * Get users List for given MemberId which have registered for this member in Evaluator role
+     * 
+     * @param id
+     * @return
+     */
     @Override
     public Set<User> getEvaluatorsForMemberId(final Long id) {
         final Member member = getMemberByIdWithUserMappings(id);
@@ -325,6 +370,12 @@ public class MemberDaoImpl implements MemberDao {
         return evaluators;
     }
 
+    /**
+     * Get users list for given MemberId which have registered for this member in SUBMITTER role
+     * 
+     * @param id
+     * @return
+     */
     @Override
     public Set<User> getSubmittersForMemberId(final Long id) {
         final Member member = getMemberByIdWithUserMappings(id);
@@ -337,6 +388,12 @@ public class MemberDaoImpl implements MemberDao {
         return submitters;
     }
 
+    /**
+     * Get users List for given MemberId which have registered for this member in Conductor role
+     * 
+     * @param id
+     * @return
+     */
     @Override
     public Set<User> getConductorsForMemberId(final Long id) {
         final Member member = getMemberByIdWithUserMappings(id);
@@ -349,8 +406,17 @@ public class MemberDaoImpl implements MemberDao {
         return conductors;
     }
 
+    /**
+     * Change Activation status for all children, sub-children members with new status for given parent member
+     * 
+     * @param parentMemberId
+     * @param status
+     * @throws Exception
+     */
     @Override
-    public void changeChildMemberActivationStatusByParentMemberId(final Long parentMemberId, final MemberStatusType status) throws Exception {
+    public void changeChildMemberActivationStatusByParentMemberId(final Long parentMemberId,
+            final MemberStatusType status) throws Exception
+    {
         openCurrentSessionwithTransaction();
         Member member = (Member) getCurrentSession().get(Member.class, parentMemberId);
         changeChildMemberActivationStatusRecursively(member, status);
@@ -364,7 +430,9 @@ public class MemberDaoImpl implements MemberDao {
      * @return
      * @throws Exception
      */
-    private void changeChildMemberActivationStatusRecursively(final Member member, final MemberStatusType status) throws Exception {
+    private void changeChildMemberActivationStatusRecursively(final Member member, final MemberStatusType status)
+            throws Exception
+    {
 
         Set<Member> childMembers = member.getChildMembers();
         if (childMembers != null && !childMembers.isEmpty()) {

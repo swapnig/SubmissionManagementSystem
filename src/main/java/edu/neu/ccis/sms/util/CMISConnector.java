@@ -402,6 +402,7 @@ public class CMISConnector {
 
     /**
      * Delete folder and all its subfolders
+     * 
      * @param folderId
      * @return boolean if the folder was completely deleted
      */
@@ -419,8 +420,9 @@ public class CMISConnector {
 
     /**
      * Delete a document mapped by given document id
+     * 
      * @param docId
-     * @return 
+     * @return
      */
     public static void deleteDocument(final String docId) {
         try {
@@ -446,6 +448,11 @@ public class CMISConnector {
         return input;
     }
 
+    /**
+     * Config class for initializing CMIS API connection with CMS
+     * 
+     * @author Pramod R Khare
+     */
     public static class CMISConfig {
         final String cmsRepoUsername;
         final String cmsRepoPswd;

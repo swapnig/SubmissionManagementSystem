@@ -14,9 +14,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * Hibernate Entity bean class for MemberAttribute; Contains attribute name, 
- * type and value information and which member it belongs to.
- *
+ * Hibernate Entity bean class for MemberAttribute; Contains attribute name, type and value information and which member
+ * it belongs to.
+ * 
  * @author Pramod R. Khare
  * @date 9-May-2015
  * @lastUpdate 7-June-2015
@@ -31,12 +31,15 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
     @Column(name = "MEMBER_ATTRIBUTE_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Member attribute name */
     @Column(name = "NAME", unique = false, nullable = false)
     private String name;
 
+    /** Member attribute value */
     @Column(name = "VALUE", unique = false, nullable = true)
     private String value;
 
+    /** member to which this attribute belongs to */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member member;
@@ -44,8 +47,7 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
     public MemberAttribute() {
     }
 
-    public MemberAttribute(final String attributeName,
-            final String attributeValue, final Member member) {
+    public MemberAttribute(final String attributeName, final String attributeValue, final Member member) {
         this.name = attributeName;
         this.value = attributeValue;
         this.member = member;
@@ -82,7 +84,7 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
     public void setMember(Member member) {
         this.member = member;
     }
-    
+
     @Override
     public int compareTo(MemberAttribute o) {
         return this.id.compareTo(o.getId());

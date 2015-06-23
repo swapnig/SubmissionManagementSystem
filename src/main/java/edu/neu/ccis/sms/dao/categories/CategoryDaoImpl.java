@@ -11,7 +11,9 @@ import edu.neu.ccis.sms.entity.categories.Category;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
 /**
- * DAO implementation class for Category Entity bean
+ * DAO implementation class for Category Entity bean;
+ * 
+ * Provides actual implementations for all category entity related access methods
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -55,6 +57,7 @@ public class CategoryDaoImpl implements CategoryDao {
         this.currentTransaction = currentTransaction;
     }
 
+    /** Save a new category */
     @Override
     public void saveCategory(Category newCategory) {
         openCurrentSessionwithTransaction();
@@ -62,6 +65,7 @@ public class CategoryDaoImpl implements CategoryDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /** Update category details for an already existing category */
     @Override
     public void updateCategory(Category modifiedCategory) {
         openCurrentSessionwithTransaction();
@@ -69,19 +73,19 @@ public class CategoryDaoImpl implements CategoryDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /** Find category by its id */
     public Category findByCategoryId(Long id) {
         openCurrentSessionwithTransaction();
-        Category category = (Category) getCurrentSession().get(Category.class,
-                id);
+        Category category = (Category) getCurrentSession().get(Category.class, id);
         closeCurrentSessionwithTransaction();
         return category;
     }
-    
+
+    /** Get category by its name, as category names are unique for an installation */
     @SuppressWarnings("unchecked")
-	public Category findByCategoryName(String categoryName) {
-    	openCurrentSessionwithTransaction();
-        Query query = getCurrentSession().createQuery(
-                "from Category WHERE name = :categoryName");
+    public Category findByCategoryName(String categoryName) {
+        openCurrentSessionwithTransaction();
+        Query query = getCurrentSession().createQuery("from Category WHERE name = :categoryName");
         query.setParameter("categoryName", categoryName);
         List<Category> categories = (List<Category>) query.list();
         closeCurrentSessionwithTransaction();
@@ -92,6 +96,7 @@ public class CategoryDaoImpl implements CategoryDao {
         }
     }
 
+    /** Delete a given category */
     @Override
     public void deleteCategory(Category category) {
         openCurrentSessionwithTransaction();
@@ -99,16 +104,17 @@ public class CategoryDaoImpl implements CategoryDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /** Get all categories available in current installation */
     @Override
     @SuppressWarnings("unchecked")
     public List<Category> getAllCategories() {
         openCurrentSessionwithTransaction();
-        List<Category> categories = (List<Category>) getCurrentSession()
-                .createQuery("from Category").list();
+        List<Category> categories = (List<Category>) getCurrentSession().createQuery("from Category").list();
         closeCurrentSessionwithTransaction();
         return categories;
     }
 
+    /** Delete all available categories */
     public void deleteAllCategories() {
         List<Category> categoryList = getAllCategories();
         for (Category category : categoryList) {
@@ -116,13 +122,17 @@ public class CategoryDaoImpl implements CategoryDao {
         }
     }
 
+    /**
+     * Get Category by its Category-Id
+     */
     @Override
     public Category getCategory(Long id) {
         return findByCategoryId(id);
     }
 
-	@Override
-	public Category getCategoryByName(String categoryName) {
-		return findByCategoryName(categoryName);
-	}
+    /** Get Category by its Category-Name; as category names are unique per installation */
+    @Override
+    public Category getCategoryByName(String categoryName) {
+        return findByCategoryName(categoryName);
+    }
 }

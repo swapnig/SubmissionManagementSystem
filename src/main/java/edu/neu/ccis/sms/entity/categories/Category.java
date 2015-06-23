@@ -18,8 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * Hibernate Entity bean class for Category; Contains category attributes and
- * other category parameters
+ * Hibernate Entity bean class for Category; Contains category attributes and other category parameters
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -36,27 +35,42 @@ public class Category implements Serializable, Comparable<Category> {
     @Column(name = "CATEGORY_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Category name - which is unique for a given installation */
     @Column(name = "CATEGORY_NAME", nullable = false)
     private String name;
 
+    /**
+     * boolean flag indicating is the members created out of this category are registerable members i.e. to which users
+     * can register to
+     */
     @Column(name = "IS_REGISTERABLE", nullable = false)
     private boolean isRegisterable = false;
 
+    /**
+     * boolean flag indicating is the members created out of this category are submittable members i.e. to which users
+     * can submit their assignments to
+     */
     @Column(name = "IS_SUBMITTABLE", nullable = false)
     private boolean isSubmittable = false;
 
+    /** Parent Category in the category hierarchy tree */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_CATEGORY_ID")
     private Category parentCategory;
 
+    /**
+     * List of children categories to which this category is parent category - currently we only support single parent
+     * i.e. a node cannot have multiple parent categories
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parentCategory")
     private Set<Category> childCategories = new HashSet<Category>();
 
+    /** Attributes list which store extra information about this category */
     @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "category")
     @Column(nullable = false)
     private Set<CategoryAttribute> attributes = new HashSet<CategoryAttribute>();
 
-    // @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+    /** list of members which were created out of this category */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "category", cascade = CascadeType.ALL)
     private Set<Member> members = new HashSet<Member>();
 

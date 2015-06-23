@@ -43,54 +43,77 @@ public class Document implements Serializable, Comparable<Document> {
     @Column(name = "DOCUMENT_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Member reference for which this document is submitted for */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member submittedForMember;
 
+    /** Users list who are authors of this document; as there can be multiple authors for a single document */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "DocumentSubmissionMapping", joinColumns = { @JoinColumn(name = "DOCUMENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
     private Set<User> submittedBy = new HashSet<User>();
 
+    /** Evaluators list who all evaluated this document */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "DocumentEvaluatorsMapping", joinColumns = { @JoinColumn(name = "DOCUMENT_ID") }, inverseJoinColumns = { @JoinColumn(name = "USER_ID") })
     private Set<User> evaluators = new HashSet<User>();
 
+    /** Evaluations done for this document; Each evaluation is done by independent evaluator */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "evaluationFor")
     private Set<Evaluation> evaluations = new HashSet<Evaluation>();
 
-    // Unidiretional one-to-one mapping for final Evaluation of this document
-    // Final Evaluation of document can be average of multiple evaluations done
-    // by multiple reviewers or evaluators
+    /**
+     * Unidiretional one-to-one mapping for final Evaluation of this document Final Evaluation of document can be
+     * average of multiple evaluations done by multiple reviewers or evaluators
+     */
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FINAL_EVAL_ID", unique = true, nullable = true, insertable = true, updatable = true)
     private Evaluation finalEvaluation;
 
+    /** Remote machine IP address from where this document was uploaded */
     @Column(name = "SUBMITTED_FROM")
     private String submittedFromRemoteAddress;
 
+    /** Document submission Timestamp */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "SUBMITTED_ON", nullable = false)
     private Date submittedOnTimestamp;
 
+    /** Filename of submitted document */
     @Column(name = "FILENAME")
     private String filename;
 
+    /** Content Type (MimeType) of submitted document */
     @Column(name = "CONTENTTYPE")
     private String contentType;
 
+    /**
+     * CMS document id of submitted document; As each submitted document will be stored into underlying CMS using CMIS
+     * APIs; So node-id of this document from CMS
+     */
     @Column(name = "CMS_DOC_ID")
     private String cmsDocId;
 
+    /**
+     * CMS document content URL of submitted document - using this URL we can stream or download actual contents of
+     * document anywhere (but not without using CMS access credentials)
+     */
     @Column(name = "CMS_DOC_CONTENT_URL")
     private String cmsDocContentUrl;
 
+    /** Path of document in CMS */
     @Column(name = "CMS_DOC_PATH")
     private String cmsDocumentPath;
 
+    /**
+     * Version of document in CMS; Whenever there is a resubmission it will stored as a new version of document i.e. All
+     * versions of a given submission will be saved into CMS and only latest version will be referred into SMS for
+     * evaluation;
+     */
     @Column(name = "CMS_DOC_VERSION")
     private String cmsDocVersion;
 
-    /* Saving the submittedOnTimestamp by default */
+    /** Default constructor - will automatically populate the submittedOnTimestamp by default */
     public Document() {
         submittedOnTimestamp = new Date();
     }

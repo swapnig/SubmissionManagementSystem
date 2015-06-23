@@ -36,27 +36,34 @@ public class Evaluation implements Serializable, Comparable<Evaluation> {
     @Column(name = "EVALUATION_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Evaluation received */
     @Column(name = "RESULT", nullable = false)
     private Float result;
 
+    /** Total maximum points possible */
     @Column(name = "TOTAL", nullable = false)
     private Float outOfTotal;
 
+    /** Comments received for this evaluation */
     @Column(name = "COMMENTS", nullable = true)
     private String comments;
 
+    /** Evaluation submitted on */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "EVALUATED_ON", nullable = false)
     private Date evaluatedOnTimestamp;
 
+    /** Evaluator who evaluated submission */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
     private User evaluatedBy;
 
+    /** Document which is evaluated */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DOCUMENT_ID", nullable = true)
     private Document evaluationFor;
 
+    /** Default Constructor - Evaluation submitted on is populated to current time */
     public Evaluation(){
         evaluatedOnTimestamp = new Date();
     }

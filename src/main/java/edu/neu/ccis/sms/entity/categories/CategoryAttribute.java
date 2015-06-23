@@ -31,12 +31,15 @@ public class CategoryAttribute implements Serializable, Comparable<CategoryAttri
     @Column(name = "CATEGORY_ATTRIBUTE_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Category attribute name */
     @Column(name = "NAME", unique = false, nullable = false)
     private String name;
 
+    /** Category attribute data type - kept for future reference and development */
     @Column(name = "TYPE", unique = false, nullable = true)
     private String type;
 
+    /** Category to which this attribute belongs to */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID", nullable = false)
     private Category category;

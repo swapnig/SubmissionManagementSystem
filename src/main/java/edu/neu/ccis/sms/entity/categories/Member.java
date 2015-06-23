@@ -21,8 +21,7 @@ import edu.neu.ccis.sms.entity.submissions.Document;
 import edu.neu.ccis.sms.entity.submissions.EvalType;
 
 /**
- * Hibernate Entity bean class for Member; Members are simply instances of a
- * Category
+ * Hibernate Entity bean class for Member; Members are simply instances of a Category
  * 
  * @author Pramod R. Khare
  * @modifedBy Swapnil Gupta
@@ -39,43 +38,63 @@ public class Member implements Serializable, Comparable<Member> {
     @Column(name = "MEMBER_ID", unique = true, nullable = false)
     private Long id;
 
+    /** member name */
     @Column(name = "MEMBER_NAME", nullable = false)
     private String name;
 
+    /**
+     * CMS folder id - For every member we create a corresponding CMS folder with same name - so we replicate the Member
+     * hierarchy into CMS via folder hierarchy
+     */
     @Column(name = "CMS_FOLDER_ID")
     private String cmsFolderId;
 
+    /** CMS folder path */
     @Column(name = "CMS_FOLDER_PATH")
     private String cmsFolderPath;
 
+    /**
+     * boolean flag indicating if this member is registerable member i.e. to which users can register to
+     */
     @Column(name = "IS_REGISTERABLE", nullable = false)
     private boolean isRegisterable = false;
 
+    /**
+     * boolean flag indicating if this member is submittable members i.e. to which users can submit their assignments to
+     */
     @Column(name = "IS_SUBMITTABLE", nullable = false)
     private boolean isSubmittable = false;
 
+    /** Category from which this member is created from */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATEGORY_ID", nullable = false)
     private Category category;
 
+    /** parent member of this member in the member hierarchy tree */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_MEMBER_ID")
     private Member parentMember;
 
+    /** list of all children members of this member in the member hierarchy tree */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parentMember", cascade = CascadeType.ALL)
     private Set<Member> childMembers = new HashSet<Member>();
 
+    /** List of attributes of this member */
     @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "member")
     @Column(nullable = false)
     private Set<MemberAttribute> attributes = new HashSet<MemberAttribute>();
 
+    /**
+     * List of posts for this forum member - kept for future reference - when a Discussion Forum member functionality is
+     * implemented
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "memberCategory")
     @Column(nullable = true)
     private Set<Post> posts = new HashSet<Post>();
 
     /**
-     * User to Member registration mapping - with their other attributes like
-     * registration dates, their role, the registration status, etc.
+     * User to Member registration mapping - with their other attributes like registration dates, their role, the
+     * registration status, etc.
      */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "member")
     @Column(nullable = false)
@@ -86,31 +105,31 @@ public class Member implements Serializable, Comparable<Member> {
      *************************************************************************/
 
     /**
-     * This flag keeps track if final evaluations are calculated for each
-     * individual submitted document from their possibly multiple evaluations.
+     * This flag keeps track if final evaluations are calculated for each individual submitted document from their
+     * possibly multiple evaluations.
      * 
-     * This flag will be made true when Coductor clicks on
-     * "disseminating grades" to students // or while calculating fairness of
-     * grades - currently its done during "disseminating grades" to students.
+     * This flag will be made true when Coductor clicks on "disseminating grades" to students // or while calculating
+     * fairness of grades - currently its done during "disseminating grades" to students.
      */
     @Column(name = "IS_FINAL_EVALUATED", nullable = false)
     private boolean isFinalEvaluated = false;
 
-    // The default EvalType - for final Evaluation calculation for submitted
-    // documents, This can be changed while - Disseminating grades to students
-    // or while calculating fairness of grades
-    // IMP - Currently it is done - while Disseminating grades to students, as
-    // fairness calculation is a future work of this project
+    /**
+     * The default EvalType - for final Evaluation calculation for submitted documents;
+     * 
+     * This can be changed while - a) Disseminating grades to students or b) while calculating fairness of grades IMP -
+     * 
+     * Currently it is done - while Disseminating grades to students, as fairness calculation is a future work of this
+     * project
+     */
     @Column(name = "EVAL_TYPE", nullable = false, updatable = true)
     private EvalType finalEvalType = EvalType.AVERAGE;
 
-
+    /** Member activation status - if this member is active or inactivated */
     @Column(name = "ACTIVATION_STATUS", nullable = false, updatable = true)
     private MemberStatusType activationStatus = MemberStatusType.ACTIVE;
 
-    /**
-     * All submitted documents for this submittable member
-     */
+    /** All submitted documents for this submittable member */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "submittedForMember")
     @Column(nullable = true)
     private Set<Document> submissions = new HashSet<Document>();

@@ -13,9 +13,8 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * Hibernate Entity bean class for UserToReviewerMapping; Contain user to
- * reviewer mappings i.e. user's submissions will be reviewed by which
- * evaluators, for which submission,which submittable member etc.
+ * Hibernate Entity bean class for UserToReviewerMapping; Contain user to reviewer mappings i.e. user's submissions will
+ * be reviewed by which evaluators, for which submission,which submittable member etc.
  * 
  * @author Pramod R. Khare
  * @date 11-June-2015
@@ -30,17 +29,21 @@ public class UserToReviewerMapping implements Serializable, Comparable<UserToRev
     @Column(name = "ID", unique = true, nullable = false)
     private Long id;
 
+    /** Submitter who is getting evaluated for his submission document for a particular member */
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     private User submitter;
 
+    /** Evaluator who is evaluating submission document from a submitter for a particular member */
     @ManyToOne
     @JoinColumn(name = "REVIEWER_ID", nullable = false)
     private User evaluator;
 
+    /** Member for which submission is done */
     @Column(name = "MEMBER_ID_TO_EVALUATE", nullable = false)
     private Long evaluationForMemberId;
 
+    /** Document to be evaluated */
     @Column(name = "DOCUMENT_ID_TO_EVALUATE")
     private Long evaluateDocId;
 

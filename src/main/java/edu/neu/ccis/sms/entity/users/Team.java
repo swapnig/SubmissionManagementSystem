@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * Team Hibernate Entity bean class
+ * Team Entity bean class
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -31,9 +31,11 @@ public class Team implements Serializable, Comparable<Team> {
     @Column(name = "TEAM_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Team members list */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "team")
     private Set<User> teammembers = new HashSet<User>();
 
+    /** Team name */
     @Column(name = "NAME", length = 255)
     private String name;
 

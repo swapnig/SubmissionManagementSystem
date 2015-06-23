@@ -5,7 +5,7 @@ import java.util.List;
 import edu.neu.ccis.sms.entity.users.UserToReviewerMapping;
 
 /**
- * DAO interface for UserToReviewerMapping Entity bean
+ * DAO interface for UserToReviewerMapping Entity bean; 
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015

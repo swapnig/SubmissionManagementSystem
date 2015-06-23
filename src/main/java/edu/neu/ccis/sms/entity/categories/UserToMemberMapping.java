@@ -20,9 +20,8 @@ import edu.neu.ccis.sms.entity.users.StatusType;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Hibernate Entity bean class for UserToMemberMapping; Contain member to user
- * mappings i.e. user is registered to which member and with which role, the
- * registration status, time etc.
+ * Hibernate Entity bean class for UserToMemberMapping; Contain member to user mappings i.e. user is registered to which
+ * member and with which role, the registration status, time etc.
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -37,21 +36,26 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
     @Column(name = "ID", unique = true, nullable = false)
     private Long id;
 
+    /** User who is registering for a particular member with a particular role */
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
+    /** Member for which registration is done */
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member member;
 
+    /** Registration timestamp */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REGISTERED_ON", nullable = false, updatable = false)
     private Date registeredOn;
 
+    /** User's role with which registration is done */
     @Column(name = "ROLE", nullable = false)
     private RoleType role;
 
+    /** is registration is active or expired */
     @Column(name = "ISACTIVE", nullable = false)
     private boolean isActive = true;
 
@@ -59,8 +63,10 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
     @Column(name = "STATUS", nullable = false)
     private StatusType status = StatusType.ACTIVE;
 
+    /**
+     * Default Constructor - Automatically populates the registration timestamp value
+     */
     public UserToMemberMapping() {
-        // Automatically set the registered on datetime
         registeredOn = new Date();
     }
 

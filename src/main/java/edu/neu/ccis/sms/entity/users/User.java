@@ -24,9 +24,8 @@ import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.submissions.Document;
 
 /**
- * User Hibernate Entity bean class; contains all important information about
- * user, his submissions and his member-registration mappings, and other
- * personal information
+ * User Hibernate Entity bean class; contains all important information about user, his submissions and his
+ * member-registration mappings, and other personal information
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -43,19 +42,23 @@ public class User implements Serializable, Comparable<User> {
     @Column(name = "USER_ID", unique = true, nullable = false)
     private Long id;
 
+    /** First name of user */
     @Column(name = "FIRSTNAME", length = 255, nullable = false)
     private String firstname;
 
+    /** Last name of user */
     @Column(name = "LASTNAME", length = 255)
     private String lastname;
 
+    /** Email id of user; which is unique and cannot be reused by other users */
     @Column(name = "EMAIL", nullable = false, length = 100)
     private String email;
 
-    // TODO - Use MD5 hashing
+    /** MD-5 hashed password string of this user */
     @Column(name = "PASSWORD", nullable = false)
     private String password;
 
+    /** username for login use; which is unique and cannot be reused by other users */
     @Column(name = "USERNAME", nullable = false, length = 100)
     private String username;
 
@@ -71,37 +74,46 @@ public class User implements Serializable, Comparable<User> {
     @Column(name = "STATUS", nullable = false)
     private StatusType status = StatusType.ACTIVE;
 
+    /** Team for which this user is part of */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TEAM_ID", nullable = true)
     private Team team;
 
+    /** List of all the submissions done by this for all different members */
     @ManyToMany(mappedBy = "submittedBy")
     private Set<Document> submissions = new HashSet<Document>();
 
+    /** Documents evaluated by this user for all the members where he/she is Evaluator */
     @ManyToMany(mappedBy = "evaluators")
     private Set<Document> documentsForEvaluation = new HashSet<Document>();
 
-    // TODO - Create a separate Topics entity with many-to-many relationship
+    /** Topics of preference or interest - currently stored as list of strings */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "UserTopicsOfInterest", joinColumns = @JoinColumn(name = "USER_ID"))
     @Column(name = "TOPICS_OF_INTEREST")
     private Set<String> topicsOfInterest = new HashSet<String>();
 
+    /** List of users with whom this user has conflicts of interest with */
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "UserConflictOfInterestMapping", joinColumns = { @JoinColumn(name = "USER_ID") }, inverseJoinColumns = { @JoinColumn(name = "CONFLICT_WITH_USER_ID") })
     private Set<User> myConflictsOfInterestWithUsers = new HashSet<User>();
 
+    /** List of users who have marked this user in their conflicts of interest list */
     @ManyToMany(mappedBy = "myConflictsOfInterestWithUsers", fetch = FetchType.EAGER)
     private Set<User> usersForWhomMeInConflictOfInterest = new HashSet<User>();
 
-    /** UserToMemberMapping many to one relationship */
+    /** List of all registrations by this User to different members */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Set<UserToMemberMapping> userToMemberMappings = new HashSet<UserToMemberMapping>();
 
-    // user to reviewer mapping - as many to many mappings
+    /** user to reviewer mapping -i.e. for different members who were the evaluators mapped to this user's submissions */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "submitter")
     private Set<UserToReviewerMapping> allocatedEvaluators = new HashSet<UserToReviewerMapping>();
 
+    /**
+     * List of submitters to evaluators for different members whom this user has to evaluate i.e. for all members where
+     * this user is has Evaluator role
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "evaluator")
     private Set<UserToReviewerMapping> submittersToEvaluate = new HashSet<UserToReviewerMapping>();
 
@@ -309,8 +321,7 @@ public class User implements Serializable, Comparable<User> {
     }
 
     /**
-     * Get user's role for given member is RoleType.EVALUATOR then returns true
-     * else returns false
+     * Get user's role for given member is RoleType.EVALUATOR then returns true else returns false
      * 
      * @NOTE: Use this method if "userToMemberMappings" is populated, because its lazily loaded
      * @param memberId
@@ -326,8 +337,7 @@ public class User implements Serializable, Comparable<User> {
     }
 
     /**
-     * Get user's role for given member is RoleType.CONDUCTOR then returns true
-     * else returns false
+     * Get user's role for given member is RoleType.CONDUCTOR then returns true else returns false
      * 
      * @NOTE: Use this method if "userToMemberMappings" is populated, because its lazily loaded
      * @param memberId
@@ -343,8 +353,7 @@ public class User implements Serializable, Comparable<User> {
     }
 
     /**
-     * Get user's role for given member is RoleType.SUBMITTER then returns true
-     * else returns false
+     * Get user's role for given member is RoleType.SUBMITTER then returns true else returns false
      * 
      * @NOTE: Use this method if "userToMemberMappings" is populated, because its lazily loaded
      * @param memberId
@@ -364,8 +373,7 @@ public class User implements Serializable, Comparable<User> {
      * 
      * @NOTE: Use this method if "submittersToEvaluate" is populated, because its lazily loaded
      * @param memberId
-     * @return Set<User> users which are allocated for this evaluator to
-     *         evaluate for given memberId
+     * @return Set<User> users which are allocated for this evaluator to evaluate for given memberId
      */
     public Set<User> getSubmittersToEvaluateForMemberId(final Long memberId) {
         Set<User> submitters = new HashSet<User>();
@@ -379,7 +387,7 @@ public class User implements Serializable, Comparable<User> {
 
     /* Hashcode method */
     /*
-     * public int hashCode() { final int prime = 31; int hash = 17; hash = hash
-     * * prime + ((int) (this.id ^ (this.id>>> 32))); return hash; }
+     * public int hashCode() { final int prime = 31; int hash = 17; hash = hash * prime + ((int) (this.id ^ (this.id>>>
+     * 32))); return hash; }
      */
 }

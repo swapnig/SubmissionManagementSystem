@@ -1,7 +1,7 @@
 package edu.neu.ccis.sms.constants;
 
 /**
- * Constant Keys class for HttpServletRequest object
+ * Constant Keys for HttpServletRequest attributes
  * 
  * @author Pramod Khare
  * @date 4-June-2015
@@ -22,8 +22,6 @@ public interface RequestKeys {
 	public static final String PARAM_USER_ROLE = "role";
 	public static final String PARAM_USER_EMAIL = "userEmailId";
 
-    /**
-     * This attribute is used for storing any messages from backend while forwarding requests to next Servlet or UI page
-     */
+    /** message attribute stored in request while forwarding it */
     public static final String PARAM_MESSAGE = "message";
 }
