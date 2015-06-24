@@ -439,7 +439,6 @@ public class MemberDaoImpl implements MemberDao {
             for (Member child : childMembers) {
                 child.setActivationStatus(status);
                 getCurrentSession().update(child);
-                System.out.println(child.getName());
                 changeChildMemberActivationStatusRecursively(child, status);
             }
         }

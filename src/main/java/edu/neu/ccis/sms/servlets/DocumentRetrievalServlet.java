@@ -70,7 +70,7 @@ public class DocumentRetrievalServlet extends HttpServlet {
 
             // Load all the submittable Member Details
             Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-            System.out.println("Session activeMemberId - " + activeMemberId);
+            LOGGER.info("Session activeMemberId - " + activeMemberId);
 
             // Get parameter "memberId" for which submissions to be downloaded
             Long memberId = Long.parseLong(request.getParameter("memberId"));

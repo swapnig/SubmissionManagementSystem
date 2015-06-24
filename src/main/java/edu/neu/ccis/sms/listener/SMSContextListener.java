@@ -184,7 +184,7 @@ public class SMSContextListener implements ServletContextListener {
         for (Map.Entry<String, String> entry : categoryToPropertyKey.entrySet()) {
             String categoryName = entry.getKey();
             if (null == categoryDao.getCategoryByName(categoryName)) {
-                System.out.println("Creating category: " + categoryName);
+                LOGGER.info("Creating category: " + categoryName);
                 String parentCategoryName = categoryToParent.get(categoryName);
 
                 Category category = new Category();
@@ -194,7 +194,7 @@ public class SMSContextListener implements ServletContextListener {
                 category.setSubmittable(submittableCategories.contains(categoryName));
                 categoryDao.saveCategory(category);
             } else {
-                System.out.println("Category already exist, cannot create: " + categoryName);
+                LOGGER.info("Category already exist, cannot create: " + categoryName);
             }
         }
     }
@@ -231,7 +231,7 @@ public class SMSContextListener implements ServletContextListener {
             rootMember.setName(rootMemberName);
 
             memberDao.saveMember(rootMember);
-            System.out.println("Member " + rootMemberName + " for root category does not exist, created it now.");
+            LOGGER.info("Member " + rootMemberName + " for root category does not exist, created it now.");
             createConductorForMember(rootCategoryPropertyKey, rootMember);
         }
     }
@@ -258,7 +258,7 @@ public class SMSContextListener implements ServletContextListener {
         if (null == rootUser) {
             rootUser = new User();
             rootUser.setUsername(username);
-            System.out.println(rootUser.getUsername() + " does not exist creating it now");
+            LOGGER.info(rootUser.getUsername() + " does not exist creating it now");
 
             String emailKey = ConfigurationReader.getChildElementKeyForProperty(
                     ConfigKeys.HIERARCHY_ROOT_EMAIL_ELEMENT, rootCategoryPropertyKey);
@@ -278,7 +278,7 @@ public class SMSContextListener implements ServletContextListener {
         UserToMemberMappingDao mappingDao = new UserToMemberMappingDaoImpl();
         // If the given user is already conductor for root member then do nothing else make user conductor for member
         if (mappingDao.doesUserHaveRoleForMember(rootUser.getId(), RoleType.CONDUCTOR, rootMember.getId())) {
-            System.out.println("Root member: " + rootMember.getName() + " already has " + rootUser.getUsername()
+            LOGGER.info("Root member: " + rootMember.getName() + " already has " + rootUser.getUsername()
                     + " as its conductor");
         } else {
             UserToMemberMapping mapping = new UserToMemberMapping();
@@ -286,7 +286,7 @@ public class SMSContextListener implements ServletContextListener {
             mapping.setRole(RoleType.CONDUCTOR);
             mapping.setUser(rootUser);
             mappingDao.saveUserToMemberMapping(mapping);
-            System.out.println("Root member: " + rootMember.getName() + " does not have " + rootUser.getUsername()
+            LOGGER.info("Root member: " + rootMember.getName() + " does not have " + rootUser.getUsername()
                     + " as its conductor. It has been now made its conductor");
         }
     }

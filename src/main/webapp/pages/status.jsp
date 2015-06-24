@@ -17,10 +17,10 @@
     edu.neu.ccis.sms.entity.users.RoleType"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <jsp:include page="layout/header.jsp" />
+<jsp:include page="layout/nav.jsp" />
 <%
 	/* Load all the submittable Member Details */
 	Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-	System.out.println("Session activeMemberId - " + activeMemberId);
 
 	// Get current logged in users all submission documents
     Long userId = (Long)session.getAttribute(SessionKeys.keyUserId);
@@ -38,7 +38,6 @@
     List<Member> submittableMembers = new ArrayList<Member>(submittables);
     Collections.sort(submittableMembers);
 
-    System.out.println("Total Number of submittables - " + submittableMembers.size());
     String activeMemberName = activeMember.getName();
 
     RoleType role = userToMemberMappingDao.getUsersRoleForMember(userId, activeMemberId);
@@ -55,11 +54,13 @@
     }else if (role == RoleType.SUBMITTER) {
         submittersList.add(user);
     }
+    Collections.sort(submittersList);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" type="text/css"/>
         <title>Submission Evaluations Status Page</title>
     </head>
     <body>
@@ -115,5 +116,6 @@
             2. NA - This status means the submission is yet to be evaluated.<br/>
             2. All grades are in percentage values (i.e. out of 100).<br/>
         </font>
+        <jsp:include page="layout/footer.jsp" />
     </body>
 </html>

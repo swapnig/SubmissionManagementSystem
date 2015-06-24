@@ -54,7 +54,7 @@
             <br/>
             <br/>
             <label style="width:150px;display:inline-block;" for="cpword">Confirm Password<sup>*</sup></label>
-            <input type="password" id="cpword" size=30 value="" maxlength=254>
+            <input type="password" name="confirmPassword" id="cpword" size=30 value="" maxlength=254>
 
             <br/>
             <br/>
@@ -68,6 +68,8 @@
 	                out.println("<div>"+message+"</div><br/>");
 	            }
 	        %>
+	        <br/>
+            <a href="<%=request.getContextPath()%>/pages/login.jsp">Back to Login Page</a>
         </form>
         <hr/>
     </div>

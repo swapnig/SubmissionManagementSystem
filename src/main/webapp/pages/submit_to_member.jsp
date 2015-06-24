@@ -11,20 +11,18 @@
     edu.neu.ccis.sms.entity.users.RoleType"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <jsp:include page="layout/header.jsp" />
+<jsp:include page="layout/nav.jsp" />
 <%
     // Check if there is any message to show in page
     String message = (String) request.getAttribute("message");
 
     // Get the current user id
     Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
-    System.out.println("Session userId - " + userId);
 
     // Load all the submittable Member Details
     Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-    System.out.println("Session activeMemberId - " + activeMemberId);
 
     Long submittableMemberId = (Long) session.getAttribute(SessionKeys.activeSubmittableMemberId);
-    System.out.println("Session activeSubmittableMemberId - " + activeMemberId);
 
     // Get the MemberDaoImple instance
     MemberDao memberDao = new MemberDaoImpl();
@@ -50,6 +48,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" type="text/css"/>
         <title>Upload Submission <%=activeMemberName%> - <%=submittableMemberName%></title>
     </head>
     <body>
@@ -80,5 +79,6 @@
         &nbsp;&nbsp;
         <a href="<%=request.getContextPath()%>/ViewRegistrableMember?memberId=<%=activeMemberId%>">Back to <%=activeMemberName%></a>
         <hr/>
+        <jsp:include page="layout/footer.jsp" />
     </body>
 </html>

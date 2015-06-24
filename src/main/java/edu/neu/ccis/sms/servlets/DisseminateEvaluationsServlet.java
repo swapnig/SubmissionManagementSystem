@@ -112,6 +112,9 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                 // evaluations
                 finalEval.setOutOfTotal(100f);
 
+                // Clear any previous results value 
+                finalEval.setResult(null);
+
                 Set<Evaluation> evals = doc.getEvaluations();
 
                 // iterate over each individual evaluation to find out
@@ -158,7 +161,7 @@ public class DisseminateEvaluationsServlet extends HttpServlet {
                 }
 
                 // Calculate the final average
-                if (evalType == EvalType.AVERAGE && finalEval.getResult() == null) {
+                if (evalType == EvalType.AVERAGE && finalEval.getResult() != null) {
                     finalEval.setResult(finalEval.getResult() / evals.size());
                 }
 

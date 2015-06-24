@@ -151,7 +151,8 @@ public class UploadEvaluationsServlet extends HttpServlet {
                     e.printStackTrace();
                 }
             }
-            request.setAttribute(RequestKeys.PARAM_MESSAGE, "Thank you! Evaluations received and saved successfully by system.");
+            request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                    "Thank you! Evaluations received and saved successfully by system.");
             LOGGER.info("Successfully uploaded the evaluations for Member! - " + submittableMemberId);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -189,6 +190,9 @@ public class UploadEvaluationsServlet extends HttpServlet {
         // in percentage results from all individual document
         // evaluations
         finalEval.setOutOfTotal(100f);
+
+        // Clear any previous results value
+        finalEval.setResult(null);
 
         Set<Evaluation> evals = doc.getEvaluations();
         EvalType evalType = submittableMember.getFinalEvalType();
@@ -237,7 +241,7 @@ public class UploadEvaluationsServlet extends HttpServlet {
         }
 
         // Calculate the final average
-        if (evalType == EvalType.AVERAGE && finalEval.getResult() == null) {
+        if (evalType == EvalType.AVERAGE && finalEval.getResult() != null) {
             finalEval.setResult(finalEval.getResult() / evals.size());
         }
 

@@ -8,7 +8,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import edu.neu.ccis.sms.entity.submissions.Document;
-import edu.neu.ccis.sms.entity.users.User;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
 /**

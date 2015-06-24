@@ -4,20 +4,19 @@
 <%
     /* Load all current Topics of interest */
     Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
-    System.out.println("Session userId - "+userId);
-    
+
     // Get the UserDaoImpl instance
     UserDao userDao = new UserDaoImpl();
     User one = userDao.getUser(userId);
 
     Set<User> coiSet = one.getMyConflictsOfInterestWithUsers();
-
-    System.out.println("Total Number of coiSet - "+coiSet.size());
 %>
 <jsp:include page="layout/header.jsp" />
+<jsp:include page="layout/nav.jsp" />
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" type="text/css"/>
         <title>Update User's Conflicts of Interest</title>
         <style>
             body {
@@ -118,6 +117,7 @@
         </form>
         <br/>
         <hr/>
+        <jsp:include page="layout/footer.jsp" />
     </body>
 </html>
 

@@ -5,14 +5,11 @@
 <%
     // Get the current user id
     Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
-    System.out.println("Session userId - " + userId);
 
     // Load all the submittable Member Details
     Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-    System.out.println("Session activeMemberId - " + activeMemberId);
 
     Long submittableMemberId = (Long) session.getAttribute(SessionKeys.activeSubmittableMemberId);
-    System.out.println("Session activeSubmittableMemberId - " + activeMemberId);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

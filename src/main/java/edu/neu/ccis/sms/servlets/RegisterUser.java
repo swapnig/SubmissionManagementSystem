@@ -57,9 +57,16 @@ public class RegisterUser extends HttpServlet {
 
         String username = request.getParameter("userName");
         String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmPassword");
         String emailId = request.getParameter("email");
         String firstname = request.getParameter("firstName");
         String lastname = request.getParameter("lastName");
+
+        if(!confirmPassword.equals(password)){
+            request.setAttribute(RequestKeys.PARAM_MESSAGE, "Passwords doesn't match, please provide both passwords the same and retry!");
+            request.getRequestDispatcher(JspViews.REGISTER_USER_VIEW).forward(request, response);
+            return;
+        }
 
         // Convert password into its MD5Hash
         password = getMD5HashForString(password);
