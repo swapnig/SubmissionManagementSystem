@@ -6,17 +6,18 @@ import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 import edu.neu.ccis.sms.entity.users.RoleType;
 
 /**
+ * DAO interface for all user to member registration mapping entity accesses
  * 
  * @author Pramod R Khare
  * @date 9-May-2015
  * @modifiedBy Swapnil Gupta
- *
+ * 
  */
 public interface UserToMemberMappingDao {
     /**
      * Get all user to member registrations for all available members;
      * 
-     * @return
+     * @return - list of all user-to-member registration mappings
      */
     public List<UserToMemberMapping> getAllUserToMemberMappings();
 
@@ -24,21 +25,24 @@ public interface UserToMemberMappingDao {
      * Get member registration (User to member mapping) details for a given registration id
      * 
      * @param id
-     * @return
+     *            - registration mapping id
+     * @return - User to member registration mapping for given registration mapping id
      */
     public UserToMemberMapping getUserToMemberMapping(Long id);
 
     /**
-     * Update already existing user to member registration details
+     * Update already existing user to member registration details mapping
      * 
      * @param modifiedUserToMemberMapping
+     *            - user to member registration mapping to be modified
      */
     public void updateUserToMemberMapping(UserToMemberMapping modifiedUserToMemberMapping);
 
     /**
-     * Delete a user to member registration
+     * Delete a user to member registration mapping
      * 
      * @param userToMemberMapping
+     *            - user to member registration object to be deleted
      */
     public void deleteUserToMemberMapping(UserToMemberMapping userToMemberMapping);
 
@@ -46,14 +50,17 @@ public interface UserToMemberMappingDao {
      * Save a new user to member registration
      * 
      * @param newUserToMemberMapping
+     *            - new registration details object
      */
     public void saveUserToMemberMapping(UserToMemberMapping newUserToMemberMapping);
 
     /**
-     * Get all members to which given user id has registrations with (including all registration statuses)
+     * Get all members to which given user id has registrations with (including all registration statuses, in all
+     * registration role types)
      * 
      * @param userId
-     * @return
+     *            - user id
+     * @return - list of registrations for a given user
      */
     public List<UserToMemberMapping> getAllMembersForUser(Long userId);
 
@@ -61,9 +68,12 @@ public interface UserToMemberMappingDao {
      * Checks if given user has a specific role registration for a given member
      * 
      * @param userId
+     *            - user id
      * @param role
+     *            - role
      * @param memberId
-     * @return
+     *            - member id
+     * @return - boolean result if user has registered with given member with given role
      */
     public boolean doesUserHaveRoleForMember(Long userId, RoleType role, Long memberId);
 
@@ -71,8 +81,10 @@ public interface UserToMemberMappingDao {
      * Get user's role for given member registration, if user is not registered with given member it will return null
      * 
      * @param userId
+     *            - user id
      * @param memberId
-     * @return
+     *            - member id
+     * @return - RoleType if given user is registered with given member else returns null
      */
     public RoleType getUsersRoleForMember(final Long userId, final Long memberId);
 
@@ -80,7 +92,8 @@ public interface UserToMemberMappingDao {
      * Get all registerable members for which given user has registered with
      * 
      * @param userId
-     * @return
+     *            - id of user
+     * @return - list of mappings for which given user has registered with some kind of role
      */
     public List<UserToMemberMapping> getAllRegisterableMembersForUser(Long userId);
 
@@ -88,8 +101,10 @@ public interface UserToMemberMappingDao {
      * Get all roles a given user has assumed for a given member
      * 
      * @param userId
+     *            - id of user
      * @param memberId
-     * @return
+     *            - id of member
+     * @return - list of role mappings that given user have for given member
      */
     List<UserToMemberMapping> getAllUserRolesForMember(Long userId, Long memberId);
 }

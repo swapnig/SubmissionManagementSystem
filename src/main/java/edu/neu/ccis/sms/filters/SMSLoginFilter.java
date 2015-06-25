@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet Filter implementation class SMSLoginFilter
+ * This filter checks if the current user has a valid login session to access the requested resource; if there isn't
+ * then forward the user to login screen to log him in with proper credentials.
  * 
  * @author Pramod R. Khare
  * @date 23-May-2015
@@ -29,7 +30,6 @@ public class SMSLoginFilter implements Filter {
      * Default constructor.
      */
     public SMSLoginFilter() {
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -37,7 +37,6 @@ public class SMSLoginFilter implements Filter {
      */
     @Override
     public void destroy() {
-        // TODO Auto-generated method stub
     }
 
     /**
@@ -50,15 +49,18 @@ public class SMSLoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        // check the session is expired or not
+        /** check the session is expired or not */
         validateUserSession(httpRequest, httpResponse, chain);
     }
 
     /**
-     * validateUserSession checks for session expired request and returns expired message.
+     * Except login.jsp and user_registration.jsp page requests all other resource requests should have a valid login
+     * session; if not forward them to login page.
      * 
      * @param request
+     *            - Http request
      * @param response
+     *            - Http response
      * @throws ServletException
      * @throws IOException
      */
@@ -71,24 +73,20 @@ public class SMSLoginFilter implements Filter {
         requestURL = requestURL.substring(requestURL.lastIndexOf("/") + 1);
 
         HttpSession session = request.getSession(false);
+
+        // Except login.jsp and user_registration.jsp page requests all other resource requests should have a valid
+        // login session
         boolean isSessionValid = session != null
                 || session == null
                 && (requestURL.contains("login.jsp") || requestURL.contains("user_registration.jsp") || requestURL
                         .equals("Login"));
 
-        // If the request from the login page pass to login action
-        // to create new user session.
         if (isSessionValid) {
             LOGGER.info("forwarding to resource!, valid session request!");
             chain.doFilter(request, response);
             return;
-        }
-        // If the request for other than login page then check whether the
-        // request has a session expired or not
-        else {
+        } else {
             LOGGER.info("Invalid session, login again!");
-            // HttpServletResponse.SC_LENGTH_REQUIRED 411 error code here used
-            // to indicated for session expiration.
             response.sendRedirect("/SMS/pages/login.jsp");
         }
     }
@@ -98,7 +96,5 @@ public class SMSLoginFilter implements Filter {
      */
     @Override
     public void init(final FilterConfig fConfig) throws ServletException {
-        // TODO Auto-generated method stub
     }
-
 }

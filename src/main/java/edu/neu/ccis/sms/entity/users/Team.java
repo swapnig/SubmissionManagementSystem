@@ -15,6 +15,9 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
+ * THIS CLASS IS KEPT FOR FUTURE ENHANCEMENT PURPOSES OF SMS SYSTEM; CURRENTLY THERE IS NO UI PAGE FOR MANIPULATING
+ * TEAMS
+ * 
  * Team Entity bean class
  * 
  * @author Pramod R. Khare
@@ -66,7 +69,6 @@ public class Team implements Serializable, Comparable<Team> {
     public boolean addTeammembers(User teammember) {
         return this.teammembers.add(teammember);
     }
-    
 
     @Override
     public int compareTo(Team o) {

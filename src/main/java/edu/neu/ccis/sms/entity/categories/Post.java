@@ -14,8 +14,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * Hibernate Entity bean class for Post; Post contain topic, content - They are
- * ideally children to a member e.g. discussion Forum
+ * THIS CLASS IS KEPT FOR FUTURE ENHANCEMENT PURPOSES OF SMS SYSTEM;
+ * 
+ * Hibernate Entity bean class for Post; Post contain topic, content - They are ideally children to a member e.g.
+ * discussion Forum
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -31,12 +33,15 @@ public class Post implements Serializable, Comparable<Post> {
     @Column(name = "POST_ID", unique = true, nullable = false)
     private Long id;
 
+    /** Post Topic name */
     @Column(name = "POST_TOPIC")
     private String postTopic;
 
+    /** Actual post contents */
     @Column(name = "POST_CONTENTS")
     private String postContents;
 
+    /** Forum or discussion thread member instance to which this post belongs to */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID", nullable = false)
     private Member memberCategory;

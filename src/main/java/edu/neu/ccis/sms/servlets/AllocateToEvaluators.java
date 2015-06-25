@@ -33,7 +33,16 @@ import edu.neu.ccis.sms.entity.users.User;
 import edu.neu.ccis.sms.entity.users.UserToReviewerMapping;
 
 /**
- * Servlet implementation class AllocateToEvaluators
+ * Servlet implementation class AllocateToEvaluators; This servlet serves requests for dynamic allocation of
+ * evaluators/reviewer for submissions from submitters.
+ * 
+ * This servlet takes two request parameters,
+ * 
+ * 1) memberId - submittable member for which reviewers to be allocated
+ * 
+ * 2) numberOfEvaluatorsPerSub - number of reviewers/evaluators to allocate per submission for this submittable member;
+ * if the value is more than actually available number of evaluators, then allocates only available number of evaluators
+ * to submissions
  * 
  * @author Pramod R. Khare
  * @date 2-June-2015
@@ -61,7 +70,13 @@ public class AllocateToEvaluators extends HttpServlet {
     }
 
     /**
-     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
+     * This servlet allocates evaluators to grade the submissions; and it takes two request parameters,
+     * 
+     * 1) memberId - submittable member for which reviewers to be allocated
+     * 
+     * 2) numberOfEvaluatorsPerSub - number of reviewers/evaluators to allocate per submission for this submittable
+     * member; if the value is more than actually available number of evaluators, then allocates only available number
+     * of evaluators to submissions
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
@@ -76,8 +91,6 @@ public class AllocateToEvaluators extends HttpServlet {
             HttpSession session = request.getSession(false);
             Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
             Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-
-            LOGGER.info("User id " + userId + " \t ActiveMember id " + activeMemberId);
 
             // Important TODO Validate if he is the conductor for given active member id
             List<UserToMemberMapping> rolesMapping = user2MemberMapDao.getAllUserRolesForMember(userId, activeMemberId);
@@ -99,7 +112,6 @@ public class AllocateToEvaluators extends HttpServlet {
 
             // TODO change it to take the current submittable member rather than a drop down
             Long memberId = (Long) session.getAttribute(SessionKeys.activeSubmittableMemberId);
-            LOGGER.info("Session activeSubmittableMemberId - " + activeMemberId);
 
             // Get request parameter values: memberId and numberOfEvaluatorsPerSub
             memberId = Long.parseLong(request.getParameter("memberId"));
@@ -188,7 +200,9 @@ public class AllocateToEvaluators extends HttpServlet {
      * submitted by this user
      * 
      * @param submisions
+     *            - list of documents submitted for this submittable member
      * @param submitter
+     *            - A user for whom we are checking if he/she has submitted any document in above list of documents
      * @return Document object if is it submitted by given user else returns null
      */
     private Document findSubmissionDocumentForUserFromAllSubmissions(Set<Document> submisions, User submitter) {

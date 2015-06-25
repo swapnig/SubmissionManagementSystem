@@ -5,7 +5,7 @@ import java.util.List;
 import edu.neu.ccis.sms.entity.submissions.Document;
 
 /**
- * DAO interface for Document Entity bean; provides access methods for document information
+ * DAO interface for Document Entity bean; provides access methods for document entities
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
@@ -15,7 +15,7 @@ public interface DocumentDao {
     /**
      * Gets all the documents from all users submitted for all members
      * 
-     * @return
+     * @return - list of all documents submitted till now in this system
      */
     public List<Document> getAllDocuments();
 
@@ -23,7 +23,8 @@ public interface DocumentDao {
      * Gets a specific document by given document id
      * 
      * @param id
-     * @return
+     *            - document id
+     * @return - Document obejct with given document id if it exists else null
      */
     public Document getDocument(Long id);
 
@@ -31,6 +32,7 @@ public interface DocumentDao {
      * Update document details for a given document
      * 
      * @param modifiedDocument
+     *            - modified document object
      */
     public void updateDocument(Document modifiedDocument);
 
@@ -38,6 +40,7 @@ public interface DocumentDao {
      * Delete a document
      * 
      * @param document
+     *            - document to be deleted
      */
     public void deleteDocument(final Document document);
 
@@ -45,6 +48,7 @@ public interface DocumentDao {
      * Save a new document
      * 
      * @param newDocument
+     *            - new document to be saved
      */
     public void saveDocument(final Document newDocument);
 
@@ -52,7 +56,8 @@ public interface DocumentDao {
      * Load document along with its all evaluations
      * 
      * @param documentId
-     * @return
+     *            - id of a document to be retrieved
+     * @return - Document object with all its evaluations
      */
     public Document getDocumentByIdWithEvaluations(final Long documentId);
 }

@@ -23,6 +23,7 @@ public interface TeamDao {
      * Get a specific team by its team-id
      * 
      * @param id
+     *            - team id
      * @return team instance if it exists else returns null
      */
     public Team getTeam(Long id);
@@ -31,6 +32,7 @@ public interface TeamDao {
      * Update team details of an existing team
      * 
      * @param modifiedTeam
+     *            - modified team object
      */
     public void updateTeam(Team modifiedTeam);
 
@@ -38,6 +40,7 @@ public interface TeamDao {
      * Delete existing team
      * 
      * @param team
+     *            - team to be deleted
      */
     public void deleteTeam(Team team);
 
@@ -45,6 +48,7 @@ public interface TeamDao {
      * Saves a new team
      * 
      * @param newTeam
+     *            - new team object to be saved
      */
     public void saveTeam(Team newTeam);
 }
