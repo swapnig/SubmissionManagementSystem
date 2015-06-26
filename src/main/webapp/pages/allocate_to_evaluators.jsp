@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"
 	import="edu.neu.ccis.sms.constants.SessionKeys,
+	edu.neu.ccis.sms.constants.ContextKeys,
 	javax.servlet.http.HttpSession,java.util.*,
 	javax.servlet.http.HttpServletRequest,
 	edu.neu.ccis.sms.dao.categories.MemberDao,
@@ -41,22 +42,28 @@
 
     String submittableMemberName = submittableMember.getName();
     String activeMemberName = activeMember.getName();
+
+    String evaluatorCustomTerm = "evaluator";
+    Map<String, String> roleKeyToRoleMap = (HashMap<String, String>) request.getServletContext().getAttribute(ContextKeys.ROLE_KEY_TO_ROLE);
+    if(roleKeyToRoleMap.get("evaluator") != null){
+        evaluatorCustomTerm = roleKeyToRoleMap.get("evaluator");
+    }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<link href="${pageContext.request.contextPath}/resources/css/style.css" rel="stylesheet" type="text/css"/>
-		<title>Allocate Submissions To Evaluators for <%=activeMemberName%> - <%=submittableMemberName%></title>
+		<title>Allocate Submissions To <%=evaluatorCustomTerm%>s for <%=activeMemberName%> - <%=submittableMemberName%></title>
 	</head>
 	<body>
-		<div>Allocate Submissions To Evaluators for <%=activeMemberName%> - <%=submittableMemberName%></div>
+		<div>Allocate Submissions To <%=evaluatorCustomTerm%>s for <%=activeMemberName%> - <%=submittableMemberName%></div>
         <br/>
 		<form action="<%=request.getContextPath()%>/AllocateToEvaluators" method="POST">
 			<input type="hidden" id="memberId" name="memberId" value="<%=submittableMemberId%>">
 			<table cellpadding="3" border="0">
 				<tr>
-	                <td>Select number of evaluators per submission:</td>
+	                <td>Select number of <%=evaluatorCustomTerm%>s per submission:</td>
 	                <td><select id="numberOfEvaluatorsPerSub" name="numberOfEvaluatorsPerSub" style="width: 300px;">
 	                        <%
 	                            for (int i=1; i<=evaluators.size(); i++) {
@@ -87,7 +94,7 @@
         <hr />
 		<font size=2>
         NOTE : <br/>
-            This page is to configure and perform automatic allocation of evaluators for grading the submissions.
+            This page is to configure and perform automatic allocation of <%=evaluatorCustomTerm%>s for grading the submissions.
         </font>
         <jsp:include page="layout/footer.jsp" />
     </body>

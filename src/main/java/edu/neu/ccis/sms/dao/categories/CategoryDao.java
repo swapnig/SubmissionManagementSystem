@@ -7,9 +7,8 @@ import edu.neu.ccis.sms.entity.categories.Category;
 /**
  * DAO interface for Category Entity bean; Provides methods to access category from persistent store
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
- * @modifiedBy Swapnil Gupta
  * @lastUpdate 7-June-2015
  */
 public interface CategoryDao {

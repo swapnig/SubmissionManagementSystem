@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class LogutServlet
+ * Servlet implementation class LogutServlet; Invalidates the current logged-in user's session and forward the user back
+ * to login sceen
  * 
  * @author Pramod R. Khare
  * @date 28-May-2015
@@ -30,20 +31,20 @@ public class LogutServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
-    protected void doGet(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
         doPost(request, response);
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-     *      response)
+     * Invalidate current logged-in user's http session and forward him/her back to login screen
      */
-    protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException
+    {
         LOGGER.info("Method - LogutServlet:doPost");
 
         HttpSession session = request.getSession(false);

@@ -8,10 +8,8 @@ import edu.neu.ccis.sms.entity.users.RoleType;
 /**
  * DAO interface for all user to member registration mapping entity accesses
  * 
- * @author Pramod R Khare
+ * @author Pramod R Khare, Swapnil Gupta
  * @date 9-May-2015
- * @modifiedBy Swapnil Gupta
- * 
  */
 public interface UserToMemberMappingDao {
     /**
@@ -60,12 +58,12 @@ public interface UserToMemberMappingDao {
      * 
      * @param userId
      *            - user id
-     * @return - list of registrations for a given user
+     * @return - list of user-to-member registrations for a given user
      */
     public List<UserToMemberMapping> getAllMembersForUser(Long userId);
 
     /**
-     * Checks if given user has a specific role registration for a given member
+     * Checks if given user has a registration for a given member in given specific role
      * 
      * @param userId
      *            - user id
@@ -78,7 +76,8 @@ public interface UserToMemberMappingDao {
     public boolean doesUserHaveRoleForMember(Long userId, RoleType role, Long memberId);
 
     /**
-     * Get user's role for given member registration, if user is not registered with given member it will return null
+     * Get user's role for given member registration, if user is not registered with given member it will return null;
+     * If user has multiple roles registered with given member then returns its first role
      * 
      * @param userId
      *            - user id

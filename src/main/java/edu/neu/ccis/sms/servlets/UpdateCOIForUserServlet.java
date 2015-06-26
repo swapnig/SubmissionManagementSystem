@@ -19,7 +19,18 @@ import edu.neu.ccis.sms.dao.users.UserDaoImpl;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Servlet implementation class UpdateCOIForUserServlet
+ * Servlet implementation class UpdateCOIForUserServlet; Saves user's conflict of interests with other users in the
+ * system; Takes other user's email ids with whom this logged-in user has Conflict of Interest with.
+ * 
+ * This servlet can be used to Add, modify and delete - user ids from Conflicts of Interest list of users
+ * 
+ * Takes request parameters:
+ * 
+ * 1) "submitType" - There can be 3 submit types - a) "Add" - To add new users to conflicts of interest list, b)
+ * "Replace" - Modify conflicts of interest list - here it removes old list of users with new list of users, c) "Clear"
+ * - To delete all users from conflicts of interest list
+ * 
+ * 2) "coifield" - email ids of users with whom this user has conflicts of interest with
  * 
  * @author Pramod R. Khare
  * @date 6-June-2015
@@ -28,6 +39,8 @@ import edu.neu.ccis.sms.entity.users.User;
 @WebServlet(name = "UpdateCOIForUserServlet", urlPatterns = { "/UpdateCOIForUser" })
 public class UpdateCOIForUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final String coiJspView = "pages/update_coi.jsp";
+    private static final String errorPageJspView = "pages/error.jsp";
     private static final Logger LOGGER = Logger.getLogger(UpdateCOIForUserServlet.class.getName());
 
     /**
@@ -39,7 +52,8 @@ public class UpdateCOIForUserServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -47,7 +61,16 @@ public class UpdateCOIForUserServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * Takes user's email-ids with whom this logged-in user has conflicts of interest with; This servlet can be used to
+     * Add, modify and delete - user ids from Conflicts of Interest list of users
+     * 
+     * Takes request parameters:
+     * 
+     * 1) "submitType" - There can be 3 submit types - a) "Add" - To add new users to conflicts of interest list, b)
+     * "Replace" - Modify conflicts of interest list - here it removes old list of users with new list of users, c)
+     * "Clear" - To delete all users from conflicts of interest list
+     * 
+     * 2) "coifield" - email ids of users with whom this user has conflicts of interest with
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
@@ -97,12 +120,11 @@ public class UpdateCOIForUserServlet extends HttpServlet {
                 userDao.updateUser(one);
             }
 
-            LOGGER.info("COI saved successfully!");
-            response.sendRedirect("pages/update_coi.jsp");
+            response.sendRedirect(coiJspView);
         } catch (final Exception e) {
             e.printStackTrace();
             LOGGER.info("Failed to update Conflict of interest : " + e.getMessage());
-            response.sendRedirect("pages/error.jsp");
+            response.sendRedirect(errorPageJspView);
         }
     }
 }

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1" 
-	import="edu.neu.ccis.sms.constants.SessionKeys"%>
+	import="edu.neu.ccis.sms.constants.SessionKeys,
+	edu.neu.ccis.sms.constants.ContextKeys,java.util.*"%>
 <%@ taglib  uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     // Get the current user id
@@ -10,6 +11,12 @@
     Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
 
     Long submittableMemberId = (Long) session.getAttribute(SessionKeys.activeSubmittableMemberId);
+
+    String evaluatorCustomTerm = "evaluator";
+    Map<String, String> roleKeyToRoleMap = (HashMap<String, String>) request.getServletContext().getAttribute(ContextKeys.ROLE_KEY_TO_ROLE);
+    if(roleKeyToRoleMap.get("evaluator") != null){
+        evaluatorCustomTerm = roleKeyToRoleMap.get("evaluator");
+    }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -32,7 +39,7 @@
 							<legend id="conductorLegend"><strong>Conductor links</strong></legend>
 							<!-- Add links to pages which should be accessible to Evaluators role only -->
 							<ul>
-	                            <li><a href="${pageContext.request.contextPath}/pages/allocate_to_evaluators.jsp">Allocate Evaluators (for grading submissions)</a></li>
+	                            <li><a href="${pageContext.request.contextPath}/pages/allocate_to_evaluators.jsp">Allocate <%=evaluatorCustomTerm%>s (for grading submissions)</a></li>
 	                            <li><a href="${pageContext.request.contextPath}/pages/disseminate_evaluations.jsp">Disseminate Evaluations (to students)</a></li>
 	                        </ul>
 						</fieldset>

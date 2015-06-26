@@ -10,9 +10,8 @@ import edu.neu.ccis.sms.entity.users.User;
 /**
  * DAO interface for Member Entity bean; Provides access methods for accessing members from persistent store
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
- * @modifiedBy Swapnil Gupta
  * @lastUpdate 10-June-2015
  */
 public interface MemberDao {
@@ -125,7 +124,7 @@ public interface MemberDao {
      * Get users list for given MemberId which have registered for this member in SUBMITTER role
      * 
      * @param id
-     *            - id of member to retrieve
+     *            - id of member for which we are finding list of users who have registered in SUBMITTER role
      * @return - set of users who have registered for this member in SUBMITTER role
      */
     public Set<User> getSubmittersForMemberId(final Long id);
@@ -134,7 +133,7 @@ public interface MemberDao {
      * Get users List for given MemberId which have registered for this member in Evaluator role
      * 
      * @param id
-     *            - id of member to retrieve
+     *            - id of member for which we are finding list of users who have registered in EVALUATOR role
      * @return - set of users who have registered for this member in EVALUATOR role
      */
     public Set<User> getEvaluatorsForMemberId(final Long id);
@@ -143,7 +142,7 @@ public interface MemberDao {
      * Get users List for given MemberId which have registered for this member in Conductor role
      * 
      * @param id
-     *            - id of member to retrieve
+     *            - id of member for which we are finding list of users who have registered in CONDUCTOR role
      * @return - set of users who have registered for this member in CONDUCTOR role
      */
     public Set<User> getConductorsForMemberId(final Long id);
@@ -176,7 +175,7 @@ public interface MemberDao {
 
     /**
      * Get all members of a given category type and which are under given parent member in its hierarchy tree and which
-     * are currntly having MemberStatusType as Active
+     * are currently having MemberStatusType as Active
      * 
      * @param categoryId
      *            - id of a category which is a parent category for members to be retrieved

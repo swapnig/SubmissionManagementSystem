@@ -11,9 +11,8 @@ import edu.neu.ccis.sms.entity.users.User;
 /**
  * DAO interface class for User Entity bean; provides access methods for User entity retrievals
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
- * @modifiedBy Swapnil Gupta
  * @lastUpdate 10-June-2015
  */
 public interface UserDao {

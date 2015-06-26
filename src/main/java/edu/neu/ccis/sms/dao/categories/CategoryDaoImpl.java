@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import edu.neu.ccis.sms.entity.categories.Category;
@@ -15,50 +14,67 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  * 
  * Provides actual implementations for all category entity related access methods
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
- * @modifiedBy Swapnil Gupta
  * @lastUpdate 7-June-2015
  */
 public class CategoryDaoImpl implements CategoryDao {
+    /** Hibernate session instance */
     private Session currentSession;
+
+    /** Hibernate session transaction instance */
     private Transaction currentTransaction;
 
+    /** Default Constructor */
     public CategoryDaoImpl() {
     }
 
-    public Session openCurrentSessionwithTransaction() {
-        currentSession = getSessionFactory().openSession();
+    /**
+     * private utility book-keeping method to open hibernate session with a new transaction
+     * 
+     * @return - Hibernate session instance
+     */
+    private Session openCurrentSessionwithTransaction() {
+        currentSession = HibernateUtil.getSessionFactory().openSession();
         currentTransaction = currentSession.beginTransaction();
         return currentSession;
     }
 
-    public void closeCurrentSessionwithTransaction() {
+    /**
+     * private utility book-keeping method to close current transaction along with hibernate session, committing any new
+     * changes to entities; nulling out old references;
+     */
+    private void closeCurrentSessionwithTransaction() {
         currentTransaction.commit();
         currentSession.close();
+        currentTransaction = null;
+        currentSession = null;
     }
 
-    private static SessionFactory getSessionFactory() {
-        return HibernateUtil.getSessionFactory();
-    }
-
+    /**
+     * Getter method for current active hibernate session, if there isn't any active session then returns null
+     * 
+     * @return - current active hibernate session instance else null
+     */
     public Session getCurrentSession() {
         return currentSession;
     }
 
-    public void setCurrentSession(final Session currentSession) {
-        this.currentSession = currentSession;
-    }
-
+    /**
+     * Getter method for current active hibernate transaction, if there isn't any active transaction then returns null
+     * 
+     * @return - current active hibernate transaction instance else null
+     */
     public Transaction getCurrentTransaction() {
         return currentTransaction;
     }
 
-    public void setCurrentTransaction(final Transaction currentTransaction) {
-        this.currentTransaction = currentTransaction;
-    }
-
-    /** Save a new category */
+    /**
+     * Save a new category
+     * 
+     * @param newCategory
+     *            - new category to be saved
+     */
     @Override
     public void saveCategory(final Category newCategory) {
         openCurrentSessionwithTransaction();
@@ -66,7 +82,12 @@ public class CategoryDaoImpl implements CategoryDao {
         closeCurrentSessionwithTransaction();
     }
 
-    /** Update category details for an already existing category */
+    /**
+     * Update category details for an already existing category
+     * 
+     * @param modifiedCategory
+     *            - modified category object
+     */
     @Override
     public void updateCategory(final Category modifiedCategory) {
         openCurrentSessionwithTransaction();
@@ -74,7 +95,13 @@ public class CategoryDaoImpl implements CategoryDao {
         closeCurrentSessionwithTransaction();
     }
 
-    /** Find category by its id */
+    /**
+     * Find Category by its category-id if it exists, else return null
+     * 
+     * @param id
+     *            - category id
+     * @return - retrieved category instance if it exists else null
+     */
     public Category findByCategoryId(final Long id) {
         openCurrentSessionwithTransaction();
         Category category = (Category) getCurrentSession().get(Category.class, id);
@@ -82,7 +109,15 @@ public class CategoryDaoImpl implements CategoryDao {
         return category;
     }
 
-    /** Get category by its name, as category names are unique for an installation */
+    /**
+     * Find Category by its category-name if it exists else returns null;
+     * 
+     * @note category names are unique for every installation
+     * 
+     * @param categoryName
+     *            - name of category to find
+     * @return - Category instance with given category-name if it exists else returns null
+     */
     @SuppressWarnings("unchecked")
     public Category findByCategoryName(final String categoryName) {
         openCurrentSessionwithTransaction();
@@ -97,7 +132,12 @@ public class CategoryDaoImpl implements CategoryDao {
         }
     }
 
-    /** Delete a given category */
+    /**
+     * Delete a given category
+     * 
+     * @param category
+     *            - category object to be deleted
+     */
     @Override
     public void deleteCategory(final Category category) {
         openCurrentSessionwithTransaction();
@@ -105,7 +145,11 @@ public class CategoryDaoImpl implements CategoryDao {
         closeCurrentSessionwithTransaction();
     }
 
-    /** Get all categories available in current installation */
+    /**
+     * Get all categories available in current installation
+     * 
+     * @return List<Category> - a list of all retrieved categories
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<Category> getAllCategories() {
@@ -115,23 +159,25 @@ public class CategoryDaoImpl implements CategoryDao {
         return categories;
     }
 
-    /** Delete all available categories */
-    public void deleteAllCategories() {
-        List<Category> categoryList = getAllCategories();
-        for (Category category : categoryList) {
-            deleteCategory(category);
-        }
-    }
-
     /**
-     * Get Category by its Category-Id
+     * Get category by its category id
+     * 
+     * @param id
+     *            - category id to be retrieved
+     * @return Category object if there is a category with given category-id else returns null
      */
     @Override
     public Category getCategory(final Long id) {
         return findByCategoryId(id);
     }
 
-    /** Get Category by its Category-Name; as category names are unique per installation */
+    /**
+     * Get category by its name, as category names are unique for an installation
+     * 
+     * @param categoryName
+     *            - name of category to be retrieved
+     * @return Category object if there is a category with given category-name else returns null
+     */
     @Override
     public Category getCategoryByName(final String categoryName) {
         return findByCategoryName(categoryName);

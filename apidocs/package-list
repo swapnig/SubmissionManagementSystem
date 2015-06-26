@@ -10,11 +10,5 @@ edu.neu.ccis.sms.entity.users
 edu.neu.ccis.sms.filters
 edu.neu.ccis.sms.listener
 edu.neu.ccis.sms.servlets
-edu.neu.ccis.sms.servlets.members.create
-edu.neu.ccis.sms.servlets.members.delete
-edu.neu.ccis.sms.servlets.members.read
-edu.neu.ccis.sms.servlets.members.register
-edu.neu.ccis.sms.servlets.members.registerable
-edu.neu.ccis.sms.servlets.members.submittable
-edu.neu.ccis.sms.servlets.members.update
+edu.neu.ccis.sms.servlets.members
 edu.neu.ccis.sms.util

@@ -37,7 +37,14 @@ import edu.neu.ccis.sms.entity.users.User;
 import edu.neu.ccis.sms.util.CMISConnector;
 
 /**
- * Servlet implementation class UploadForMember
+ * Servlet implementation class UploadForMember; Uploads submission document for submittable member by current logged-in
+ * submitter user;
+ * 
+ * Takes request parameter - 1) "memberId" - as the submittable member for which user is submitting the document for, 2)
+ * and actual uploaded document file.
+ * 
+ * The uploaded submission document file - is then uploaded into CMS system, under submittable member folder in CMS. And
+ * the CMS document id, path, contentUrls are saved into SMS persistent store in Document entity.
  * 
  * @author Pramod R. Khare
  * @date 2-June-2015
@@ -58,7 +65,8 @@ public class UploadForMember extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -66,7 +74,15 @@ public class UploadForMember extends HttpServlet {
     }
 
     /**
-     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
+     * Uploads submission document for submittable member by current logged-in submitter user; Upon receiving file
+     * upload submission, parses the request to read upload data and saves the file at temporary location on disk before
+     * uploading it into CMS.
+     * 
+     * Takes request parameter - 1) "memberId" - as the submittable member for which user is submitting the document
+     * for, 2) and actual uploaded document file.
+     * 
+     * The uploaded submission document file - is then uploaded into CMS system, under submittable member folder in CMS.
+     * And the CMS document id, path, contentUrls are saved into SMS persistent store in Document entity.
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
@@ -85,10 +101,6 @@ public class UploadForMember extends HttpServlet {
         Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
 
         String submittedFromRemoteAddress = request.getRemoteAddr();
-
-        // DAOs
-        UserDao userDao = new UserDaoImpl();
-        MemberDao memberDao = new MemberDaoImpl();
 
         ServletContext context = request.getServletContext();
 
@@ -163,78 +175,10 @@ public class UploadForMember extends HttpServlet {
             }
 
             // Upload this file into CMS only if we have a valid memberId,
-            // uploaded file, filename from request
+            // and uploaded file, and filename from request
             if (null != memberIdToUploadFor && null != storeFile && null != fileName) {
-                User submitter = userDao.getUser(userId);
-                Member member = memberDao.getMember(memberIdToUploadFor);
-
-                String memberFolderPath = member.getCmsFolderPath();
-
-                // Create the email-id folder for given user if it doesn't exist
-                Folder submitterCMSFolder = CMISConnector.createFolder(memberFolderPath, submitter.getEmail());
-
-                DocumentDao docDao = new DocumentDaoImpl();
-                org.apache.chemistry.opencmis.client.api.Document doc = null;
-
-                // First check if user has already submitted for this
-                // member already - meaning is it a resubmission, then get the
-                // document reference
-                // Get the submission document reference for given memberId
-                Document smsDoc = userDao.getSubmissionDocumentForMemberIdByUserId(userId, memberIdToUploadFor);
-
-                // If there is no previous submission by this user for this
-                // memberId
-                if (null == smsDoc) {
-                    // Upload the uploaded-file into CMS
-                    doc = CMISConnector.uploadToCMSUsingFileToFolder(submitterCMSFolder, fileName, storeFile);
-
-                    // Save the Document object into SMS database
-                    smsDoc = new Document();
-                    smsDoc.setFilename(fileName);
-                    smsDoc.setCmsDocContentUrl(doc.getContentUrl());
-                    smsDoc.setCmsDocId(doc.getId());
-                    smsDoc.setCmsDocumentPath(doc.getPaths().get(0));
-                    smsDoc.setCmsDocVersion(doc.getVersionLabel());
-                    smsDoc.setContentType((String) doc.getPropertyValue("cmis:contentStreamMimeType"));
-                    smsDoc.addSubmittedBy(submitter);
-                    smsDoc.setSubmittedForMember(member);
-                    smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
-
-                    docDao.saveDocument(smsDoc);
-                    LOGGER.info("Saved user's first submission into CMS!");
-                    request.setAttribute(RequestKeys.PARAM_MESSAGE, "Your submission received successfully by system."
-                            + "<br/>Document Name - " + fileName + "<br/>Received on - " + smsDoc.getSubmittedOnTimestamp());
-                } else {
-                    // Resubmission scenario - get previous Document reference
-                    // and update it with newer version
-                    doc = CMISConnector.getDocumentByPath(smsDoc.getCmsDocumentPath());
-
-                    // Check if we have CHECK_OUT permission
-                    if (null != doc && doc.getAllowableActions().getAllowableActions().contains(Action.CAN_CHECK_OUT)) {
-                        doc = CMISConnector.updateNewDocumentVersion(doc, fileName, storeFile);
-
-                        // Update the Document
-                        smsDoc.setFilename(fileName);
-                        smsDoc.setCmsDocContentUrl(doc.getContentUrl());
-                        smsDoc.setCmsDocId(doc.getId());
-                        smsDoc.setCmsDocumentPath(doc.getPaths().get(0));
-                        smsDoc.setCmsDocVersion(doc.getVersionLabel());
-                        smsDoc.setContentType((String) doc.getPropertyValue("cmis:contentStreamMimeType"));
-                        smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
-                        smsDoc.setSubmittedOnTimestamp(new Date());
-
-                        docDao.updateDocument(smsDoc);
-                        LOGGER.info("Saved user's resubmission into CMS!");
-                        request.setAttribute(RequestKeys.PARAM_MESSAGE,
-                                "Your resubmission received successfully by system." + "<br/>Document Name - " + fileName
-                                        + "<br/>Received on - " + smsDoc.getSubmittedOnTimestamp());
-                    } else {
-                        LOGGER.info("Failed to save user's resubmission into CMS!");
-                        request.setAttribute(RequestKeys.PARAM_MESSAGE,
-                                "Failed to save your resubmission, Please retry or contact administrator.");
-                    }
-                }
-                LOGGER.info("Successfully uploaded the document for Member! - " + doc.getPaths().get(0));
+                uploadDocToCMSAndUpdateSMSDocumentEntity(request, userId, memberIdToUploadFor, fileName, storeFile,
+                        submittedFromRemoteAddress);
             } else {
                 request.setAttribute(RequestKeys.PARAM_MESSAGE, "Failed to save your submission; "
                         + "some problem with receiveing your submission, Please retry or contact administrator.");
@@ -247,5 +191,97 @@ public class UploadForMember extends HttpServlet {
         }
         // redirects client to message page
         request.getRequestDispatcher(JspViews.SUBMIT_TO_MEMBER_VIEW).forward(request, response);
+    }
+
+    /**
+     * Upload the submission document contents into CMS and save the Document entity into SMS persistent store with all
+     * cms document related information; If its a new submission then uploading document into CMS will create first 1.0
+     * version of document; during resubmission, however we checkout and checkin new document contents and change the
+     * file name to new filename as well, this will cause CMS document node version to increase for every resubmission;
+     * 
+     * @param userId
+     *            - submitter user id
+     * @param memberIdToUploadFor
+     *            - submittable member for which this document is getting submitted
+     * @throws Exception
+     *             - If it fails to upload file contents to CMS (e.g. permission issues in CMS, etc)
+     */
+    private void uploadDocToCMSAndUpdateSMSDocumentEntity(final HttpServletRequest request, final Long userId,
+            final Long memberIdToUploadFor, final String fileName, final File storeFile,
+            final String submittedFromRemoteAddress) throws Exception
+    {
+
+        // DAOs
+        UserDao userDao = new UserDaoImpl();
+        MemberDao memberDao = new MemberDaoImpl();
+
+        User submitter = userDao.getUser(userId);
+        Member member = memberDao.getMember(memberIdToUploadFor);
+
+        String memberFolderPath = member.getCmsFolderPath();
+
+        // Create the email-id folder for given user if it doesn't exist
+        Folder submitterCMSFolder = CMISConnector.createFolder(memberFolderPath, submitter.getEmail());
+
+        DocumentDao docDao = new DocumentDaoImpl();
+        org.apache.chemistry.opencmis.client.api.Document doc = null;
+
+        // First check if user has already submitted for this
+        // member already - meaning is it a resubmission, then get the
+        // document reference
+        // Get the submission document reference for given memberId
+        Document smsDoc = userDao.getSubmissionDocumentForMemberIdByUserId(userId, memberIdToUploadFor);
+
+        // If there is no previous submission by this user for this
+        // memberId
+        if (null == smsDoc) {
+            // Upload the uploaded-file into CMS
+            doc = CMISConnector.uploadToCMSUsingFileToFolder(submitterCMSFolder, fileName, storeFile);
+
+            // Save the Document object into SMS database
+            smsDoc = new Document();
+            smsDoc.setFilename(fileName);
+            smsDoc.setCmsDocContentUrl(doc.getContentUrl());
+            smsDoc.setCmsDocId(doc.getId());
+            smsDoc.setCmsDocumentPath(doc.getPaths().get(0));
+            smsDoc.setCmsDocVersion(doc.getVersionLabel());
+            smsDoc.setContentType((String) doc.getPropertyValue("cmis:contentStreamMimeType"));
+            smsDoc.addSubmittedBy(submitter);
+            smsDoc.setSubmittedForMember(member);
+            smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
+
+            docDao.saveDocument(smsDoc);
+            LOGGER.info("Saved user's first submission into CMS!");
+            request.setAttribute(RequestKeys.PARAM_MESSAGE, "Your submission received successfully by system."
+                    + "<br/>Document Name - " + fileName + "<br/>Received on - " + smsDoc.getSubmittedOnTimestamp());
+        } else {
+            // Resubmission scenario - get previous Document reference
+            // and update it with newer version
+            doc = CMISConnector.getDocumentByPath(smsDoc.getCmsDocumentPath());
+
+            // Check if we have CHECK_OUT permission
+            if (null != doc && doc.getAllowableActions().getAllowableActions().contains(Action.CAN_CHECK_OUT)) {
+                doc = CMISConnector.updateNewDocumentVersion(doc, fileName, storeFile);
+
+                // Update the Document
+                smsDoc.setFilename(fileName);
+                smsDoc.setCmsDocContentUrl(doc.getContentUrl());
+                smsDoc.setCmsDocId(doc.getId());
+                smsDoc.setCmsDocumentPath(doc.getPaths().get(0));
+                smsDoc.setCmsDocVersion(doc.getVersionLabel());
+                smsDoc.setContentType((String) doc.getPropertyValue("cmis:contentStreamMimeType"));
+                smsDoc.setSubmittedFromRemoteAddress(submittedFromRemoteAddress);
+                smsDoc.setSubmittedOnTimestamp(new Date());
+
+                docDao.updateDocument(smsDoc);
+                LOGGER.info("Saved user's resubmission into CMS!");
+                request.setAttribute(RequestKeys.PARAM_MESSAGE, "Your resubmission received successfully by system."
+                        + "<br/>Document Name - " + fileName + "<br/>Received on - " + smsDoc.getSubmittedOnTimestamp());
+            } else {
+                LOGGER.info("Failed to save user's resubmission into CMS!");
+                request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                        "Failed to save your resubmission, Please retry or contact administrator.");
+            }
+        }
     }
 }

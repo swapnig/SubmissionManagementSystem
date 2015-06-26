@@ -30,7 +30,14 @@ import edu.neu.ccis.sms.entity.users.User;
 import edu.neu.ccis.sms.util.CMISConnector;
 
 /**
- * Servlet implementation class DocumentRetrievalServlet
+ * Servlet implementation class DocumentRetrievalServlet; Download the submission documents for given submittable member
+ * as ZIP file.
+ * 
+ * Servlet takes one request parameter - 1) memberId - submittable member id for which current user has EVALUATOR role
+ * and is trying to download the submissions for evaluating them. First we check who all submitters are mapped for given
+ * member to this evaluator. For each submitter user - we check if that user has submitted a document or not, if yes
+ * then download the document contents from CMS into local temporary directory before compressing it and sending as ZIP
+ * stream to EVALUATOR.
  * 
  * @author Pramod R. Khare
  * @date 12-June-2015
@@ -50,7 +57,8 @@ public class DocumentRetrievalServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -58,7 +66,13 @@ public class DocumentRetrievalServlet extends HttpServlet {
     }
 
     /**
-     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
+     * Download the submission documents for given submittable member as ZIP file.
+     * 
+     * Servlet takes one request parameter - 1) memberId - submittable member id for which current user has EVALUATOR
+     * role and is trying to download the submissions for evaluating them. First we check who all submitters are mapped
+     * for given member to this evaluator. For each submitter user - we check if that user has submitted a document or
+     * not, if yes then download the document contents from CMS into local temporary directory before compressing it and
+     * sending as ZIP stream to EVALUATOR.
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
@@ -68,16 +82,12 @@ public class DocumentRetrievalServlet extends HttpServlet {
             HttpSession session = request.getSession(false);
             Long userId = (Long) session.getAttribute(SessionKeys.keyUserId);
 
-            // Load all the submittable Member Details
-            Long activeMemberId = (Long) session.getAttribute(SessionKeys.activeMemberId);
-            LOGGER.info("Session activeMemberId - " + activeMemberId);
-
             // Get parameter "memberId" for which submissions to be downloaded
             Long memberId = Long.parseLong(request.getParameter("memberId"));
-            LOGGER.info("Downloading submissions for - " + memberId);
-
             UserDao userDao = new UserDaoImpl();
             User reviewer = userDao.getUserByIdWithSubmittersToEvaluateMappings(userId);
+
+            // Get all the submitters which are to be evalauted by current logged-in user - EVALUATOR
             Set<User> evaluateSubmitters = reviewer.getSubmittersToEvaluateForMemberId(memberId);
 
             File tempDir = new File(System.getProperty("java.io.tmpdir"));
@@ -89,13 +99,12 @@ public class DocumentRetrievalServlet extends HttpServlet {
                 FileUtils.deleteDirectory(solutionsDir);
             }
 
+            // Creating a temporary directory to download the individual solutions from submitters from CMS
             solutionsDir.mkdirs();
 
-            LOGGER.info("Solutions tmp dir - " + solutionsDir.getAbsolutePath());
-            LOGGER.info("Downloading submissions for submitters " + evaluateSubmitters.size());
-
+            // For each submitter, check if he/she has submitted any document into the SMS system, if yes download it
+            // from CMS, else skip to next submitter
             for (User user : evaluateSubmitters) {
-                LOGGER.info("Downloading document user - " + user.getEmail());
                 Document doc = null;
                 try {
                     doc = userDao.getSubmissionDocumentForMemberIdByUserId(user.getId(), memberId);
@@ -111,16 +120,13 @@ public class DocumentRetrievalServlet extends HttpServlet {
                     file.createNewFile();
 
                     CMISConnector.downloadDocument(doc.getCmsDocId(), file.getAbsolutePath());
-                    LOGGER.info("Document downloaded - " + file.getAbsolutePath());
                 } catch (final Exception e) {
                     LOGGER.info("Unable to download document - " + doc.getFilename());
                     e.printStackTrace();
                 }
             }
 
-            LOGGER.info("Document submissions downloaded successfully from CMS!!");
-
-            // Checks to see if the directory contains some files.
+            // Checks to see if the temporary solutions directory contains some files.
             if (solutionsDir != null && solutionsDir.list().length > 0) {
                 // Call the zipFiles method for creating a zip stream.
                 byte[] zip = zipFiles(solutionsDir);
@@ -162,7 +168,12 @@ public class DocumentRetrievalServlet extends HttpServlet {
     }
 
     /**
-     * Compress the given directory with all its files.
+     * Compress the given directory with all its files into a Zip output stream
+     * 
+     * @param directory
+     *            - Directory to be compressed into ZIP file
+     * @return - ZIP output stream bytes
+     * @throws IOException
      */
     private byte[] zipFiles(File directory) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -179,8 +190,10 @@ public class DocumentRetrievalServlet extends HttpServlet {
     }
 
     /**
+     * Add directory entry into zipoutputstream;
      * 
      * @param dirObj
+     *            - directory to be added into zip output stream
      * @throws IOException
      */
     private void addDir(File dirObj, ZipOutputStream out, String zipEntryRelativePath) throws IOException {

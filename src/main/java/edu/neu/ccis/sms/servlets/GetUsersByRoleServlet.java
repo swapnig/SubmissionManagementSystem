@@ -20,7 +20,14 @@ import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Servlet implementation class GetUsersByRoleServlet
+ * Servlet implementation class GetUsersByRoleServlet; This servlet gives the list of users who have registered for a
+ * given registerable member and have given role.
+ * 
+ * Servlet takes two request parameters :
+ * 
+ * 1) memberId - id of a registerable member for which we are retrieving users list
+ * 
+ * 2) roleType - role for which we are retrieving users list
  * 
  * @author Pramod R. Khare
  * @date 19-June-2015
@@ -39,7 +46,8 @@ public class GetUsersByRoleServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -47,7 +55,14 @@ public class GetUsersByRoleServlet extends HttpServlet {
     }
 
     /**
-     * Get the user's list by their role for a registerable member
+     * Get the user's list by their role for a registerable member;
+     * 
+     * Takes two request parameters :
+     * 
+     * 1) memberId - id of a registerable member for which we are retrieving users list
+     * 
+     * 2) roleType - role for which we are retrieving users list
+     * 
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException

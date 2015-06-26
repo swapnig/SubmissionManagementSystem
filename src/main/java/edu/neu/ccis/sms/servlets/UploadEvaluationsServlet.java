@@ -31,7 +31,25 @@ import edu.neu.ccis.sms.entity.submissions.Evaluation;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Servlet implementation class UploadEvaluationsServlet
+ * Servlet implementation class UploadEvaluationsServlet; Saves document submission evaluations uploaded by Evaluator
+ * into SMS system; As every evaluator is mapped/allocated with fixed set of submitters, this servlet saves only
+ * evaluations for users for whom this EVALUATOR user is mapped with. If there is any other user email id found in
+ * request it ignores them.
+ * 
+ * It takes following request parameters :
+ * 
+ * 1) submittableMemberId - submittable member for which these evaluation are getting uploaded
+ * 
+ * 2) maxGrades - maximum possible grades in these evaluations
+ * 
+ * And multiple of following set of request parameters - e.g. "submitterId0", "gradesReceived0", "comments0",
+ * "submitterId1", "gradesReceived1", "comments1", etc.
+ * 
+ * 3) submitterId - submitter user email id whose submission document is evaluated
+ * 
+ * 4) gradesReceived - actual grades received for the submission document by the submitter user
+ * 
+ * 5) comments - Overall comments by evaluator about the submission by submitter
  * 
  * @author Pramod R. Khare
  * @date 2-June-2015
@@ -51,7 +69,8 @@ public class UploadEvaluationsServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -59,7 +78,25 @@ public class UploadEvaluationsServlet extends HttpServlet {
     }
 
     /**
-     * Upon receiving file upload submission, parses the request to read upload data and saves the file on disk.
+     * Saves document submission evaluations uploaded by Evaluator into SMS system; As every evaluator is
+     * mapped/allocated with fixed set of submitters, this servlet saves only evaluations for users for whom this
+     * EVALUATOR user is mapped with. If there is any other user email id found in request it ignores them.
+     * 
+     * It takes following request parameters :
+     * 
+     * 1) submittableMemberId - submittable member for which these evaluation are getting uploaded
+     * 
+     * 2) maxGrades - maximum possible grades in these evaluations
+     * 
+     * And multiple of following set of request parameters - e.g. "submitterId0", "gradesReceived0", "comments0",
+     * "submitterId1", "gradesReceived1", "comments1", etc.
+     * 
+     * 3) submitterId - submitter user email id whose submission document is evaluated
+     * 
+     * 4) gradesReceived - actual grades received for the submission document by the submitter user
+     * 
+     * 5) comments - Overall comments by evaluator about the submission by submitter
+     * 
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
@@ -76,8 +113,17 @@ public class UploadEvaluationsServlet extends HttpServlet {
             MemberDao memberDao = new MemberDaoImpl();
             EvaluationDao evalDao = new EvaluationDaoImpl();
 
-            Long submittableMemberId = Long.parseLong(request.getParameter("submittableMemberId"));
-            Float maxGrades = Float.parseFloat(request.getParameter("maxGrades"));
+            Long submittableMemberId = Long.parseLong(request.getParameter("submittableMemberId").trim());
+            Float maxGrades = Float.parseFloat(request.getParameter("maxGrades").trim());
+
+            // For negative or zero - maximum possible grades - throw exception
+            if (maxGrades <= 0) {
+                request.setAttribute(RequestKeys.PARAM_MESSAGE,
+                        "Invalid Maximum Grades value, it should be more than zero.");
+                LOGGER.info("Invalid Out ot total i.e. Maximum grades value. It should be more than zero.");
+                request.getRequestDispatcher(JspViews.UPLOAD_EVALUATIONS_VIEW).forward(request, response);
+                return;
+            }
 
             User evaluatedBy = userDao.getUserByIdWithSubmittersToEvaluateMappings(evaluatorId);
             Set<User> submittersToEvaluate = evaluatedBy.getSubmittersToEvaluateForMemberId(submittableMemberId);
@@ -90,14 +136,14 @@ public class UploadEvaluationsServlet extends HttpServlet {
             for (int i = 0; i < count; i++) {
                 String strSubmitterUserId = request.getParameter("submitterId" + i);
                 try {
-                    Long submitterUserId = Long.parseLong(strSubmitterUserId);
-                    Float gradesReceived = Float.parseFloat(request.getParameter("gradesReceived" + i));
+                    Long submitterUserId = Long.parseLong(strSubmitterUserId.trim());
+                    Float gradesReceived = Float.parseFloat(request.getParameter("gradesReceived" + i).trim());
                     // In case gradesReceived are more than the toal maximum
                     // grades possible then
                     if (gradesReceived > maxGrades) {
                         gradesReceived = maxGrades;
                     }
-                    String comments = request.getParameter("comments" + i);
+                    String comments = request.getParameter("comments" + i).trim();
 
                     if (!checkIfUserIsValidToEvaluate(submittersToEvaluate, submitterUserId)) {
                         LOGGER.info("This submitterUserId " + submitterUserId
@@ -205,10 +251,11 @@ public class UploadEvaluationsServlet extends HttpServlet {
                 case MAXIMUM: {
                     if (finalEval.getResult() == null) {
                         // Always save the percent result
-                        finalEval.setResult(eval.getResult());
+                        finalEval.setResult((eval.getResult() / eval.getOutOfTotal()) * 100);
                     } else {
-                        if (finalEval.getResult() < eval.getResult()) {
-                            finalEval.setResult(eval.getResult());
+                        float percentEvalResult = (eval.getResult() / eval.getOutOfTotal()) * 100;
+                        if (finalEval.getResult() < percentEvalResult) {
+                            finalEval.setResult(percentEvalResult);
                         }
                     }
 
@@ -216,10 +263,11 @@ public class UploadEvaluationsServlet extends HttpServlet {
                 }
                 case MINIMUM: {
                     if (finalEval.getResult() == null) {
-                        finalEval.setResult(eval.getResult());
+                        finalEval.setResult((eval.getResult() / eval.getOutOfTotal()) * 100);
                     } else {
-                        if (finalEval.getResult() > eval.getResult()) {
-                            finalEval.setResult(eval.getResult());
+                        float percentEvalResult = (eval.getResult() / eval.getOutOfTotal()) * 100;
+                        if (finalEval.getResult() > percentEvalResult) {
+                            finalEval.setResult(percentEvalResult);
                         }
                     }
 
@@ -228,12 +276,13 @@ public class UploadEvaluationsServlet extends HttpServlet {
                 case AVERAGE:
                 default: {
                     if (finalEval.getResult() == null) {
-                        finalEval.setResult(eval.getResult());
+                        finalEval.setResult((eval.getResult() / eval.getOutOfTotal()) * 100);
                     } else {
                         // Just add all the evaluations, division by
                         // total number of evaluations will be done
                         // in the end
-                        finalEval.setResult(finalEval.getResult() + eval.getResult());
+                        float percentEvalResult = (eval.getResult() / eval.getOutOfTotal()) * 100;
+                        finalEval.setResult(finalEval.getResult() + percentEvalResult);
                     }
                     break;
                 }

@@ -19,7 +19,18 @@ import edu.neu.ccis.sms.dao.users.UserDaoImpl;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Servlet implementation class UpdateTOIForUserServlet
+ * Servlet implementation class UpdateTOIForUserServlet; Saves user's topics of interests/preferences as list of strings
+ * into persistent store; Using this servlet we can Add, Modify or Delete the topics of preferences
+ * 
+ * This servlet can be used to Add, modify and delete - topics of interests/preferences list
+ * 
+ * Takes request parameters:
+ * 
+ * 1) "submitType" - There can be 3 submit types - a) "Add" - To add new topics to topics of interests/preferences list,
+ * b) "Replace" - Modify topics of interests/preferences list - here it removes old list of topics with new list of
+ * topics, c) "Clear" - To delete all old topics of interests/preferences
+ * 
+ * 2) "toifield" - topic name to be added/modifed into topics of interests/preferences list
  * 
  * @author Pramod R. Khare
  * @date 2-June-2015
@@ -28,6 +39,8 @@ import edu.neu.ccis.sms.entity.users.User;
 @WebServlet(name = "UpdateTOIForUserServlet", urlPatterns = { "/UpdateTOIForUser" })
 public class UpdateTOIForUserServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static final String toiJspView = "pages/update_toi.jsp";
+    private static final String errorPageJspView = "pages/error.jsp";
     private static final Logger LOGGER = Logger.getLogger(UpdateCOIForUserServlet.class.getName());
 
     /**
@@ -38,7 +51,8 @@ public class UpdateTOIForUserServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Forwards to doPost(request, response) method, See javadoc comments of
+     * {@link #doPost(HttpServletRequest, HttpServletResponse)}
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
@@ -46,7 +60,19 @@ public class UpdateTOIForUserServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * Saves user's topics of interests/preferences as list of strings into persistent store; Using this servlet we can
+     * Add, Modify or Delete the topics of preferences
+     * 
+     * This servlet can be used to Add, modify and delete - topics of interests/preferences list
+     * 
+     * Takes request parameters:
+     * 
+     * 1) "submitType" - There can be 3 submit types - a) "Add" - To add new topics to topics of interests/preferences
+     * list, b) "Replace" - Modify topics of interests/preferences list - here it removes old list of topics with new
+     * list of topics, c) "Clear" - To delete all old topics of interests/preferences
+     * 
+     * 2) "toifield" - topic name to be added/modifed into topics of interests/preferences list
+     * 
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException
@@ -92,12 +118,11 @@ public class UpdateTOIForUserServlet extends HttpServlet {
                 userDao.updateUser(one);
             }
 
-            LOGGER.info("TOI saved successfully!");
-            response.sendRedirect("pages/update_toi.jsp");
+            response.sendRedirect(toiJspView);
         } catch (final Exception e) {
             e.printStackTrace();
             LOGGER.info("Failed to update topics of interest : " + e.getMessage());
-            response.sendRedirect("pages/error.jsp");
+            response.sendRedirect(errorPageJspView);
         }
     }
 }

@@ -4,57 +4,75 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import edu.neu.ccis.sms.entity.submissions.Document;
 import edu.neu.ccis.sms.util.HibernateUtil;
 
 /**
- * DAO implementation class for Document Entity bean
+ * DAO implementation class for Document Entity bean; Provides access methods for document entity
  * 
  * @author Pramod R. Khare
  * @date 9-May-2015
  * @lastUpdate 10-June-2015
  */
 public class DocumentDaoImpl implements DocumentDao {
+    /** Hibernate session instance */
     private Session currentSession;
+
+    /** Hibernate session transaction instance */
     private Transaction currentTransaction;
 
+    /** Default Constructor */
     public DocumentDaoImpl() {
     }
 
-    public Session openCurrentSessionwithTransaction() {
-        currentSession = getSessionFactory().openSession();
+    /**
+     * private utility book-keeping method to open hibernate session with a new transaction
+     * 
+     * @return - Hibernate session instance
+     */
+    private Session openCurrentSessionwithTransaction() {
+        currentSession = HibernateUtil.getSessionFactory().openSession();
         currentTransaction = currentSession.beginTransaction();
         return currentSession;
     }
 
-    public void closeCurrentSessionwithTransaction() {
+    /**
+     * private utility book-keeping method to close current transaction along with hibernate session, committing any new
+     * changes to entities; nulling out old references;
+     */
+    private void closeCurrentSessionwithTransaction() {
         currentTransaction.commit();
         currentSession.close();
+        currentTransaction = null;
+        currentSession = null;
     }
 
-    private static SessionFactory getSessionFactory() {
-        return HibernateUtil.getSessionFactory();
-    }
-
+    /**
+     * Getter method for current active hibernate session, if there isn't any active session then returns null
+     * 
+     * @return - current active hibernate session instance else null
+     */
     public Session getCurrentSession() {
         return currentSession;
     }
 
-    public void setCurrentSession(Session currentSession) {
-        this.currentSession = currentSession;
-    }
-
+    /**
+     * Getter method for current active hibernate transaction, if there isn't any active transaction then returns null
+     * 
+     * @return - current active hibernate transaction instance else null
+     */
     public Transaction getCurrentTransaction() {
         return currentTransaction;
     }
 
-    public void setCurrentTransaction(Transaction currentTransaction) {
-        this.currentTransaction = currentTransaction;
-    }
-
+    /**
+     * Save a new document
+     * 
+     * @param newDocument
+     *            - new document to be saved
+     */
     @Override
     public void saveDocument(Document newDocument) {
         openCurrentSessionwithTransaction();
@@ -62,6 +80,12 @@ public class DocumentDaoImpl implements DocumentDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /**
+     * Update document details for a given document
+     * 
+     * @param modifiedDocument
+     *            - modified document object
+     */
     @Override
     public void updateDocument(Document modifiedDocument) {
         openCurrentSessionwithTransaction();
@@ -69,6 +93,13 @@ public class DocumentDaoImpl implements DocumentDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /**
+     * Find a specific document by given document id
+     * 
+     * @param id
+     *            - document id
+     * @return - Document obejct with given document id if it exists else null
+     */
     public Document findByDocumentId(Long id) {
         openCurrentSessionwithTransaction();
         Document Document = (Document) getCurrentSession().get(Document.class, id);
@@ -76,6 +107,12 @@ public class DocumentDaoImpl implements DocumentDao {
         return Document;
     }
 
+    /**
+     * Delete a document
+     * 
+     * @param document
+     *            - document to be deleted
+     */
     @Override
     public void deleteDocument(Document Document) {
         openCurrentSessionwithTransaction();
@@ -83,6 +120,11 @@ public class DocumentDaoImpl implements DocumentDao {
         closeCurrentSessionwithTransaction();
     }
 
+    /**
+     * Gets all the documents from all users submitted for all members
+     * 
+     * @return - list of all documents submitted till now in this system
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<Document> getAllDocuments() {
@@ -92,18 +134,25 @@ public class DocumentDaoImpl implements DocumentDao {
         return categories;
     }
 
-    public void deleteAllCategories() {
-        List<Document> DocumentList = getAllDocuments();
-        for (Document document : DocumentList) {
-            deleteDocument(document);
-        }
-    }
-
+    /**
+     * Gets a specific document by given document id
+     * 
+     * @param id
+     *            - document id
+     * @return - Document obejct with given document id if it exists else null
+     */
     @Override
     public Document getDocument(Long id) {
         return findByDocumentId(id);
     }
 
+    /**
+     * Load document along with its all evaluations
+     * 
+     * @param documentId
+     *            - id of a document to be retrieved
+     * @return - Document object with all its evaluations
+     */
     @Override
     public Document getDocumentByIdWithEvaluations(final Long documentId) {
         openCurrentSessionwithTransaction();
