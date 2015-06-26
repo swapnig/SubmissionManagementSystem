@@ -92,7 +92,7 @@
         <br/>
         <form action="<%=request.getContextPath()%>/UpdateCOIForUser" method="POST">
             <label style="width:400px;display:inline-block;">Enter Conflicts of Interest</label><br/>
-            <font size="2">(Note:Invalid user email ids will be skipped)</font><br/><br/>
+            <font size="2">(Note:Invalid user email ids will be ignored)</font><br/><br/>
             <table id="fieldTable">
                 <tr>
                     <td><input type="text" placeholder="Enter user email-id" name="coifield0" value="" size=50 maxlength=254/></td>

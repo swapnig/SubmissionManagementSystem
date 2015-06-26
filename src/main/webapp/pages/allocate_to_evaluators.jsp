@@ -77,7 +77,7 @@
 	        <table>
 			    <tr>
 	                <td align=center colspan=2>
-	                    <input type='submit' value="Allocate Evaluators" style="width: 150px; display: inline-block;"/>
+	                    <input type='submit' value="Allocate <%=evaluatorCustomTerm%>s" style="width: 150px; display: inline-block;"/>
 	                </td>
 	            </tr>
 	        </table>
