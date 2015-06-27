@@ -25,8 +25,14 @@ import edu.neu.ccis.sms.entity.users.RoleType;
  * Register current user for a given member with given role,
  * if such a user-role-member mapping does not already exist.
  * 
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member id for which role is to be assigned
+ * <br>2) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_USER_ROLE}
+ * - Role to be assigned to the user
+ * 
  * @author Swapnil Gupta
- * @createdOn May 16, 2015
+ * @date 16-May-2015
  *
  */
 @WebServlet("/RegisterUserForMember")
@@ -45,9 +51,7 @@ public class RegisterUserForMemberServlet extends HttpServlet {
     /**
      * When the request is received assign the current user, the given role on the given member,
      * if they do not already have that role for member, else display an error message indicating
-     * that they already have the role on the member
-     * 
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * that they already have the role on the member.
      */
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)

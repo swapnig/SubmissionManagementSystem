@@ -29,10 +29,12 @@ import edu.neu.ccis.sms.entity.users.RoleType;
 
 /**
  * Show all the active registrations for the user on their dashboard, arranged by the roles user has on
- * the members.
+ * the members. Arrange each member by the role user has for the member, members on which user has highest level of
+ * access comes first.
  * 
  * @author Swapnil Gupta
- * @createdOn Jun 1, 2015
+ * @date 1-June-2015
+ * @lastUpdate 20-June-2015
  */
 @WebServlet("/Dashboard")
 public class DashboardServlet extends HttpServlet {
@@ -47,7 +49,7 @@ public class DashboardServlet extends HttpServlet {
 
     /**
      * When the request is received get all the active registration for the current user,
-     * and arranged by the role user has for the member. highest role first
+     * arranged by the role user has for the member. highest role first
      * 
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
@@ -80,7 +82,7 @@ public class DashboardServlet extends HttpServlet {
 
     /**
      * For each role available in the application get all the active registrations for the user.
-     * Arrange each member by the role user has for the member, Members on which user has highest level of
+     * Arrange each member by the role user has for the member, members on which user has highest level of
      * access comes first.
      * 
      * @param request request object for current servlet

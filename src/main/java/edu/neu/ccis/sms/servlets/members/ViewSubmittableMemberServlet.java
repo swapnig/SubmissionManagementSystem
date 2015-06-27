@@ -26,11 +26,16 @@ import edu.neu.ccis.sms.entity.categories.MemberAttribute;
 import edu.neu.ccis.sms.entity.categories.UserToMemberMapping;
 
 /**
- * Show view only details for a submittable member, along with user role specific actions
+ * Show view only details for a submittable member, along with user role specific actions.
+ * Access level of a user for a submittable member is same as their access level on its
+ * registerable ancestor, as you cannot explicitly register for a submittable member.
+ * 
+ * <br><br>Submits data asynchronously to following api-urls
+ * <br>1. "/UpdateMember" : Update selected member details
  * 
  * @author Swapnil Gupta
- * @createdOn Jun 11, 2015
- *
+ * @date 11-June-2015
+ * @lastUpdate 20-June-2015
  */
 @WebServlet("/ViewSubmittableMember")
 public class ViewSubmittableMemberServlet extends HttpServlet {
@@ -47,8 +52,12 @@ public class ViewSubmittableMemberServlet extends HttpServlet {
 
     /**
      * When the request is received to view a submittable, show the view only details to user.
-     * Also identifies the user role for the member and provide option to perform activities authorized for their role
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Based on the user role for the member, provides additional functionalities specific to the role.
+     * 
+     * <br><br> Conductor - Allocate submissions to evaluators, Disseminate evaluation to studens
+     * <br><br> Evaluator - Download submissions for evaluation, Upload evaluations
+     * <br><br> Submitter - Upload submissions
+     * 
      */
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)

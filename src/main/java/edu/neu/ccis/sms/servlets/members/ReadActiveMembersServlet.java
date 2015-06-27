@@ -28,8 +28,15 @@ import edu.neu.ccis.sms.entity.categories.Member;
  * Read all the active child members for the given category and parent member id,
  * presenting these members formatted as values of a select box.
  * 
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_PARENT_MEMBER_ID}
+ * - Member for which existing active child members needs to be fetched
+ * <br>2) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_CATEGORY_NAME}
+ * - Category for which existing active members needs to be fetched
+ * 
  * @author Swapnil Gupta
- * @createdOn June 16, 2015
+ * @date 16-June-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/ReadActiveMembers")

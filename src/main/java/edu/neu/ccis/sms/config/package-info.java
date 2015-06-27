@@ -1,5 +1,6 @@
 /**
- * Configuration classes responsible for loading customized vocabulary and category hierarchy
+ * Contains all of the classes necessary to extract the application workflow terminology
+ * from configuration files.
  * 
  * @since 1.0
  * @author Swapnil Gupta

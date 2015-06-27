@@ -4,35 +4,34 @@ package edu.neu.ccis.sms.constants;
  * Interface containing keys for all the views (jsp files) used by the application
  *
  * @author Swapnil Gupta
- * @version SMS 1.0
- * @since June 1, 2015
+ * @date 20-May-2015
+ * @lastUpdate 20-June-2015
  * @ModifiedBy Pramod Khare
- * @LastModified June 20, 2015
  */
 public interface JspViews {
 
-	/** Key for the Dashboard view. */
-	public static final String DASHBOARD_VIEW = "/pages/dashboard.jsp";
+    /** Key for the Dashboard view. */
+    public static final String DASHBOARD_VIEW = "/pages/dashboard.jsp";
 
-	/** Key for the add member view. */
-	public static final String ADD_MEMBER_VIEW = "/pages/member/addMember.jsp";
+    /** Key for the add member view. */
+    public static final String ADD_MEMBER_VIEW = "/pages/member/addMember.jsp";
 
-	/** Key for view registrable member view. */
-	public static final String VIEW_REGISTRABLE_MEMBER_VIEW = "/pages/member/viewRegistrableMember.jsp";
+    /** Key for view registrable member view. */
+    public static final String VIEW_REGISTRABLE_MEMBER_VIEW = "/pages/member/viewRegistrableMember.jsp";
 
-	/** Key for view submittable member view. */
-	public static final String VIEW_SUBMITTABLE_MEMBER_VIEW = "/pages/member/viewSubmittableMember.jsp";
+    /** Key for view submittable member view. */
+    public static final String VIEW_SUBMITTABLE_MEMBER_VIEW = "/pages/member/viewSubmittableMember.jsp";
 
-	/** Key for register for a member view. */
-	public static final String REGISTER_FOR_MEMBER_VIEW = "/pages/member/registerForMember.jsp";
+    /** Key for register for a member view. */
+    public static final String REGISTER_FOR_MEMBER_VIEW = "/pages/member/registerForMember.jsp";
 
-	/** Key for view member details view. */
-	public static final String VIEW_MEMBER_DETAILS_VIEW = "/pages/member/viewMemberDetails.jsp";
-	
-	/** Key for upload submission document for submittable member page */
-	public static final String SUBMIT_TO_MEMBER_VIEW = "/pages/submit_to_member.jsp";
-	
-	/** Key for upload evaluations page */
+    /** Key for view member details view. */
+    public static final String VIEW_MEMBER_DETAILS_VIEW = "/pages/member/viewMemberDetails.jsp";
+
+    /** Key for upload submission document for submittable member page */
+    public static final String SUBMIT_TO_MEMBER_VIEW = "/pages/submit_to_member.jsp";
+
+    /** Key for upload evaluations page */
     public static final String UPLOAD_EVALUATIONS_VIEW = "/pages/upload_evaluations.jsp";
 
     /** Key for downloading submissions for evaluation page */

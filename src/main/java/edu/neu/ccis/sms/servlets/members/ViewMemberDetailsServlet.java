@@ -11,12 +11,21 @@ import javax.servlet.http.HttpServletResponse;
 import edu.neu.ccis.sms.constants.JspViews;
 
 /**
- * View details for a given member, currently just forwards request to
- * {@link edu.neu.ccis.sms.constants.JspViews#VIEW_MEMBER_DETAILS_VIEW}.
+ * Provide view only member details, for users with conductor access provide additional functionality
+ * to edit member, add role for user to member, activate/inactivate member.
+ * 
+ * <br><br>Retrieves data asynchronously from following api-urls
+ * <br>1. "/ReadMembers"  : Read all members for given category and parent member
+ * <br>2. "/ReadMemberDetails" : Read details for an individual member
+ * 
+ * <br><br>Submits data asynchronously to following api-urls
+ * <br>1. "/ToggleMemberActivation" : Toggle activation state of selected member
+ * <br>2. "/UpdateMember" : Update selected member details
+ * <br>3. "/AddRoleToMember" : Add role for another user on selected member
  * 
  * @author Swapnil Gupta
- * @since Jun 12, 2015
- * @version SMS 1.0
+ * @date 24-May-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/ViewMemberDetails")
@@ -32,7 +41,9 @@ public class ViewMemberDetailsServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Provide view only member details, for users with conductor access provide additional functionality
+     * to edit member, add role for user to member, activate/inactivate member.
+     * 
      */
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {

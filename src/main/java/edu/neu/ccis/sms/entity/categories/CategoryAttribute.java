@@ -14,10 +14,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * Hibernate Entity bean class for CategoryAttribute; Contains attribute name, 
+ * Hibernate Entity bean class for CategoryAttribute; Contains attribute name,
  * type and value information
  *
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
  * @lastUpdate 7-June-2015
  */
@@ -48,7 +48,7 @@ public class CategoryAttribute implements Serializable, Comparable<CategoryAttri
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class CategoryAttribute implements Serializable, Comparable<CategoryAttri
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -64,7 +64,7 @@ public class CategoryAttribute implements Serializable, Comparable<CategoryAttri
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -72,23 +72,23 @@ public class CategoryAttribute implements Serializable, Comparable<CategoryAttri
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(final Category category) {
         this.category = category;
-    }
-    
-    @Override
-    public int compareTo(CategoryAttribute o) {
-        return this.id.compareTo(o.getId());
     }
 
     @Override
-    public boolean equals(Object anObject) {
+    public int compareTo(final CategoryAttribute o) {
+        return id.compareTo(o.getId());
+    }
+
+    @Override
+    public boolean equals(final Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof CategoryAttribute) {
             CategoryAttribute catAttr = (CategoryAttribute) anObject;
-            return (this.id.equals(catAttr.id));
+            return id.equals(catAttr.id);
         }
         return false;
     }

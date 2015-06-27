@@ -22,7 +22,6 @@ import edu.neu.ccis.sms.util.HibernateUtil;
  * 
  * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
- * @modifiedBy
  * @lastUpdate 10-June-2015
  */
 public class UserDaoImpl implements UserDao {

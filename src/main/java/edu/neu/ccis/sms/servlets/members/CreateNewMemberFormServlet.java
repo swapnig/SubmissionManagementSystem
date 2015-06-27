@@ -25,8 +25,15 @@ import edu.neu.ccis.sms.entity.users.RoleType;
  * Create a new member html form from the application terminology, based on its category and parent member,
  * providing user with the controls to submit this form and create a new member.
  * 
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member for which new member is to be created
+ * <br>2) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_CATEGORY_NAME}
+ * - Category for which new member is to be created
+ * 
  * @author Swapnil Gupta
- * @createdOn May 28, 2015
+ * @date 28-May-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/CreateNewMemberForm")
@@ -44,17 +51,16 @@ public class CreateNewMemberFormServlet extends HttpServlet {
 
     /**
      * Upon receiving the request respond with new member form for the given category and parent member,
-     * If the user has conductor access on the given parent member,
-     * Else respond with an authorized member creation error message.
+     * <br> If the user has conductor access on the given parent member,
+     * <br> Else respond with an authorized member creation error message.
      * 
-     * Currently all the category attributes are considered as labels for input type text fields.
-     * First field is a text field, all the subsequent fields are text area
-     * If other input fields are to be considered they need to be configured in the terminology,
+     * <br><br>Currently first attribute is considered as label for input type text field,
+     * while all the subsequent category attributes are considered as labels for input type text area.
+     * <br>If other input fields are to be considered they need to be configured in the terminology,
      * identified below and used to build the html form appropriately
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
-
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
@@ -116,7 +122,8 @@ public class CreateNewMemberFormServlet extends HttpServlet {
                  */
                 if(index++ == 0) {
                     responseData.append("<tr><td>"
-                            + "<label style='text-transform: capitalize'>" + htmlLabels.get(0) + "*</label>:"
+                            + "<label style='text-transform: capitalize'>" + htmlLabels.get(0)
+                            + "<font size='3' color='red'> *</font></label>:"
                             + "</td>");
 
                     responseData.append("<td>"

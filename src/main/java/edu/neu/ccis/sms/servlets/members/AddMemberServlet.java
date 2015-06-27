@@ -11,23 +11,19 @@ import javax.servlet.http.HttpServletResponse;
 import edu.neu.ccis.sms.constants.JspViews;
 
 /**
- * Servlet for Add Member request, currently just forwards the request to the
- * {@link edu.neu.ccis.sms.constants.JspViews#ADD_MEMBER_VIEW}.
+ * Add new member; addition of new members is hierarchy based; Members can only be added as child members
+ * of existing members.
+ * 
+ * <br><br>Retrieves data asynchronously from following api-urls
+ * <br>1. "/ReadActiveMembers"  : Read all active members for given category and parent member
+ * <br>2. "/CreateNewMemberForm" : Create New member form
+ * 
+ * <br><br>Submits data asynchronously to following api-urls
+ * <br>1. "/CreateMember" : Persist new member in database
  * 
  * @author Swapnil Gupta
- * @since May 25, 2015
- * @version SMS 1.0
-
- * 
- * @jsp {@link edu.neu.ccis.sms.constants.JspViews#ADD_MEMBER_VIEW}
- * Displays the user interface to add new member. Addition of new members is hierarchy based.
- * You can only add members as child members to existing members, or create a new parent member
- * first and then the child member
- * 
- * Further mapping includes ajax calls through javascript to
- * "/ReadMembers"  : Read all the members
- * "/CreateNewMemberForm" : Create New member form
- * "/CreateMember" : Persist new member in database
+ * @date 24-May-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/AddMember")
@@ -43,8 +39,11 @@ public class AddMemberServlet extends HttpServlet {
     }
 
     /**
-     * Handle the get request, for the web servlet, currently just redirects to jsp
-     * {@link edu.neu.ccis.sms.constants.JspViews#ADD_MEMBER_VIEW}
+     * Handle the get request, for the web servlet, redirecting to jsp
+     * {@link edu.neu.ccis.sms.constants.JspViews#ADD_MEMBER_VIEW}.
+     * 
+     * Addition of new members is hierarchy based. You can only add members as child members
+     * to existing members.
      *
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)

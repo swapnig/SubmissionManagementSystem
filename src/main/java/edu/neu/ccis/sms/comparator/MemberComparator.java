@@ -9,8 +9,8 @@ import edu.neu.ccis.sms.entity.categories.Member;
  * name property.
  *
  * @author Swapnil Gupta
- * @version SMS 1.0
- * @since Jun 13, 2015
+ * @date 12-June-2015
+ * @lastUpdate 13-June-2015
  */
 public class MemberComparator implements Comparator<Member> {
 

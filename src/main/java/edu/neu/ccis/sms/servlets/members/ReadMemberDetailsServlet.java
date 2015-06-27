@@ -24,12 +24,17 @@ import edu.neu.ccis.sms.entity.categories.MemberStatusType;
 import edu.neu.ccis.sms.entity.users.RoleType;
 
 /**
- * Read all the attributes for the current member providing view only access, for conductors provide
+ * Read all the attributes for the current member providing view only access; for conductors provide
  * additional functionality to edit/update member attributes, add role for user on member and
- * activate/ inactivate a member
+ * activate/ inactivate a member.
+ * 
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member id for which details are to be viewed
  * 
  * @author Swapnil Gupta
- * @createdOn May 28, 2015
+ * @date 28-May-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/ReadMemberDetails")
@@ -46,9 +51,9 @@ public class ReadMemberDetailsServlet extends HttpServlet {
     }
 
     /**
-     * On receiving the request get all the attribute for the current member, and responds back with member
+     * On receiving the request gets all the current member attributes, formatting member
      * details as a view-only form. If the user is conductor provide controls to edit, update member,
-     * add roles for user on member and activate/Inactivate a member.
+     * add roles for user on member and Activate/Inactivate a member.
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
@@ -85,7 +90,8 @@ public class ReadMemberDetailsServlet extends HttpServlet {
             String attributeValue = memberAttribute.getValue();
             if(index++ == 0) {
                 responseData.append("<tr><td>"
-                        + "<label for='" + attributeName + "'>" + attributeName + "</label>"
+                        + "<label for='" + attributeName + "'>" + attributeName
+                        + "<font size='3' color='red'> *</font></label>:"
                         + "</td>");
 
                 responseData.append("<td>"

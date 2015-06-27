@@ -24,12 +24,20 @@ import edu.neu.ccis.sms.entity.categories.Member;
 import edu.neu.ccis.sms.entity.categories.MemberAttribute;
 import edu.neu.ccis.sms.entity.users.RoleType;
 /**
- * Show view only details for a registrable member, along with option to view submittables.
- * If the user has a conductor access for the registrable member then provide option to edit member details and
+ * Show view only details for a registerable member, along with option to view submittables.
+ * If the user has a conductor access for the registerable member then provide option to edit member details and
  * add roles for other user through their email
  * 
+ * <br><br>Retrieves data asynchronously from following api-urls
+ * <br>1. "/ReadSubmittablesForMember"  : Read all submittables for selected member
+ * 
+ * <br><br>Submits data asynchronously to following api-urls]
+ * <br>1. "/UpdateMember" : Update selected member details
+ * <br>2. "/AddRoleToMember" : Add role for another user on selected member
+ * 
  * @author Swapnil Gupta
- * @createdOn Jun 8, 2015
+ * @date 8-June-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/ViewRegistrableMember")
@@ -46,13 +54,12 @@ public class ViewRegistrableMemberServlet extends HttpServlet {
     }
 
     /**
-     * When the request is received get the details of the registrable member, providing option to view
+     * When the request is received, gets the details of the registrable member, providing option to view
      * all the child submittables for this member.
      * 
      * If the current user has conductor access on the registrable member, provide option
      * to edit details, add role for user by email.
      * 
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)

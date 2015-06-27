@@ -1,5 +1,5 @@
 /**
- * Servlet implementation classes for serving requests related to members
+ * Servlet implementation classes for serving requests specific to members
  * 
  * @since 1.0
  * @author Swapnil Gupta

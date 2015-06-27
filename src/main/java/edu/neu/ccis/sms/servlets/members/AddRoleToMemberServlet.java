@@ -22,13 +22,20 @@ import edu.neu.ccis.sms.entity.users.RoleType;
 import edu.neu.ccis.sms.entity.users.User;
 
 /**
- * Adds given role for the member to the user identified by its email id,
+ * Adds new role for a user identified by its email id on the given member,
  * if such a user-role-member mapping does not already exist.
  * 
- * Authentication to perform this action is done from the front end.
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member id for which role is to be assigned
+ * <br>2) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_USER_ROLE}
+ * - Role to be assigned to the user
+ * <br>3) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_USER_EMAIL}
+ * - Email of the user assigned the role
  * 
  * @author Swapnil Gupta
- * @createdOn Jun 16, 2015
+ * @date 16-June-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/AddRoleToMember")
@@ -45,12 +52,12 @@ public class AddRoleToMemberServlet extends HttpServlet {
     }
 
     /**
-     * When the request is received assign the given user, the given role on the given member,
-     * if they do not already have that role for member, else display an error message indicating
-     * that they already have the role on the member.
+     * When the request is received,
+     * <br>If user does not already have that role for member, assign current user selected role on the selected member
+     * <br>Else display an error message indicating that they already have the role on the member.
      * 
-     * If the member with given email id does not exist return an error message indicating that
-     * no user with given email exists
+     * <br>If the member with given email id does not exist return an error message indicating that
+     * no user with given email exists.
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
@@ -59,7 +66,7 @@ public class AddRoleToMemberServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 
         /*
-         * Get the member id, email of the user which is to be assigned the role,\
+         * Get the member id, email of the user which is to be assigned the role,
          * the role to be assigned from request parameters
          */
         Long memberId = Long.parseLong(request.getParameter(RequestKeys.PARAM_MEMBER_ID));

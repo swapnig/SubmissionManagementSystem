@@ -19,13 +19,16 @@ import edu.neu.ccis.sms.entity.categories.Member;
 import edu.neu.ccis.sms.entity.categories.MemberAttribute;
 
 /**
- * Update the new details for the member.
+ * Update the new details for the member; with the restriction that the updated child member name
+ * should be unique for its direct parent member.
  * 
- * Authentication of user for performing this action is done from the front end.
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member id of the member for which details are to be updated.
+ * <br>2) All the member attributes as key value pairs
  * 
  * @author Swapnil Gupta
- * @date Jun 11, 2015
- * @lastUpdate Jun 11, 2015
+ * @date 10-May-2015
  *
  */
 @WebServlet("/UpdateMember")
@@ -45,8 +48,6 @@ public class UpdateMemberServlet extends HttpServlet {
      * When the request is received, update the new details for the member into the database,
      * ensuring the constraint that the new name of the member,
      * if updated does not already exist for the parent member.
-     * 
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {

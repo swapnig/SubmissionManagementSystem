@@ -2,6 +2,7 @@ package edu.neu.ccis.sms.entity.categories;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -23,8 +24,7 @@ import edu.neu.ccis.sms.entity.submissions.EvalType;
 /**
  * Hibernate Entity bean class for Member; Members are simply instances of a Category
  * 
- * @author Pramod R. Khare
- * @modifedBy Swapnil Gupta
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
  * @lastUpdate 10-June-2015
  */
@@ -82,7 +82,7 @@ public class Member implements Serializable, Comparable<Member> {
     /** List of attributes of this member */
     @OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL, CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "member")
     @Column(nullable = false)
-    private Set<MemberAttribute> attributes = new HashSet<MemberAttribute>();
+    private Set<MemberAttribute> attributes = new LinkedHashSet<MemberAttribute>();
 
     /**
      * List of posts for this forum member - kept for future reference - when a Discussion Forum member functionality is

@@ -11,12 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 import edu.neu.ccis.sms.constants.JspViews;
 
 /**
- * Servlet for Register for a member request, currently just forwards the request to the
- * {@link edu.neu.ccis.sms.constants.JspViews#REGISTER_FOR_MEMBER_VIEW}.
+ * Register for an active registerable member, for a specific role,
+ * 
+ * <br><br>Retrieves data asynchronously from following api-urls
+ * <br>1. "/ReadMembers"  : Read all active members for given category and parent member
+ * <br>2. "/ReadMemberDetails" : Read details of the member, user is trying to register
+ * 
+ * <br><br>Submits data asynchronously to following api-urls
+ * <br>3. "/RegisterUserForMember" : Register user for the selected member
  * 
  * @author Swapnil Gupta
- * @since Jun 10, 2015
- * @version SMS 1.0
+ * @date 10-Jun-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/RegisterForMember")
@@ -32,10 +38,12 @@ public class RegisterForMemberServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * Register for an active registerable member, for a specific role, if the user does not already
+     * have that role for the member
      */
     @Override
-    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
+            throws ServletException, IOException {
         request.getRequestDispatcher(JspViews.REGISTER_FOR_MEMBER_VIEW).forward(request, response);
     }
 }

@@ -23,7 +23,7 @@ import edu.neu.ccis.sms.entity.users.User;
  * Hibernate Entity bean class for UserToMemberMapping; Contain member to user mappings i.e. user is registered to which
  * member and with which role, the registration status, time etc.
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
  * @lastUpdate 10-June-2015
  */
@@ -49,7 +49,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
     /** Registration timestamp */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REGISTERED_ON", nullable = false, updatable = false)
-    private Date registeredOn;
+    private final Date registeredOn;
 
     /** User's role with which registration is done */
     @Column(name = "ROLE", nullable = false)
@@ -74,7 +74,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -82,7 +82,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
         return status;
     }
 
-    public void setStatus(StatusType status) {
+    public void setStatus(final StatusType status) {
         this.status = status;
     }
 
@@ -90,7 +90,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 
@@ -98,7 +98,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
         return member;
     }
 
-    public void setMember(Member member) {
+    public void setMember(final Member member) {
         this.member = member;
     }
 
@@ -110,7 +110,7 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
         return role;
     }
 
-    public void setRole(RoleType role) {
+    public void setRole(final RoleType role) {
         this.role = role;
     }
 
@@ -118,23 +118,23 @@ public class UserToMemberMapping implements Serializable, Comparable<UserToMembe
         return isActive;
     }
 
-    public void setActive(boolean isActive) {
+    public void setActive(final boolean isActive) {
         this.isActive = isActive;
     }
 
     @Override
-    public int compareTo(UserToMemberMapping o) {
-        return this.id.compareTo(o.getId());
+    public int compareTo(final UserToMemberMapping o) {
+        return id.compareTo(o.getId());
     }
 
     @Override
-    public boolean equals(Object anObject) {
+    public boolean equals(final Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof UserToMemberMapping) {
             UserToMemberMapping mappings = (UserToMemberMapping) anObject;
-            return (this.id.equals(mappings.id));
+            return id.equals(mappings.id);
         }
         return false;
     }

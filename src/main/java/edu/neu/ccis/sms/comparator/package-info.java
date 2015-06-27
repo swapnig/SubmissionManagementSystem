@@ -1,5 +1,5 @@
 /**
- * Custom Comparators for Member and MemberAttribute entities 
+ * Contains all of the custom comparators to impose total ordering on Member and MemberAttribute entities
  * 
  * @since 1.0
  * @author Swapnil Gupta

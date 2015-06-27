@@ -17,7 +17,7 @@ import javax.persistence.UniqueConstraint;
  * Hibernate Entity bean class for MemberAttribute; Contains attribute name, type and value information and which member
  * it belongs to.
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
  * @lastUpdate 7-June-2015
  */
@@ -36,7 +36,7 @@ public class MemberAttribute implements Serializable, Comparable<MemberAttribute
     private String name;
 
     /** Member attribute value */
-    @Column(name = "VALUE", unique = false, nullable = true)
+    @Column(name = "VALUE", unique = false, nullable = true, length = 5000)
     private String value;
 
     /** member to which this attribute belongs to */

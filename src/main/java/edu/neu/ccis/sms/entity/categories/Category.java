@@ -20,7 +20,7 @@ import javax.persistence.UniqueConstraint;
 /**
  * Hibernate Entity bean class for Category; Contains category attributes and other category parameters
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
  * @lastUpdate 7-June-2015
  */
@@ -78,7 +78,7 @@ public class Category implements Serializable, Comparable<Category> {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -86,7 +86,7 @@ public class Category implements Serializable, Comparable<Category> {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -94,7 +94,7 @@ public class Category implements Serializable, Comparable<Category> {
         return isRegisterable;
     }
 
-    public void setRegisterable(boolean isRegisterable) {
+    public void setRegisterable(final boolean isRegisterable) {
         this.isRegisterable = isRegisterable;
     }
 
@@ -102,7 +102,7 @@ public class Category implements Serializable, Comparable<Category> {
         return isSubmittable;
     }
 
-    public void setSubmittable(boolean isSubmittable) {
+    public void setSubmittable(final boolean isSubmittable) {
         this.isSubmittable = isSubmittable;
     }
 
@@ -110,7 +110,7 @@ public class Category implements Serializable, Comparable<Category> {
         return parentCategory;
     }
 
-    public void setParentCategory(Category parentCategory) {
+    public void setParentCategory(final Category parentCategory) {
         this.parentCategory = parentCategory;
     }
 
@@ -118,51 +118,51 @@ public class Category implements Serializable, Comparable<Category> {
         return childCategories;
     }
 
-    public void setChildCategories(Set<Category> childCategories) {
+    public void setChildCategories(final Set<Category> childCategories) {
         this.childCategories = childCategories;
     }
 
-    public boolean addChildCategories(Category childCategorie) {
-        return this.childCategories.add(childCategorie);
+    public boolean addChildCategories(final Category childCategorie) {
+        return childCategories.add(childCategorie);
     }
 
     public Set<CategoryAttribute> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Set<CategoryAttribute> attributes) {
+    public void setAttributes(final Set<CategoryAttribute> attributes) {
         this.attributes = attributes;
     }
 
-    public boolean addAttributes(CategoryAttribute attribute) {
-        return this.attributes.add(attribute);
+    public boolean addAttributes(final CategoryAttribute attribute) {
+        return attributes.add(attribute);
     }
 
     public Set<Member> getMembers() {
         return members;
     }
 
-    public void setMembers(Set<Member> members) {
+    public void setMembers(final Set<Member> members) {
         this.members = members;
     }
 
-    public boolean addMembers(Member member) {
-        return this.members.add(member);
+    public boolean addMembers(final Member member) {
+        return members.add(member);
     }
 
     @Override
-    public int compareTo(Category o) {
-        return this.id.compareTo(o.getId());
+    public int compareTo(final Category o) {
+        return id.compareTo(o.getId());
     }
 
     @Override
-    public boolean equals(Object anObject) {
+    public boolean equals(final Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof Category) {
             Category cat = (Category) anObject;
-            return (this.id.equals(cat.id) && this.name.equals(cat.name));
+            return id.equals(cat.id) && name.equals(cat.name);
         }
         return false;
     }

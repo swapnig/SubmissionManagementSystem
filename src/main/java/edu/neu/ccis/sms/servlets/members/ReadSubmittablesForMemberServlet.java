@@ -22,8 +22,12 @@ import edu.neu.ccis.sms.entity.categories.Member;
 /**
  * Read all the child submittables for the given member, represented as an unordered list, sorted by their name.
  * 
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member id for which submittables need to be fetched
+ * 
  * @author Swapnil Gupta
- * @createdOn Jun 10, 2015
+ * @date 10-June-2015
  *
  */
 @WebServlet("/ReadSubmittablesForMember")
@@ -41,11 +45,9 @@ public class ReadSubmittablesForMemberServlet extends HttpServlet {
 
     /**
      * When the request is received retrieves all the submittables for the current member,
-     * If none exist then return a help message indicating that no submittable child members have been
-     *  created for this member yet
-     * Else return all such child members as an unordered list
-     * 
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     * <br>If none exist, then return a help message indicating that no submittable child members have been
+     *  created for this member yet.
+     * <br>Else return all such child members as an unordered list.
      */
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)

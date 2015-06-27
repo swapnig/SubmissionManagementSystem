@@ -29,8 +29,16 @@ import edu.neu.ccis.sms.entity.categories.MemberAttribute;
  * and the values provided by the user for these attributes.
  * Member name should be unique for its direct parent member.
  * 
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_PARENT_MEMBER_ID}
+ * - Member id for which new child member is to be created
+ * <br>2) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_CATEGORY_NAME}
+ * - Category for which the new member is to be created
+ * <br>3) All the member attributes as key value pairs
+ * 
  * @author Swapnil Gupta
- * @createdOn May 25, 2015
+ * @date 25-May-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/CreateMember")
@@ -47,10 +55,9 @@ public class CreateMemberServlet extends HttpServlet {
     }
 
     /**
-     * On receiving the request creates a new member, if a member with the same name as the new member
-     * does not already exists for its direct parent member.
+     * On receiving the request creates a new member, if a member name is unique for its direct parent member.
      * 
-     * If it exists show an error message to the user indicating the requirement of unique member name
+     * <br>Else show an error message to the user indicating the requirement of unique member name
      * for a given parent member.
      * 
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

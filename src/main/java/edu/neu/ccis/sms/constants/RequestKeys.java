@@ -10,17 +10,33 @@ package edu.neu.ccis.sms.constants;
  */
 
 public interface RequestKeys {
-	
-	public static final String PARAM_ROLE_CONDUCTOR = "conductor";
-	public static final String PARAM_MEMBER_ID = "memberId";
-	public static final String PARAM_MEMBER_NAMEE = "memberName";
-	public static final String PARAM_MEMBER_ATTRIBUTES = "memberAttributes";
-	public static final String PARAM_PARENT_MEMBER_ID = "parentMemberId";
-	public static final String PARAM_PARENT_MEMBER_NAME = "parentMemberName";
-	public static final String PARAM_CATEGORY_NAME = "category";
-	public static final String PARAM_MEMBER_NAME = "Name";
-	public static final String PARAM_USER_ROLE = "role";
-	public static final String PARAM_USER_EMAIL = "userEmailId";
+
+    /** Attribute identifying conductor role for the member */
+    public static final String PARAM_ROLE_CONDUCTOR = "conductor";
+
+    /** Attribute uniquely identifying a member */
+    public static final String PARAM_MEMBER_ID = "memberId";
+
+    /** Attribute identifying name of current member */
+    public static final String PARAM_MEMBER_NAME = "memberName";
+
+    /** Attribute identifying member attributes passed as a request parameter */
+    public static final String PARAM_MEMBER_ATTRIBUTES = "memberAttributes";
+
+    /** Attribute identifying the member id of the parent of the current member */
+    public static final String PARAM_PARENT_MEMBER_ID = "parentMemberId";
+
+    /** Attribute identifying the member name of the parent of the current member */
+    public static final String PARAM_PARENT_MEMBER_NAME = "parentMemberName";
+
+    /** Attribute identifying the category of the member to be created */
+    public static final String PARAM_CATEGORY_NAME = "category";
+
+    /** Attribute identifying the current role or role to be assigned*/
+    public static final String PARAM_USER_ROLE = "role";
+
+    /** Attribute identifying a user email id*/
+    public static final String PARAM_USER_EMAIL = "userEmailId";
 
     /** message attribute stored in request while forwarding it */
     public static final String PARAM_MESSAGE = "message";

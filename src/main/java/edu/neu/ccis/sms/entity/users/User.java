@@ -27,7 +27,7 @@ import edu.neu.ccis.sms.entity.submissions.Document;
  * User Hibernate Entity bean class; contains all important information about user, his submissions and his
  * member-registration mappings, and other personal information
  * 
- * @author Pramod R. Khare
+ * @author Pramod R. Khare, Swapnil Gupta
  * @date 9-May-2015
  * @lastUpdate 10-June-2015
  */
@@ -121,7 +121,7 @@ public class User implements Serializable, Comparable<User> {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -129,31 +129,31 @@ public class User implements Serializable, Comparable<User> {
         return allocatedEvaluators;
     }
 
-    public void setAllocatedEvaluators(Set<UserToReviewerMapping> allocatedEvaluators) {
+    public void setAllocatedEvaluators(final Set<UserToReviewerMapping> allocatedEvaluators) {
         this.allocatedEvaluators = allocatedEvaluators;
     }
 
-    public boolean addAllocatedEvaluator(UserToReviewerMapping allocatedEvaluator) {
-        return this.allocatedEvaluators.add(allocatedEvaluator);
+    public boolean addAllocatedEvaluator(final UserToReviewerMapping allocatedEvaluator) {
+        return allocatedEvaluators.add(allocatedEvaluator);
     }
 
     public Set<UserToReviewerMapping> getSubmittersToEvaluate() {
         return submittersToEvaluate;
     }
 
-    public void setSubmittersToEvaluate(Set<UserToReviewerMapping> submittersToEvaluate) {
+    public void setSubmittersToEvaluate(final Set<UserToReviewerMapping> submittersToEvaluate) {
         this.submittersToEvaluate = submittersToEvaluate;
     }
 
-    public boolean addSubmitterToEvaluate(UserToReviewerMapping submitterToEvaluate) {
-        return this.submittersToEvaluate.add(submitterToEvaluate);
+    public boolean addSubmitterToEvaluate(final UserToReviewerMapping submitterToEvaluate) {
+        return submittersToEvaluate.add(submitterToEvaluate);
     }
 
     public Team getTeam() {
         return team;
     }
 
-    public void setTeam(Team team) {
+    public void setTeam(final Team team) {
         this.team = team;
     }
 
@@ -161,7 +161,7 @@ public class User implements Serializable, Comparable<User> {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -169,7 +169,7 @@ public class User implements Serializable, Comparable<User> {
         return firstname;
     }
 
-    public void setFirstname(String firstname) {
+    public void setFirstname(final String firstname) {
         this.firstname = firstname;
     }
 
@@ -177,7 +177,7 @@ public class User implements Serializable, Comparable<User> {
         return lastname;
     }
 
-    public void setLastname(String lastname) {
+    public void setLastname(final String lastname) {
         this.lastname = lastname;
     }
 
@@ -185,7 +185,7 @@ public class User implements Serializable, Comparable<User> {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -193,7 +193,7 @@ public class User implements Serializable, Comparable<User> {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -201,7 +201,7 @@ public class User implements Serializable, Comparable<User> {
         return activation;
     }
 
-    public void setActivation(String activation) {
+    public void setActivation(final String activation) {
         this.activation = activation;
     }
 
@@ -209,7 +209,7 @@ public class User implements Serializable, Comparable<User> {
         return expiration;
     }
 
-    public void setExpiration(Long expiration) {
+    public void setExpiration(final Long expiration) {
         this.expiration = expiration;
     }
 
@@ -217,7 +217,7 @@ public class User implements Serializable, Comparable<User> {
         return status;
     }
 
-    public void setStatus(StatusType status) {
+    public void setStatus(final StatusType status) {
         this.status = status;
     }
 
@@ -225,11 +225,11 @@ public class User implements Serializable, Comparable<User> {
         return topicsOfInterest;
     }
 
-    public void setTopicsOfInterest(Set<String> topicsOfInterest) {
+    public void setTopicsOfInterest(final Set<String> topicsOfInterest) {
         this.topicsOfInterest = topicsOfInterest;
     }
 
-    public boolean addTopicsOfInterest(String topicsOfInterest) {
+    public boolean addTopicsOfInterest(final String topicsOfInterest) {
         return this.topicsOfInterest.add(topicsOfInterest);
     }
 
@@ -237,60 +237,60 @@ public class User implements Serializable, Comparable<User> {
         return submissions;
     }
 
-    public void setSubmissions(Set<Document> submissions) {
+    public void setSubmissions(final Set<Document> submissions) {
         this.submissions = submissions;
     }
 
-    public boolean addSubmission(Document submission) {
-        return this.submissions.add(submission);
+    public boolean addSubmission(final Document submission) {
+        return submissions.add(submission);
     }
 
     public Set<UserToMemberMapping> getUserToMemberMappings() {
         return userToMemberMappings;
     }
 
-    public void setUserToMemberMappings(Set<UserToMemberMapping> userToMemberMappings) {
+    public void setUserToMemberMappings(final Set<UserToMemberMapping> userToMemberMappings) {
         this.userToMemberMappings = userToMemberMappings;
     }
 
-    public boolean addUserToMemberMapping(UserToMemberMapping userToMemberMapping) {
-        return this.userToMemberMappings.add(userToMemberMapping);
+    public boolean addUserToMemberMapping(final UserToMemberMapping userToMemberMapping) {
+        return userToMemberMappings.add(userToMemberMapping);
     }
 
     public Set<User> getMyConflictsOfInterestWithUsers() {
         return myConflictsOfInterestWithUsers;
     }
 
-    public void setMyConflictsOfInterestWithUsers(Set<User> myConflictsOfInterestWithUsers) {
+    public void setMyConflictsOfInterestWithUsers(final Set<User> myConflictsOfInterestWithUsers) {
         this.myConflictsOfInterestWithUsers = myConflictsOfInterestWithUsers;
     }
 
-    public boolean addMyConflictsOfInterestWithUsers(User user) {
-        return this.myConflictsOfInterestWithUsers.add(user);
+    public boolean addMyConflictsOfInterestWithUsers(final User user) {
+        return myConflictsOfInterestWithUsers.add(user);
     }
 
     public Set<User> getUsersForWhomMeInConflictOfInterest() {
         return usersForWhomMeInConflictOfInterest;
     }
 
-    public void setUsersForWhomMeInConflictOfInterest(Set<User> usersForWhomMeInConflictOfInterest) {
+    public void setUsersForWhomMeInConflictOfInterest(final Set<User> usersForWhomMeInConflictOfInterest) {
         this.usersForWhomMeInConflictOfInterest = usersForWhomMeInConflictOfInterest;
     }
 
-    public boolean addUsersForWhomMeInConflictOfInterest(User user) {
-        return this.usersForWhomMeInConflictOfInterest.add(user);
+    public boolean addUsersForWhomMeInConflictOfInterest(final User user) {
+        return usersForWhomMeInConflictOfInterest.add(user);
     }
 
     public Set<Document> getDocumentsForEvaluation() {
         return documentsForEvaluation;
     }
 
-    public void setDocumentsForEvaluation(Set<Document> documentsForEvaluation) {
+    public void setDocumentsForEvaluation(final Set<Document> documentsForEvaluation) {
         this.documentsForEvaluation = documentsForEvaluation;
     }
 
-    public boolean addDocumentForEvaluation(Document document) {
-        return this.documentsForEvaluation.add(document);
+    public boolean addDocumentForEvaluation(final Document document) {
+        return documentsForEvaluation.add(document);
     }
 
     /**
@@ -303,19 +303,19 @@ public class User implements Serializable, Comparable<User> {
     }
 
     @Override
-    public int compareTo(User o) {
-        return this.id.compareTo(o.getId());
+    public int compareTo(final User o) {
+        return id.compareTo(o.getId());
     }
 
     @Override
-    public boolean equals(Object anObject) {
+    public boolean equals(final Object anObject) {
         if (this == anObject) {
             return true;
         }
         if (anObject instanceof User) {
             User anotherUser = (User) anObject;
-            return (this.id.equals(anotherUser.id) && this.email.equals(anotherUser.email) && this.username
-                    .equals(anotherUser.username));
+            return id.equals(anotherUser.id) && email.equals(anotherUser.email) && username
+                    .equals(anotherUser.username);
         }
         return false;
     }
@@ -328,7 +328,7 @@ public class User implements Serializable, Comparable<User> {
      * @return
      */
     public boolean isEvaluatorForMemberId(final Long memberId) {
-        for (UserToMemberMapping mapping : this.userToMemberMappings) {
+        for (UserToMemberMapping mapping : userToMemberMappings) {
             if (mapping.getMember().getId().equals(memberId) && mapping.getRole() == RoleType.EVALUATOR) {
                 return true;
             }
@@ -344,7 +344,7 @@ public class User implements Serializable, Comparable<User> {
      * @return
      */
     public boolean isConductorForMemberId(final Long memberId) {
-        for (UserToMemberMapping mapping : this.userToMemberMappings) {
+        for (UserToMemberMapping mapping : userToMemberMappings) {
             if (mapping.getMember().getId().equals(memberId) && mapping.getRole() == RoleType.CONDUCTOR) {
                 return true;
             }
@@ -360,7 +360,7 @@ public class User implements Serializable, Comparable<User> {
      * @return
      */
     public boolean isSubmitterForMemberId(final Long memberId) {
-        for (UserToMemberMapping mapping : this.userToMemberMappings) {
+        for (UserToMemberMapping mapping : userToMemberMappings) {
             if (mapping.getMember().getId().equals(memberId) && mapping.getRole() == RoleType.SUBMITTER) {
                 return true;
             }
@@ -377,7 +377,7 @@ public class User implements Serializable, Comparable<User> {
      */
     public Set<User> getSubmittersToEvaluateForMemberId(final Long memberId) {
         Set<User> submitters = new HashSet<User>();
-        for (UserToReviewerMapping mapping : this.submittersToEvaluate) {
+        for (UserToReviewerMapping mapping : submittersToEvaluate) {
             if (mapping.getEvaluationForMemberId().equals(memberId)) {
                 submitters.add(mapping.getSubmitter());
             }

@@ -20,10 +20,13 @@ import edu.neu.ccis.sms.entity.categories.MemberStatusType;
  * Toggle activation status (active/inactive) for a member and enforce parent's new activation state on all its children.
  * With restriction that member's parent need to be active for that member to be active.
  * 
- * Authentication of user for performing this action is done from the front end.
+ * <br><br>This servlet expects following request parameters -
+ * <br>1) {@link edu.neu.ccis.sms.constants.RequestKeys#PARAM_MEMBER_ID}
+ * - Member id for which activation status need to be toggled
  * 
  * @author Swapnil Gupta
- * @createdOn June 18, 2015
+ * @date 16-June-2015
+ * @lastUpdate 20-June-2015
  *
  */
 @WebServlet("/ToggleMemberActivation")
@@ -41,17 +44,14 @@ public class ToggleMemberActivationServlet extends HttpServlet {
 
     /**
      * When the request is received toggles the current activation state of the member between active and
-     * inactive state. THe new activation state of the parent is enforced on all its child members
+     * inactive state. The new activation state of the parent is enforced on all its child members
      * 
-     * i.e.
-     * 1. If an attempt is made to inactivate an active member,
+     * <br><br>1. If an attempt is made to inactivate an active member,
      *      inactivates that member and all its child members recursively.
-     * 2. If an attempt is made to activate an inactive member,
-     *      activate that member and all its child members recursively,
-     *      If the member's parent is in already active,
-     *      Else show error message indicating that parent member needs to be active to activate the child member
+     * <br>2. If an attempt is made to activate an inactive member,
+     *      <br>  a. If the member's parent is currently active, activate that member and all its child members recursively
+     *      <br>  b. Else show error message indicating that parent member needs to be active to activate the child member
      * 
-     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
