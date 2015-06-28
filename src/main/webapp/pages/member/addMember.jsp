@@ -5,6 +5,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Add member</title>
 		<script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			// Convert server side hashmap using jstl to javascript map
@@ -22,7 +23,9 @@
 		<div id="container">
 			<jsp:include page="../layout/header.jsp" />
 			<jsp:include page="../layout/nav.jsp" />
+			
 			<div id="section">
+				<h2 style="margin:0px">Add member</h2><br>
 				<jsp:include page="../templates/selectCategory.jsp" /><br/>
 				<jsp:include page="../templates/selectExistingMembers.jsp" /><br/>
 				<jsp:include page="../templates/memberForm.jsp" /><br/>

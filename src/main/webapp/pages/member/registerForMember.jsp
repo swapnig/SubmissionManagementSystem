@@ -5,6 +5,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Register for Member</title>
 		<script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			// Convert server side hashmap using jstl to javascript map
@@ -23,6 +24,7 @@
 			<jsp:include page="../layout/header.jsp" />
 			<jsp:include page="../layout/nav.jsp" />
 			<div id="section">
+				<h2 style="margin:0px">Register for member</h2><br>
 				<jsp:include page="../templates/selectCategoryForRegistration.jsp" /><br/>
 				<jsp:include page="../templates/selectExistingMembers.jsp" /><br/>
 				<jsp:include page="../templates/memberForm.jsp" /><br/>

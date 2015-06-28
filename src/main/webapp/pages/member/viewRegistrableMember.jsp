@@ -6,7 +6,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title>Insert title here</title>
+		<title>${memberName} details</title>
 		<script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
 		<script src="${pageContext.request.contextPath}/resources/js/ajaxRequest.js" type="text/javascript"></script>
 		<script src="${pageContext.request.contextPath}/resources/js/viewRegistrableMember.js" type="text/javascript"></script>
